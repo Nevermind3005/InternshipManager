@@ -1,0 +1,23 @@
+﻿services:
+  database:
+    container_name: internship-store
+    image: postgres:18.0
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: internship_store
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+  server:
+    image: server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+volumes:
+  database-data:
