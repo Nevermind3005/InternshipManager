@@ -16,4 +16,7 @@ public class User : EntityBase
     [Required]
     [MaxLength(32)]
     public string Role { get; set; } = string.Empty;
+    
+    public Guid PersonId { get; set; }
+    public Person Person { get; set; } = null!;
 }
