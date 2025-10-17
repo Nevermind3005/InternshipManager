@@ -2,7 +2,7 @@ import type { IStudentRegisterReq } from "@/models/user/student/IStudentRegister
 import { useMutation } from "@tanstack/react-query";
 import { httpClient } from "../http";
 import { API } from "../api";
-import type {IUserRes} from "@/models/user/IUserRes.ts";
+import type {IUserRes} from "@/models/user/IUserRes";
 
 export const useRegisterStudent = () => {
     return useMutation({

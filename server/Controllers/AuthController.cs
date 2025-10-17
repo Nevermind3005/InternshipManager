@@ -32,7 +32,7 @@ public class AuthController(
     }
 
     // TODO This needs to be only accessible to authenticated user (owner)
-    [HttpPost("user/{id:guid}")]
+    [HttpGet("user/{id:guid}")]
     public async Task<ActionResult<UserResDto>> GetUserById(Guid id)
     {
         var result = await authService.GetUserByIdAsync(id);

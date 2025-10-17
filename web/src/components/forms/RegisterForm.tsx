@@ -112,7 +112,7 @@ const RegisterForm = () => {
         <Card>
             <CardHeader>
                 <CardTitle>Create an account</CardTitle>
-                <CardDescription>Enter your information bellow to create your account</CardDescription>
+                <CardDescription>Enter your information below to create your account</CardDescription>
             </CardHeader>
             <CardContent>
                 <form id="StudentRegisterForm" onSubmit={form.handleSubmit(onSubmit)}>
@@ -254,7 +254,7 @@ const RegisterForm = () => {
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="StudentRegisterForm_street">
+                                            <FieldLabel htmlFor="StudentRegisterForm_Street">
                                     Street
                                             </FieldLabel>
                                             <Input
