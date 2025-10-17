@@ -4,6 +4,8 @@ using Scalar.AspNetCore;
 using server.Data;
 using server.Services;
 
+const string corsAllowFrontendPolicy = "AllowFrontend";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,6 +23,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsAllowFrontendPolicy, policy =>
+    {
+        var consumers = builder.Configuration.GetRequiredSection("Consumers")["FrontendURL"];
+
+        if (string.IsNullOrEmpty(consumers))
+        {
+            throw new InvalidOperationException("Configuration value 'Consumers->FrontendURL' is missing.");
+        }
+        
+        policy.WithOrigins(consumers)
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
@@ -35,6 +54,8 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
+
+app.UseCors(corsAllowFrontendPolicy);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
