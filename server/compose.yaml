@@ -1,12 +1,12 @@
 ﻿services:
   database:
-    container_name: internship-store
+    container_name: internship-database
     image: postgres:18.0
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: internship_store
+      POSTGRES_DB: dev_internship_database
     ports:
       - "5432:5432"
     volumes:
@@ -16,6 +16,9 @@
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - 'ConnectionStrings__InternshipDatabase=Host=database;Port=5432;Username=postgres;Password=postgres;Database=dev_internship_database'
+      - 'Consumers__FrontendURL=http://localhost:5173'
     ports:
       - "8080:8080"
       - "8081:8081"
