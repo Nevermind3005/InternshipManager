@@ -26,10 +26,12 @@ public static class AuthStatics
     /// Creates a signed JWT token using the provided information.
     /// </summary>
     /// <param name="claims">List of claims.</param>
+    /// <param name="issuer">Issuer of the token.</param>
+    /// <param name="audience">Intended audience of the token.</param>
     /// <param name="signingKey">Key used to sign token.</param>
     /// <param name="expiresIn">Token expiration date and time.</param>
     /// <returns>A signed JWT token string.</returns>
-    public static string CreateToken(IEnumerable<Claim> claims, string signingKey, DateTime expiresIn)
+    public static string CreateToken(IEnumerable<Claim> claims, string issuer, string audience, string signingKey, DateTime expiresIn)
     {
         // Token needs to be 64 characters long due to the signing HmacSha512 algorithm (512 / 8 = 64)
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
@@ -38,6 +40,8 @@ public static class AuthStatics
 
         var tokenDescriptor = new JwtSecurityToken(
             claims: claims,
+            issuer: issuer,
+            audience: audience,
             expires: expiresIn,
             signingCredentials: credentials
         );

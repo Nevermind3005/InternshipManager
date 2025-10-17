@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using server.Foundation.Result;
 using server.Models.Auth;
@@ -63,5 +64,13 @@ public class AuthController(
         }
 
         return Ok(result.Value);
+    }
+
+    // TODO Remove, temp auth testing endpoint
+    [HttpGet]
+    [Authorize]
+    public IActionResult Test()
+    {
+        return Ok("Authenticated");
     }
 }

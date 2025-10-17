@@ -1,8 +1,11 @@
+using System.Text;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using server.Data;
 using server.Foundation.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using server.Services;
 
 const string corsAllowFrontendPolicy = "AllowFrontend";
@@ -43,6 +46,22 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration.GetValue<string>("Auth:Issuer"),
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration.GetValue<string>("Auth:Audience"),
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Auth:SigningKey")!)),
+            ClockSkew = TimeSpan.Zero // No delay when validating JWT expiration date time as we are not doing microservices
+        };
+    });
+
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
@@ -59,6 +78,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 
 app.UseCors(corsAllowFrontendPolicy);
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

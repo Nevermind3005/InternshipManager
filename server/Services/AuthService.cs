@@ -100,6 +100,11 @@ public class AuthService(
         return Result<TokenResDto>.Success(tokens);
     }
 
+    /// <summary>
+    /// Creates a signed JWT token using the provided <see cref="user"/> information.
+    /// </summary>
+    /// <param name="user">User for whom is the token generated.</param>
+    /// <returns>A signed JWT token string.</returns>
     private string CreateToken(User user)
     {
         var claims = new List<Claim>
@@ -111,6 +116,14 @@ public class AuthService(
 
         var expiresIn = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.AccessToken);
         
-        return AuthStatics.CreateToken(claims, authConfiguration.Value.SigningKey, expiresIn);
+        var token = AuthStatics.CreateToken(
+            claims,
+            authConfiguration.Value.Issuer,
+            authConfiguration.Value.Audience,
+            authConfiguration.Value.SigningKey,
+            expiresIn 
+        );
+
+        return token;
     }
 }
