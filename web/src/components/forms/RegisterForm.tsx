@@ -1,14 +1,14 @@
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import type { IStudentRegisterReq } from "@/models/user/student/IStudentRegisterReq";
 import { useRegisterStudent } from "@/api/hooks/useRegisterStudent";
 import { LoaderIcon } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { HTTPError } from "ky";
 
 // TODO later add error messages and translations
@@ -327,7 +327,9 @@ const RegisterForm = () => {
                                 /> : null}
                                 {isPending ? "Processing" : "Register"}
                             </Button>
-
+                            <FieldDescription className="px-6 text-center">
+                  Already have an account? <Link to="/login">Sign in</Link>
+                            </FieldDescription>
                         </Field>
                     </FieldGroup>
                 </form>
