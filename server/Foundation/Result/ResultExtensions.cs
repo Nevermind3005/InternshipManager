@@ -27,7 +27,8 @@ public static class ResultExtensions
     private static readonly Dictionary<string, int> ErrorStatusMap = new()
     {
         [Error.NotFound.Key] = StatusCodes.Status404NotFound,
-        [Error.UserAlreadyExists.Key] = StatusCodes.Status400BadRequest
+        [Error.UserAlreadyExists.Key] = StatusCodes.Status400BadRequest,
+        [Error.InvalidCredentials.Key] = StatusCodes.Status401Unauthorized,
     };
 
 }

@@ -45,6 +45,6 @@ public sealed record Error(string Key, string? Description = null)
     public static readonly Error None = new(string.Empty);
     public static readonly Error UserAlreadyExists = new("Error.User.AlreadyExists", "User with this email address already exists.");
     public static readonly Error NotFound = new("Errors.Common.NotFound", "The requested resource was not found.");
-
+    public static readonly Error InvalidCredentials = new("Errors.Auth.InvalidCredentials", "Email or password incorrect.");
     public static implicit operator Result(Error error) => Result.Failure(error);
 }
