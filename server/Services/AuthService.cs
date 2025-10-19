@@ -37,7 +37,7 @@ public class AuthService(
         {
             PasswordHash = passwordHash,
             Email = request.Email,
-            Role = Roles.RoleStudent,
+            Role = ERole.Student,
             Person = person
         };
 
@@ -111,7 +111,7 @@ public class AuthService(
         {
             new(ClaimTypes.Name, user.Email),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Role, user.Role)
+            new(ClaimTypes.Role, user.Role.ToString())
         };
 
         var expiresIn = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.AccessToken);

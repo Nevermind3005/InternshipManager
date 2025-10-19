@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using server.Data;
 
 namespace server.Entities;
 
@@ -14,8 +15,7 @@ public class User : EntityBase
     public string PasswordHash { get; set; } = string.Empty;
     
     [Required]
-    [MaxLength(32)]
-    public string Role { get; set; } = string.Empty;
+    public ERole Role { get; set; }
     
     public Guid PersonId { get; set; }
     public Person Person { get; set; } = null!;
