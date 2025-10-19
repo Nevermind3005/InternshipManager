@@ -19,4 +19,6 @@ public class User : EntityBase
     
     public Guid PersonId { get; set; }
     public Person Person { get; set; } = null!;
+
+    public ICollection<RefreshToken> RefreshTokens = [];
 }

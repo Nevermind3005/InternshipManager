@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -47,5 +48,59 @@ public static class AuthStatics
         );
 
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+    }
+    
+    /// <summary>
+    /// Extracts a <see cref="ClaimsPrincipal"/> from an expired JWT token.
+    /// This is  used during token refresh, where the expired token's claims are needed.
+    /// </summary>
+    /// <param name="issuer">The expected issuer of the token.</param>
+    /// <param name="audience">The expected audience of the token.</param>
+    /// <param name="signingKey">The signing key used to validate the token's signature.</param>
+    /// <param name="token">The JWT token string.</param>
+    /// <returns>A <see cref="ClaimsPrincipal"/> extracted from the token if validation succeeds.</returns>
+    /// <exception cref="SecurityException">Thrown if the token is invalid or uses an unexpected algorithm.</exception>
+    public static ClaimsPrincipal? GetPrincipalFromExpiredToken(string issuer, string audience, string signingKey, string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = issuer,
+            ValidateAudience = true,
+            ValidAudience = audience,
+            ValidateLifetime = false, // Needs to be false, as we are getting data from an expired token
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey))
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+        var jwtSecurityToken = securityToken as JwtSecurityToken;
+        if (jwtSecurityToken is null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return null;
+        }
+
+        return principal;
+    }
+    
+    /// <summary>
+    /// Generates a secure random refresh token, encoded in Base64.
+    /// </summary>
+    /// <returns>A cryptographically secure 32-byte random token as a Base64 string.</returns>
+    public static string GenerateRefreshToken()
+    {
+        return GenerateRandomBase64(32);
+    }
+    
+    /// <summary>
+    /// Generates a cryptographically secure random string encoded in Base64.
+    /// </summary>
+    /// <param name="byteLength">The number of random bytes to generate (default is 32).</param>
+    /// <returns>A Base64-encoded random string.</returns>
+    public static string GenerateRandomBase64(int byteLength = 32)
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(byteLength);
+        return Convert.ToBase64String(randomBytes);
     }
 }

@@ -73,9 +73,13 @@ builder.Services.AddApiVersioning(options =>
     );
 }).AddMvc();
 
+builder.Services.AddDetection();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
+
+app.UseDetection();
 
 app.UseCors(corsAllowFrontendPolicy);
 

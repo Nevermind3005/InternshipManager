@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 using server.Data;
 using server.Entities;
 using server.Foundation.Configuration;
@@ -10,13 +11,15 @@ using server.Foundation.Utils;
 using server.Models.Auth;
 using server.Models.User;
 using server.Models.User.Student;
+using Wangkanai.Detection.Services;
 
 namespace server.Services;
 
 public class AuthService(
     ApplicationDbContext context,
     IMapper mapper,
-    IOptions<AuthConfiguration> authConfiguration
+    IOptions<AuthConfiguration> authConfiguration,
+    IDetectionService detectionService
     ) : IAuthService
 {
     public async Task<Result<UserResDto>> RegisterStudentAsync(StudentRegisterReqDto request)
@@ -88,30 +91,53 @@ public class AuthService(
         {
             return Result<TokenResDto>.Failure(Error.InvalidCredentials);
         }
-
-        // TODO add refresh token stuff
-        var tokens = new TokenResDto
-        {
-            AccessToken = CreateToken(user),
-            RefreshToken = "",
-            Redirector = "/"
-        };
+        
+        var tokens = await CreateTokenResponse(user, "/");
         
         return Result<TokenResDto>.Success(tokens);
+    }
+
+    public async Task<Result<TokenResDto>> RefreshTokensAsync(RefreshTokenReqDto request)
+    {
+        var principal = AuthStatics.GetPrincipalFromExpiredToken(authConfiguration.Value.Issuer, authConfiguration.Value.Audience, authConfiguration.Value.SigningKey, request.AccessToken);
+
+        if (principal is null)
+        {
+            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+        }
+        
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var tokenId = principal.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+        if (userId is null || tokenId is null)
+        {
+            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+        }
+
+        var result = await RefreshTokensAsync(request.RefreshToken, new Guid(tokenId));
+        
+        if (result is null)
+        {
+            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+        }
+
+        return Result<TokenResDto>.Success(result);
     }
 
     /// <summary>
     /// Creates a signed JWT token using the provided <see cref="user"/> information.
     /// </summary>
     /// <param name="user">User for whom is the token generated.</param>
+    /// <param name="tokenId">Id identifying jwt with a refresh token.</param>
     /// <returns>A signed JWT token string.</returns>
-    private string CreateToken(User user)
+    private string CreateToken(User user, string tokenId)
     {
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.Email),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Role, user.Role.ToString())
+            new(ClaimTypes.Role, user.Role.ToString()),
+            new(JwtRegisteredClaimNames.Jti, tokenId)
         };
 
         var expiresIn = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.AccessToken);
@@ -125,5 +151,71 @@ public class AuthService(
         );
 
         return token;
+    }
+    
+    private async Task<string> GenerateAndSaveRefreshTokenAsync(User user, Guid jwtId)
+    {
+        var deviceString =
+            $"{detectionService.Platform.Name.ToString()}{detectionService.Platform.Version.ToString()}@{detectionService.Platform.Processor.ToString()} {detectionService.Browser.Name.ToString()}{detectionService.Browser.Version.ToString()}";
+        var refreshToken = new RefreshToken
+        {
+            Token = AuthStatics.GenerateRefreshToken(),
+            JwtId = jwtId,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.RefreshToken),
+            UserId = user.Id,
+            Device = deviceString,
+            // TODO add a real IP address
+            IpAddress = "UNKNOWN"
+        };
+        await context.RefreshTokens.AddAsync(refreshToken);
+        await context.SaveChangesAsync();
+        return refreshToken.Token;
+    }
+    
+    private async Task<TokenResDto?> RefreshTokensAsync(string inRefreshToken, Guid jwtId)
+    {
+        var refreshToken = await ValidateRefreshTokenAsync(inRefreshToken, jwtId);
+        if (refreshToken is null)
+        {
+            return null;
+        }
+        
+        // Revoke the token used for refresh
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        await context.SaveChangesAsync();
+        
+        return await CreateTokenResponse(refreshToken.User, "NONE");
+    }
+    
+    private async Task<RefreshToken?> ValidateRefreshTokenAsync(string inRefreshToken, Guid jwtId)
+    {
+        var refreshToken = await context.RefreshTokens.Include(rt => rt.User).FirstOrDefaultAsync(rt => rt.Token == inRefreshToken);
+        if (
+            refreshToken is null || 
+            refreshToken.Token != inRefreshToken || 
+            refreshToken.ExpiresAt <= DateTime.UtcNow ||
+            refreshToken.RevokedAt is not null ||
+            refreshToken.JwtId != jwtId
+            )
+        {
+            return null;
+        }
+
+        return refreshToken;
+    }
+
+    private async Task<TokenResDto> CreateTokenResponse(User user, string redirector)
+    {
+        var tokenId = Guid.NewGuid();
+        var refreshToken = await GenerateAndSaveRefreshTokenAsync(user, tokenId);
+        
+        var tokens = new TokenResDto
+        {
+            AccessToken = CreateToken(user, tokenId.ToString()),
+            RefreshToken = refreshToken,
+            Redirector = redirector
+        };
+
+        return tokens;
     }
 }
