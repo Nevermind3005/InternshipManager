@@ -92,10 +92,4 @@ public class AuthController(
         return Ok(result.Value);
     }
 
-    // TODO Remove, temp auth testing endpoint
-    [HttpGet("test")]
-    public IActionResult Test()
-    {
-        return Ok(detectionService.UserAgent.ToString());
-    }
 }
