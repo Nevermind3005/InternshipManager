@@ -41,7 +41,8 @@ public class AuthService(
             PasswordHash = passwordHash,
             Email = request.Email,
             Role = ERole.Student,
-            Person = person
+            Person = person,
+            IsPasswordDirty = true
         };
 
         var address = mapper.Map<Address>(request.Address);
@@ -91,8 +92,15 @@ public class AuthService(
         {
             return Result<TokenResDto>.Failure(Error.InvalidCredentials);
         }
+
+        var redirector = "/";
+
+        if (user.IsPasswordDirty)
+        {
+            redirector = "/changeDirtyPassword";
+        }
         
-        var tokens = await CreateTokenResponse(user, "/");
+        var tokens = await CreateTokenResponse(user, redirector);
         
         return Result<TokenResDto>.Success(tokens);
     }
@@ -124,6 +132,32 @@ public class AuthService(
         return Result<TokenResDto>.Success(result);
     }
 
+    public async Task<Result<TokenResDto>> ChangeDirtyPassword(ChangeDirtyPasswordReqDto request)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (user is null)
+        {
+            return Result<TokenResDto>.Failure(Error.NotFound);
+        }
+
+        if (!user.IsPasswordDirty)
+        {
+            return Result<TokenResDto>.Failure(Error.BadRequest);
+        }
+        
+        var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(request.Password);
+
+        user.PasswordHash = passwordHash;
+        user.IsPasswordDirty = false;
+
+        await context.SaveChangesAsync();
+        
+        var tokens = await CreateTokenResponse(user, "/");
+        
+        return Result<TokenResDto>.Success(tokens);
+    }
+
     /// <summary>
     /// Creates a signed JWT token using the provided <see cref="user"/> information.
     /// </summary>
@@ -137,7 +171,8 @@ public class AuthService(
             new(ClaimTypes.Name, user.Email),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Role, user.Role.ToString()),
-            new(JwtRegisteredClaimNames.Jti, tokenId)
+            new(JwtRegisteredClaimNames.Jti, tokenId),
+            new("IsPasswordDirty", user.IsPasswordDirty.ToString())
         };
 
         var expiresIn = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.AccessToken);

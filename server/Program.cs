@@ -6,6 +6,7 @@ using server.Data;
 using server.Foundation.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using server.Foundation.Utils;
 using server.Services;
 
 const string corsAllowFrontendPolicy = "AllowFrontend";
@@ -61,6 +62,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero // No delay when validating JWT expiration date time as we are not doing microservices
         };
     });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(AuthStatics.PolicyNoDirtyPassword, policy =>
+    policy.RequireAssertion(context =>
+    {
+        var isPasswordDirty = context.User.FindFirst("IsPasswordDirty")?.Value;
+        return isPasswordDirty == "False";
+    }));
 
 builder.Services.AddApiVersioning(options =>
 {

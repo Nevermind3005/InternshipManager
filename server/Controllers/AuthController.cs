@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using server.Foundation.Result;
@@ -77,6 +78,22 @@ public class AuthController(
 
         return Ok(result.Value);
     }
+
+    [HttpPost("changeDirtyPassword")]
+    public async Task<ActionResult<TokenResDto>> ChangeDirtyPassword(ChangeDirtyPasswordReqDto request)
+    {
+        request.Email = User.FindFirst(ClaimTypes.Name)?.Value!;
+
+        var result = await authService.ChangeDirtyPassword(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return result.Value;
+    }
+
 
     // TODO This needs to be only accessible to authenticated user (owner)
     [HttpGet("user/{id:guid}")]

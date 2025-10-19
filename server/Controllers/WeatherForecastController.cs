@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using server.Foundation.Utils;
 
 namespace server.Controllers;
 
+[Authorize(Policy = AuthStatics.PolicyNoDirtyPassword)]
 [ApiController]
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
