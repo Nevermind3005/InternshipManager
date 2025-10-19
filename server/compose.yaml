@@ -1,6 +1,6 @@
 ﻿services:
   database:
-    container_name: internship-database
+    container_name: internship-database-dev
     image: postgres:18.0
     restart: always
     environment:
@@ -12,7 +12,7 @@
     volumes:
       - database-data:/var/lib/postgresql/data/
   server:
-    image: server
+    image: server-dev
     build:
       context: .
       dockerfile: Dockerfile
