@@ -5,7 +5,7 @@
     "Route.Self": "Profile",
     "SignIn.SignIn": "Sign in",
     "SignIn.ForgotPassword": "Forgot your password?",
-    "SignIn.DontHaveAccount": "Don't have an account? Sign up",
+    "SignIn.DontHaveAccount": "Don't have an account?",
     "SignIn.EnterEmailAndPassword": "Enter your email and password to sign in!",
     "SignIn.Email": "Email",
     "SignIn.Password": "Password",

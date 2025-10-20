@@ -125,7 +125,7 @@ const LoginForm = () => {
                                 {isPending ? <FormattedMessage id="Actions.Loading" /> : <FormattedMessage id="SignIn.SignIn" />}
                             </Button>
                             <FieldDescription className="text-center">
-                                {intl.formatMessage({ id: "SignUp.AlreadyHaveAnAccount" })}{" "}
+                                {intl.formatMessage({ id: "SignIn.DontHaveAccount" })}{" "}
                                 <Link to="/register">
                                     <FormattedMessage id="SignUp.SignUp" />
                                 </Link>
