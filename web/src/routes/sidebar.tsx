@@ -12,7 +12,7 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Home, Calendar, Search, Settings, Clipboard } from "lucide-react";
-//import LanguageSelect from "@/components/foundation/LanguageSelect";
+import LanguageSelect from "@/components/foundation/LanguageSelect";
 import ThemeSwitch from "@/components/ThemeSwitch";
 import { Button } from "@/components/ui/button";
 //import EnsureRole from "@/components/foundation/EnsureRole";
@@ -61,7 +61,9 @@ export function AppSidebar() {
                                     { /** TODO: the centering is kinda fucky, look for better solution than using a padding value */}
                                     <div className="flex py-6 pr-[16px]">
                                         <Button asChild variant="default" className="w-1/2">
-                                                
+                                            <Link to="/login">
+                                                Login
+                                            </Link> 
                                         </Button>
                                         <Button asChild variant="outline" className="w-1/2">
                                             <Link to="/register">
@@ -79,7 +81,7 @@ export function AppSidebar() {
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild>
                                     <div className="flex items-center justify-between w-full py-6 pr-[16px]">
-                                        
+                                        <LanguageSelect />
                                         <div className="flex items-center justify-center w-1/2">
                                             <ThemeSwitch />
                                         </div>

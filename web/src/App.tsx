@@ -5,6 +5,9 @@ import {
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 import { ThemeInitializer } from './components/foundation/ThemeInitializer';
+import { useLanguageStore } from './store/useLanguageStore';
+import { IntlProvider } from 'react-intl';
+import { locales } from './i18n/IntlConfig';
 
 /* ~Begin TanstackRouter */
 const router = createRouter({ routeTree });
@@ -19,12 +22,19 @@ declare module '@tanstack/react-router' {
 const queryClient = new QueryClient();
 /* ~End ReactQuery */
 
+
 function App() {
+    const { locale } = useLanguageStore();
+
     return (
         <>
             <QueryClientProvider client={queryClient}>
                 <ThemeInitializer />
-                <RouterProvider router={router} />
+                <IntlProvider locale={locale} messages={locales[locale]}>
+
+                    <RouterProvider router={router} />
+                </IntlProvider>
+
             </QueryClientProvider>
         </>
     );
