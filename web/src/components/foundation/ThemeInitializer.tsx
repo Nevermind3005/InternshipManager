@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useThemeStore } from "../../store/useThemeStore";
 
 export function ThemeInitializer() {
-    const { theme, applyTheme } = useThemeStore();
+    const initializeTheme = useThemeStore((state) => state.initializeTheme);
 
     useEffect(() => {
-        applyTheme(theme);
-    }, [theme, applyTheme]);
+        initializeTheme();
+    }, [initializeTheme]);
 
     return null;
 }

@@ -1,49 +1,47 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type Theme = "dark" | "light" | "system";
+export type Theme = "dark" | "light";
 
 type ThemeStore = {
-  theme: Theme;
+  theme: Theme | null;
   setTheme: (theme: Theme) => void;
   applyTheme: (theme: Theme) => void;
+  initializeTheme: () => void;
 };
 
 export const useThemeStore = create<ThemeStore>()(
     persist(
-        (set) => ({
-            theme: "system",
+        (set, get) => ({
+            theme: null, // no default, will detect system theme
             setTheme: (theme) => {
                 set({ theme });
-                // Apply immediately whenever theme changes
                 const root = window.document.documentElement;
                 root.classList.remove("light", "dark");
-
-                if (theme === "system") {
-                    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-                        ? "dark"
-                        : "light";
-                    root.classList.add(systemTheme);
-                } else {
-                    root.classList.add(theme);
-                }
+                root.classList.add(theme);
             },
             applyTheme: (theme) => {
                 const root = window.document.documentElement;
                 root.classList.remove("light", "dark");
+                root.classList.add(theme);
+            },
+            initializeTheme: () => {
+                const currentTheme = get().theme;
+                if (!currentTheme) {
+                    // Detect system theme
+                    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                    const systemTheme: Theme = prefersDark ? "dark" : "light";
 
-                if (theme === "system") {
-                    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-                        ? "dark"
-                        : "light";
-                    root.classList.add(systemTheme);
+                    // Set and apply
+                    get().setTheme(systemTheme);
                 } else {
-                    root.classList.add(theme);
+                    // Just apply stored theme
+                    get().applyTheme(currentTheme);
                 }
             },
         }),
         {
-            name: "Aerith_UserInterfaceTheme",
+            name: "ThemeStore",
         }
     )
 );
