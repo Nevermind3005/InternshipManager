@@ -3,12 +3,13 @@ import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { useLoginUser } from "@/api/hooks/useLoginUser";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link,useNavigate } from "@tanstack/react-router";
 import { HTTPError } from "ky";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Button } from "../ui/button";
 import { LoaderIcon } from "lucide-react";
 import { Input } from "../ui/input";
+import { FormattedMessage, useIntl } from "react-intl";
 
 const formSchema = z.object({
     email: z
@@ -25,6 +26,8 @@ const formSchema = z.object({
 const LoginForm = () => {
     const { mutate: login, isPending } = useLoginUser();
     const navigate = useNavigate();
+    const intl = useIntl();
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -37,7 +40,7 @@ const LoginForm = () => {
         login(data, {
             onSuccess: (res) => navigate({ to: res.redirector }),
             onError: async (error) => {
-                let message = "Something went wrong";
+                let message = intl.formatMessage({ id: "Error.Login.EmailOrPasswordInvalid" });
                 if (error instanceof HTTPError) {
                     try {
                         const data = await error.response.json();
@@ -58,8 +61,12 @@ const LoginForm = () => {
     return(
         <Card>
             <CardHeader>
-                <CardTitle>Login to your account</CardTitle>
-                <CardDescription>Enter your email below to login to your account</CardDescription>
+                <CardTitle>
+                    <FormattedMessage id="SignIn.SignIn" />
+                </CardTitle>
+                <CardDescription>
+                    <FormattedMessage id="SignIn.EnterEmailAndPassword" />
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <form id="UserLoginForm" onSubmit={form.handleSubmit(onSubmit)}>
@@ -70,13 +77,13 @@ const LoginForm = () => {
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
                                     <FieldLabel htmlFor="UserLoginForm_Email">
-                                    Email
+                                        <FormattedMessage id="SignIn.Email" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
                                         id="UserLoginForm_Email"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="name.surname@student.ukf.sk"
+                                        placeholder={intl.formatMessage({ id: "SignIn.Email" })}
                                         autoComplete="on"
                                         type="email"
                                     />
@@ -92,13 +99,13 @@ const LoginForm = () => {
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
                                     <FieldLabel htmlFor="UserLoginForm_Password">
-                                    Password
+                                        <FormattedMessage id="SignIn.Password" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
                                         id="UserLoginForm_Password"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="Password"
+                                        placeholder={intl.formatMessage({ id: "SignIn.Password" })}
                                         autoComplete="on"
                                         type="password"
                                     />
@@ -115,10 +122,13 @@ const LoginForm = () => {
                                     aria-label="Loading"
                                     className="size-4 animate-spin"
                                 /> : null}
-                                {isPending ? "Processing" : "Login"}
+                                {isPending ? <FormattedMessage id="Actions.Loading" /> : <FormattedMessage id="SignIn.SignIn" />}
                             </Button>
                             <FieldDescription className="text-center">
-                  Don&apos;t have an account? <Link to="/register">Sign up</Link>
+                                {intl.formatMessage({ id: "SignUp.AlreadyHaveAnAccount" })}{" "}
+                                <Link to="/register">
+                                    <FormattedMessage id="SignUp.SignUp" />
+                                </Link>
                             </FieldDescription>
                         </Field>
                     </FieldGroup>

@@ -56,10 +56,10 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register'
+  fullPaths: '/' | '/login' | '/register' | '/sidebar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register'
-  id: '__root__' | '/' | '/login' | '/register'
+  to: '/' | '/login' | '/register' | '/sidebar'
+  id: '__root__' | '/' | '/login' | '/register' | '/sidebar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {

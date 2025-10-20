@@ -10,6 +10,8 @@ import { useRegisterStudent } from "@/api/hooks/useRegisterStudent";
 import { LoaderIcon } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { HTTPError } from "ky";
+import { FormattedMessage } from 'react-intl';
+
 
 // TODO later add error messages and translations
 const formSchema = z.object({
@@ -111,8 +113,8 @@ const RegisterForm = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Create an account</CardTitle>
-                <CardDescription>Enter your information below to create your account</CardDescription>
+                <CardTitle><FormattedMessage id="SignUp.SignUp" /></CardTitle>
+                <CardDescription><FormattedMessage id="SignUp.Description" /></CardDescription>
             </CardHeader>
             <CardContent>
                 <form id="StudentRegisterForm" onSubmit={form.handleSubmit(onSubmit)}>
@@ -123,7 +125,7 @@ const RegisterForm = () => {
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
                                     <FieldLabel htmlFor="StudentRegisterForm_Email">
-                                    Primary Email
+                                        <FormattedMessage id="SignUp.PrimaryEmail" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
@@ -144,7 +146,7 @@ const RegisterForm = () => {
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
                                     <FieldLabel htmlFor="StudentRegister_AlternativeEmail">
-                                    Secondary Email (optional)
+                                        <FormattedMessage id="SignUp.AltEmail" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
@@ -167,7 +169,7 @@ const RegisterForm = () => {
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="StudentRegisterForm_FirstName">
-                                    First Name
+                                                <FormattedMessage id="SignUp.firstName" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
@@ -188,7 +190,7 @@ const RegisterForm = () => {
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="StudentRegisterForm_LastName">
-                                    Last Name
+                                                <FormattedMessage id="SignUp.lastName" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
@@ -211,7 +213,7 @@ const RegisterForm = () => {
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
                                     <FieldLabel htmlFor="StudentRegisterForm_Phone">
-                                    Phone Number
+                                        <FormattedMessage id="SignUp.PhoneNumber" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
@@ -234,7 +236,7 @@ const RegisterForm = () => {
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="StudentRegisterForm_City">
-                                    City
+                                                <FormattedMessage id="SignUp.City" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
@@ -255,7 +257,7 @@ const RegisterForm = () => {
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="StudentRegisterForm_Street">
-                                    Street
+                                                <FormattedMessage id="SignUp.Street" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
@@ -280,7 +282,7 @@ const RegisterForm = () => {
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="StudentRegisterForm_BuildingNumber">
-                                    Building Number
+                                                <FormattedMessage id="SignUp.BuildingNumber" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
@@ -301,7 +303,8 @@ const RegisterForm = () => {
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="StudentRegisterForm_zipCode">
-                                    Zip Code
+                                                <FormattedMessage id="SignUp.PostalCode" />
+
                                             </FieldLabel>
                                             <Input
                                                 {...field}
@@ -328,7 +331,9 @@ const RegisterForm = () => {
                                 {isPending ? "Processing" : "Register"}
                             </Button>
                             <FieldDescription className="px-6 text-center">
-                  Already have an account? <Link to="/login">Sign in</Link>
+                                <FormattedMessage id="SignUp.AlreadyHaveAnAccount" />
+                                <Link to="/login">{' '}<FormattedMessage id="SignUp.SignIn" />
+                                </Link>
                             </FieldDescription>
                         </Field>
                     </FieldGroup>
