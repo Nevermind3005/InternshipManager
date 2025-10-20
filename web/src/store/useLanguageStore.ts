@@ -15,7 +15,7 @@ export const useLanguageStore = create<ILanguageState>()(
             setLocale: (lang) => set({ locale: lang })
         }),
         {
-            name: 'Aerith_ApplicationLanguage'
+            name: 'LanguageStore'
         }
     )
 );

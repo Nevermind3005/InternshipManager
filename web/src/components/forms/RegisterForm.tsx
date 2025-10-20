@@ -304,7 +304,6 @@ const RegisterForm = () => {
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="StudentRegisterForm_zipCode">
                                                 <FormattedMessage id="SignUp.PostalCode" />
-
                                             </FieldLabel>
                                             <Input
                                                 {...field}
