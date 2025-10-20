@@ -1,7 +1,11 @@
+using System.Text;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using server.Data;
+using server.Foundation.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using server.Services;
 
 const string corsAllowFrontendPolicy = "AllowFrontend";
@@ -13,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.Configure<AuthConfiguration>(builder.Configuration.GetSection("Auth"));
 
 // Register the database ctx
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -40,6 +46,22 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration.GetValue<string>("Auth:Issuer"),
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration.GetValue<string>("Auth:Audience"),
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("Auth:SigningKey")!)),
+            ClockSkew = TimeSpan.Zero // No delay when validating JWT expiration date time as we are not doing microservices
+        };
+    });
+
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
@@ -51,11 +73,18 @@ builder.Services.AddApiVersioning(options =>
     );
 }).AddMvc();
 
+builder.Services.AddDetection();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
+app.UseDetection();
+
 app.UseCors(corsAllowFrontendPolicy);
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
