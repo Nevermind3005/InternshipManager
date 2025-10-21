@@ -17,5 +17,14 @@ public class UserResDto
     public string Role { get; set; } = string.Empty;
     
     [Required]
-    public PersonResDto Person { get; set; } = null!;
+    [MaxLength(128)]
+    public string FirstName { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(128)]
+    public string LastName { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(20)]
+    public string Phone { get; set; } = string.Empty;
 }

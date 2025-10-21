@@ -16,8 +16,7 @@ namespace server.Controllers;
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController(
-    IAuthService authService,
-    IDetectionService detectionService
+    IAuthService authService
     ) : ControllerBase
 {
     /// <summary>

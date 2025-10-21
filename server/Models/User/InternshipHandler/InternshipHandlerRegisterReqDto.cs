@@ -10,5 +10,14 @@ public class InternshipHandlerRegisterReqDto
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    public PersonReqDto Person { get; set; } = null!;
+    [MaxLength(128)]
+    public string FirstName { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(128)]
+    public string LastName { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(20)]
+    public string Phone { get; set; } = string.Empty;
 }

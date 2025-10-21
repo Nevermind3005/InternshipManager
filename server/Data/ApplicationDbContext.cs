@@ -6,8 +6,6 @@ namespace server.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<Person> Persons { get; set; }
-    public DbSet<Student> Students { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,11 +53,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 {
                     Email = "handler@mail.com", 
                     Role = ERole.InternshipHandler,
-                    Person = new Person
-                    {
-                        FirstName = "Admin",
-                        LastName = "User",
-                    }
+                    FirstName = "Admin",
+                    LastName = "User",
                 };
                 var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("12345678");
                 user.PasswordHash = passwordHash;
@@ -76,11 +71,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 {
                     Email = "handler@mail.com", 
                     Role = ERole.InternshipHandler,
-                    Person = new Person
-                    {
-                        FirstName = "Admin",
-                        LastName = "User",
-                    }
+                    FirstName = "Admin",
+                    LastName = "User",
                 };
                 var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("12345678");
                 user.PasswordHash = passwordHash;
