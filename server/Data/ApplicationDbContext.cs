@@ -43,4 +43,50 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             ((EntityBase)entity.Entity).UpdatedAt = now;
         }
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSeeding((context, _) =>
+        {
+            var adminNum = context.Set<User>().Count(u => u.Role == ERole.InternshipHandler);
+            if (adminNum < 1)
+            {
+                var user = new User
+                {
+                    Email = "handler@mail.com", 
+                    Role = ERole.InternshipHandler,
+                    Person = new Person
+                    {
+                        FirstName = "Admin",
+                        LastName = "User",
+                    }
+                };
+                var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("12345678");
+                user.PasswordHash = passwordHash;
+                context.Set<User>().Add(user);
+                context.SaveChanges();
+            }
+        })
+        .UseAsyncSeeding(async (context, _, cancellationToken) =>
+        {
+            var adminNum = context.Set<User>().Count(u => u.Role == ERole.InternshipHandler);
+            if (adminNum < 1)
+            {
+                var user = new User
+                {
+                    Email = "handler@mail.com", 
+                    Role = ERole.InternshipHandler,
+                    Person = new Person
+                    {
+                        FirstName = "Admin",
+                        LastName = "User",
+                    }
+                };
+                var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("12345678");
+                user.PasswordHash = passwordHash;
+                context.Set<User>().Add(user);
+                await context.SaveChangesAsync(cancellationToken);
+            }
+        });
+    }
 }
