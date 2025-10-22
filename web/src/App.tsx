@@ -2,17 +2,8 @@ import {
     QueryClient,
     QueryClientProvider,
 } from '@tanstack/react-query';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-import { routeTree } from './routeTree.gen';
-
-/* ~Begin TanstackRouter */
-const router = createRouter({ routeTree });
-declare module '@tanstack/react-router' {
-    interface Register {
-        router: typeof router
-    }
-}
-/* ~End TanstackRouter */
+import { RouterProvider } from '@tanstack/react-router';
+import router from './lib/router';
 
 /* ~Begin ReactQuery */
 const queryClient = new QueryClient();

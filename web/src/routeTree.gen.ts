@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as ChangeDirtyPasswordRouteImport } from './routes/changeDirtyPassword'
+import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
 import { Route as IndexRouteImport } from './routes/index'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -24,9 +24,9 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChangeDirtyPasswordRoute = ChangeDirtyPasswordRouteImport.update({
-  id: '/changeDirtyPassword',
-  path: '/changeDirtyPassword',
+const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
+  id: '/changeDefaultPassword',
+  path: '/changeDefaultPassword',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,34 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/changeDirtyPassword': typeof ChangeDirtyPasswordRoute
+  '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/changeDirtyPassword': typeof ChangeDirtyPasswordRoute
+  '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/changeDirtyPassword': typeof ChangeDirtyPasswordRoute
+  '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/changeDirtyPassword' | '/login' | '/register'
+  fullPaths: '/' | '/changeDefaultPassword' | '/login' | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/changeDirtyPassword' | '/login' | '/register'
-  id: '__root__' | '/' | '/changeDirtyPassword' | '/login' | '/register'
+  to: '/' | '/changeDefaultPassword' | '/login' | '/register'
+  id: '__root__' | '/' | '/changeDefaultPassword' | '/login' | '/register'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ChangeDirtyPasswordRoute: typeof ChangeDirtyPasswordRoute
+  ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
 }
@@ -85,11 +85,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/changeDirtyPassword': {
-      id: '/changeDirtyPassword'
-      path: '/changeDirtyPassword'
-      fullPath: '/changeDirtyPassword'
-      preLoaderRoute: typeof ChangeDirtyPasswordRouteImport
+    '/changeDefaultPassword': {
+      id: '/changeDefaultPassword'
+      path: '/changeDefaultPassword'
+      fullPath: '/changeDefaultPassword'
+      preLoaderRoute: typeof ChangeDefaultPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,7 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ChangeDirtyPasswordRoute: ChangeDirtyPasswordRoute,
+  ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
 }

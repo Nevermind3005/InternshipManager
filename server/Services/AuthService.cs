@@ -97,7 +97,7 @@ public class AuthService(
 
         if (user.IsPasswordDirty)
         {
-            redirector = "/changeDirtyPassword";
+            redirector = "/changeDefaultPassword";
         }
         
         var tokens = await CreateTokenResponse(user, redirector);
@@ -132,7 +132,7 @@ public class AuthService(
         return Result<TokenResDto>.Success(result);
     }
 
-    public async Task<Result<TokenResDto>> ChangeDirtyPassword(ChangeDirtyPasswordReqDto request)
+    public async Task<Result<TokenResDto>> ChangeDefaultPassword(ChangeDefaultPasswordReqDto request)
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 

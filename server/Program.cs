@@ -64,7 +64,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(AuthStatics.PolicyNoDirtyPassword, policy =>
+    .AddPolicy(AuthStatics.PolicyNoDefaultPassword, policy =>
     policy.RequireAssertion(context =>
     {
         var isPasswordDirty = context.User.FindFirst("IsPasswordDirty")?.Value;

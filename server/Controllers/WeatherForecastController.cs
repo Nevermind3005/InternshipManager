@@ -4,7 +4,7 @@ using server.Foundation.Utils;
 
 namespace server.Controllers;
 
-[Authorize(Policy = AuthStatics.PolicyNoDirtyPassword)]
+[Authorize(Policy = AuthStatics.PolicyNoDefaultPassword)]
 [ApiController]
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase

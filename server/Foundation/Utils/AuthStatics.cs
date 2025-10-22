@@ -13,7 +13,7 @@ namespace server.Foundation.Utils;
 /// </summary>
 public static class AuthStatics
 {
-    public const string PolicyNoDirtyPassword = "NO_DIRTY_PASSWORD";
+    public const string PolicyNoDefaultPassword = "NO_DEFAULT_PASSWORD";
     
     /// <summary>
     /// Generates a short random password encoded using Base32 (RFC 4648 format).

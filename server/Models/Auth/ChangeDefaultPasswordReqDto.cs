@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace server.Models.Auth;
 
-public class ChangeDirtyPasswordReqDto
+public class ChangeDefaultPasswordReqDto
 {
     [Required]
     [MinLength(8)]
