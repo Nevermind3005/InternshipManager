@@ -4,16 +4,25 @@ import {
 } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import router from './lib/router';
+import { ThemeInitializer } from './components/foundation/ThemeInitializer';
+import { useLanguageStore } from './store/useLanguageStore';
+import { IntlProvider } from 'react-intl';
+import { locales } from './i18n/IntlConfig';
 
 /* ~Begin ReactQuery */
 const queryClient = new QueryClient();
 /* ~End ReactQuery */
 
 function App() {
+    const { locale } = useLanguageStore();
+
     return (
         <>
             <QueryClientProvider client={queryClient}>
-                <RouterProvider router={router} />
+                <ThemeInitializer />
+                <IntlProvider locale={locale} messages={locales[locale]}>
+                    <RouterProvider router={router} />
+                </IntlProvider>
             </QueryClientProvider>
         </>
     );

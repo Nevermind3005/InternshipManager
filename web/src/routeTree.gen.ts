@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SidebarRouteImport } from './routes/sidebar'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SidebarRoute = SidebarRouteImport.update({
+  id: '/sidebar',
+  path: '/sidebar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/sidebar': typeof SidebarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/sidebar': typeof SidebarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/sidebar': typeof SidebarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/changeDefaultPassword' | '/login' | '/register'
+  fullPaths: '/' | '/login' | '/register' | '/sidebar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/changeDefaultPassword' | '/login' | '/register'
-  id: '__root__' | '/' | '/changeDefaultPassword' | '/login' | '/register'
+  to: '/' | '/login' | '/register' | '/sidebar'
+  id: '__root__' | '/' | '/login' | '/register' | '/sidebar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +76,18 @@ export interface RootRouteChildren {
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  SidebarRoute: typeof SidebarRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sidebar': {
+      id: '/sidebar'
+      path: '/sidebar'
+      fullPath: '/sidebar'
+      preLoaderRoute: typeof SidebarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  SidebarRoute: SidebarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
