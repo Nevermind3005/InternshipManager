@@ -106,6 +106,10 @@ namespace server.Migrations
                         .HasColumnType("character varying(128)")
                         .HasColumnName("first_name");
 
+                    b.Property<bool>("IsPasswordDirty")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_password_dirty");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(128)

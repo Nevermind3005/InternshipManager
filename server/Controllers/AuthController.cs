@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -91,6 +92,7 @@ public class AuthController(
     /// <param name="request">JSON containing login access and refresh tokens</param>
     /// <response code="200">Returns the authentication tokens.</response>
     /// <response code="401">If there was a problem with tokens.</response>
+    [Authorize]
     [HttpPost("refreshToken")]
     public async Task<ActionResult<TokenResDto>> RefreshTokens(RefreshTokenReqDto request)
     {
@@ -103,6 +105,23 @@ public class AuthController(
 
         return Ok(result.Value);
     }
+
+    [Authorize]
+    [HttpPost("changeDefaultPassword")]
+    public async Task<ActionResult<TokenResDto>> ChangeDefaultPassword(ChangeDefaultPasswordReqDto request)
+    {
+        request.Email = User.FindFirst(ClaimTypes.Name)?.Value!;
+
+        var result = await authService.ChangeDefaultPassword(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return result.Value;
+    }
+
 
     // TODO This needs to be only accessible to authenticated user (owner)
     [HttpGet("user/{id:guid}")]

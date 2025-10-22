@@ -12,8 +12,8 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251021081327_RefactorStudent")]
-    partial class RefactorStudent
+    [Migration("20251019152628_AddDirtyPasswordFlagToUser")]
+    partial class AddDirtyPasswordFlagToUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,7 +119,7 @@ namespace server.Migrations
                     b.ToTable("refresh_tokens", (string)null);
                 });
 
-            modelBuilder.Entity("server.Entities.User", b =>
+            modelBuilder.Entity("server.Entities.Student", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,11 +135,44 @@ namespace server.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_students");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_students_user_id");
+
+                    b.ToTable("students", (string)null);
+                });
+
+            modelBuilder.Entity("server.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("email");
+
+                    b.Property<bool>("IsPasswordDirty")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_password_dirty");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -186,18 +219,18 @@ namespace server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("server.Entities.User", b =>
+            modelBuilder.Entity("server.Entities.Student", b =>
                 {
-                    b.HasOne("server.Entities.Person", "Person")
-                        .WithOne("User")
-                        .HasForeignKey("server.Entities.User", "PersonId")
+                    b.HasOne("server.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("server.Entities.Student", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_users_persons_person_id");
+                        .HasConstraintName("fk_students_users_user_id");
 
                     b.OwnsOne("server.Entities.Address", "Address", b1 =>
                         {
-                            b1.Property<Guid>("UserId")
+                            b1.Property<Guid>("StudentId")
                                 .HasColumnType("uuid")
                                 .HasColumnName("id");
 
@@ -225,16 +258,29 @@ namespace server.Migrations
                                 .HasColumnType("character varying(16)")
                                 .HasColumnName("address_zip_code");
 
-                            b1.HasKey("UserId");
+                            b1.HasKey("StudentId");
 
-                            b1.ToTable("users");
+                            b1.ToTable("students");
 
                             b1.WithOwner()
-                                .HasForeignKey("UserId")
-                                .HasConstraintName("fk_users_users_id");
+                                .HasForeignKey("StudentId")
+                                .HasConstraintName("fk_students_students_id");
                         });
 
-                    b.Navigation("Address");
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("server.Entities.User", b =>
+                {
+                    b.HasOne("server.Entities.Person", "Person")
+                        .WithOne("User")
+                        .HasForeignKey("server.Entities.User", "PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_users_persons_person_id");
 
                     b.Navigation("Person");
                 });
