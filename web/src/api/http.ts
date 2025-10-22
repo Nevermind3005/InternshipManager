@@ -51,7 +51,7 @@ const createAuthKyInstance = () => {
                                 json: { refreshToken, accessToken }
                             }).json<{ accessToken: string, refreshToken: string }>();
 
-                            const jwtPayload = jwtDecode<IJwtPayload>(accessToken);
+                            const jwtPayload = jwtDecode<IJwtPayload>(response.accessToken);
 
                             setAccessToken(response.accessToken);
                             setRefreshToken(response.refreshToken);

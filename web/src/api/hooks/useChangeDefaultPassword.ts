@@ -18,7 +18,7 @@ const changeDefaultPassword = async (req: IChangeDefaultPasswordReq) => {
     return { redirector: data.redirector };
 };
 
-export const useChnageDefaultPassword = () => {
+export const useChanageDefaultPassword = () => {
     return useMutation({
         mutationFn: changeDefaultPassword
     });

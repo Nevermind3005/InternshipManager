@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { useChnageDefaultPassword } from "@/api/hooks/useChangeDefaultPassword";
+import { useChanageDefaultPassword } from "@/api/hooks/useChangeDefaultPassword";
 import { HTTPError } from "ky";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
@@ -18,7 +18,7 @@ const formSchema = z.object({
 });
 
 const ChangeDefaultPasswordForm = () => {
-    const { mutate: changeDefaultPassword, isPending } = useChnageDefaultPassword();
+    const { mutate: changeDefaultPassword, isPending } = useChanageDefaultPassword();
     const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
