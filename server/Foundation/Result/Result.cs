@@ -47,5 +47,6 @@ public sealed record Error(string Key, string? Description = null)
     public static readonly Error NotFound = new("Errors.Common.NotFound", "The requested resource was not found.");
     public static readonly Error InvalidCredentials = new("Errors.Auth.InvalidCredentials", "Email or password incorrect.");
     public static readonly Error InvalidAuthToken = new("Errors.Auth.InvalidAuthToken", "Provided auth token is invalid.");
+    public static readonly Error BadRequest = new("Errors.Common.BadRequest", "The requested operation was invalid.");
     public static implicit operator Result(Error error) => Result.Failure(error);
 }

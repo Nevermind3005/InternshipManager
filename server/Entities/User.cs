@@ -15,6 +15,9 @@ public class User : EntityBase
     public string PasswordHash { get; set; } = string.Empty;
     
     [Required]
+    public bool IsPasswordDirty { get; set; }
+    
+    [Required]
     public ERole Role { get; set; }
     
     public Guid PersonId { get; set; }
