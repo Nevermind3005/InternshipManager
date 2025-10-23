@@ -1,12 +1,16 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
+export type Role = "None" | "Student" | "Company" | "InternshipHandler";
+
 interface IAuthTokenState {
     accessToken: string,
     refreshToken: string;
+    role: Role,
     setAccessToken: (accessToken: string) => void;
     setRefreshToken: (refreshToken: string) => void;
-    clearTokens: () => void;
+    setRole: (role: Role) => void;
+    clearStore: () => void;
 };
 
 export const useAuthStore = create<IAuthTokenState>()(
@@ -15,9 +19,11 @@ export const useAuthStore = create<IAuthTokenState>()(
             (set) => ({
                 accessToken: '',
                 refreshToken: '',
+                role: 'None',
                 setAccessToken: (newAccessToken) => set({ accessToken: newAccessToken }, undefined, 'auth/setAccessToken'),
                 setRefreshToken: (newRefreshToken) => set({ refreshToken: newRefreshToken }, undefined, 'auth/setRefreshToken'),
-                clearTokens: () => set({ accessToken: '', refreshToken: '' }, undefined, 'auth/clearTokens')
+                setRole: (newRole) => set({ role: newRole }, undefined, 'auth/setRole'),
+                clearStore: () => set({ accessToken: '', refreshToken: '', role: 'None' }, undefined, 'auth/clearStore')
             }),
             {
                 name: 'AuthStore'

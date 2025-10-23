@@ -12,10 +12,19 @@ public class StudentRegisterReqDto
     [MaxLength(256)]
     [EmailAddress]
     public string? AltMail { get; set; }
-
-    [Required]
-    public PersonReqDto Person { get; set; } = null!;
     
     [Required]
     public AddressReqDto Address { get; set; } = null!;
+    
+    [Required]
+    [MaxLength(128)]
+    public string FirstName { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(128)]
+    public string LastName { get; set; } = string.Empty;
+    
+    [Required]
+    [MaxLength(20)]
+    public string Phone { get; set; } = string.Empty;
 }

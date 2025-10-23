@@ -6,8 +6,6 @@ namespace server.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<Person> Persons { get; set; }
-    public DbSet<Student> Students { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,5 +40,45 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             }
             ((EntityBase)entity.Entity).UpdatedAt = now;
         }
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSeeding((context, _) =>
+        {
+            var adminNum = context.Set<User>().Count(u => u.Role == ERole.InternshipHandler);
+            if (adminNum < 1)
+            {
+                var user = new User
+                {
+                    Email = "handler@mail.com", 
+                    Role = ERole.InternshipHandler,
+                    FirstName = "Admin",
+                    LastName = "User",
+                };
+                var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("12345678");
+                user.PasswordHash = passwordHash;
+                context.Set<User>().Add(user);
+                context.SaveChanges();
+            }
+        })
+        .UseAsyncSeeding(async (context, _, cancellationToken) =>
+        {
+            var adminNum = context.Set<User>().Count(u => u.Role == ERole.InternshipHandler);
+            if (adminNum < 1)
+            {
+                var user = new User
+                {
+                    Email = "handler@mail.com", 
+                    Role = ERole.InternshipHandler,
+                    FirstName = "Admin",
+                    LastName = "User",
+                };
+                var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("12345678");
+                user.PasswordHash = passwordHash;
+                context.Set<User>().Add(user);
+                await context.SaveChangesAsync(cancellationToken);
+            }
+        });
     }
 }
