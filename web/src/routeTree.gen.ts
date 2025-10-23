@@ -65,10 +65,21 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/sidebar'
+  fullPaths:
+    | '/'
+    | '/changeDefaultPassword'
+    | '/login'
+    | '/register'
+    | '/sidebar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/sidebar'
-  id: '__root__' | '/' | '/login' | '/register' | '/sidebar'
+  to: '/' | '/changeDefaultPassword' | '/login' | '/register' | '/sidebar'
+  id:
+    | '__root__'
+    | '/'
+    | '/changeDefaultPassword'
+    | '/login'
+    | '/register'
+    | '/sidebar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {

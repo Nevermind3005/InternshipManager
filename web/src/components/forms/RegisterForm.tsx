@@ -76,11 +76,9 @@ const RegisterForm = () => {
         const reqJson: IStudentRegisterReq =  {
             email: data.email,
             altMail: data.alternativeEmail.trim().length === 0 ? null : data.alternativeEmail,
-            person: {
-                firstName: data.firstName,
-                lastName: data.lastName,
-                phone: data.phone
-            },
+            firstName: data.firstName,
+            lastName: data.lastName,
+            phone: data.phone,
             address: {
                 city: data.city,
                 street: data.street,

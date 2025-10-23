@@ -26,6 +26,7 @@
     "SignUp.PostalCode": "PSČ",
     "SignUp.AlreadyHaveAnAccount": "Už máte účet?",
     "SignUp.SignIn": "Prihlásiť sa",
+    "Field.Email": "Email",
     "ForgotPassword.ForgottenPassword": "Zabudnuté heslo",
     "ForgotPassword.GetNewPassword": "Zadaj svoj email a získaj nové heslo",
     "ForgotPassword.Reset": "Obnoviť heslo",
@@ -38,5 +39,8 @@
     "Error.Validation.StudyPlan.Code.TooLong": "Maximálna dĺžka kódu by nemala presiahnuť 8",
     "Error.Login.EmailOrPasswordInvalid": "Nesprávne prihlasovacie údaje",
     "Actions.Loading": "Spracováva sa",
-    "Actions.Save": "Uložiť"
+    "Actions.Save": "Uložiť",
+    "Actions.Create": "Vytvoriť",
+    "InternshipHandler.Create": "Vytvorte nového manažéra praxe",
+    "InternshipHandler.Description": "Vyplnte údaje a vytvorte nového manažéra praxe"
 }

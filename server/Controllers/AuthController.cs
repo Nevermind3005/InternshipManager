@@ -2,9 +2,11 @@ using System.Security.Claims;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using server.Data;
 using server.Foundation.Result;
 using server.Models.Auth;
 using server.Models.User;
+using server.Models.User.InternshipHandler;
 using server.Models.User.Student;
 using server.Services;
 using Wangkanai.Detection.Services;
@@ -15,8 +17,7 @@ namespace server.Controllers;
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController(
-    IAuthService authService,
-    IDetectionService detectionService
+    IAuthService authService
     ) : ControllerBase
 {
     /// <summary>
@@ -29,6 +30,30 @@ public class AuthController(
     public async Task<ActionResult<UserResDto>> RegisterStudent(StudentRegisterReqDto request)
     {
         var result = await authService.RegisterStudentAsync(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+        
+        return CreatedAtAction(
+            nameof(GetUserById), 
+            new { id = result.Value.Id }, 
+            result.Value
+        );
+    }
+    
+    /// <summary>
+    /// Register a internship handler user.
+    /// </summary>
+    /// <param name="request">JSON containing user info</param>
+    /// <response code="200">Returns a user object.</response>
+    /// <response code="400">If a user with given email already exists.</response>
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    [HttpPost("register/internshipHandler")]
+    public async Task<ActionResult<UserResDto>> RegisterInternshipHandler(InternshipHandlerRegisterReqDto request)
+    {
+        var result = await authService.RegisterInternshipHandlerAsync(request);
 
         if (result.IsFailure)
         {
