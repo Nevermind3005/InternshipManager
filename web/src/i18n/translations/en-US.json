@@ -26,6 +26,7 @@
     "SignUp.PostalCode": "Postal Code",
     "SignUp.AlreadyHaveAnAccount": "Already have an account?",
     "SignUp.SignIn": "Sign in",
+    "Field.Email": "Email",
     "ForgotPassword.ForgottenPassword": "Forgotten Password",
     "ForgotPassword.GetNewPassword": "Enter your email, and get a new password",
     "ForgotPassword.Reset": "Reset Password",
@@ -38,5 +39,8 @@
     "Error.Validation.StudyPlan.Code.TooLong": "Max length of the Code should be 8",
     "Error.Login.EmailOrPasswordInvalid": "Invalid login credentials",
     "Actions.Loading": "Loading",
-    "Actions.Save": "Save"
+    "Actions.Save": "Save",
+    "Actions.Crate": "Create",
+    "InternshipHandler.Create": "Create new internship handler",
+    "InternshipHandler.Description": "Enter fields bellow and create new internship handler"
 }

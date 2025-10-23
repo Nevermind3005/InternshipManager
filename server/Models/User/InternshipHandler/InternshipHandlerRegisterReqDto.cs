@@ -16,8 +16,4 @@ public class InternshipHandlerRegisterReqDto
     [Required]
     [MaxLength(128)]
     public string LastName { get; set; } = string.Empty;
-    
-    [Required]
-    [MaxLength(20)]
-    public string Phone { get; set; } = string.Empty;
 }
