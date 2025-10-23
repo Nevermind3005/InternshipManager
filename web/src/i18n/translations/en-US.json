@@ -40,7 +40,7 @@
     "Error.Login.EmailOrPasswordInvalid": "Invalid login credentials",
     "Actions.Loading": "Loading",
     "Actions.Save": "Save",
-    "Actions.Crate": "Create",
+    "Actions.Create": "Create",
     "InternshipHandler.Create": "Create new internship handler",
     "InternshipHandler.Description": "Enter fields bellow and create new internship handler"
 }

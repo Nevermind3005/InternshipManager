@@ -139,7 +139,7 @@ const CreateInternshipHandler = () => {
                             </Field>
                         </Field>
                         <Field>
-                            <LoadingButton isPending={isPending} form="CreateInternshipHandler"><FormattedMessage id="Actions.Crate"/></LoadingButton>
+                            <LoadingButton isPending={isPending} form="CreateInternshipHandler"><FormattedMessage id="Actions.Create"/></LoadingButton>
                         </Field>
                     </FieldGroup>
                 </form>

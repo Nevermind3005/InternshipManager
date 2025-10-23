@@ -40,7 +40,7 @@
     "Error.Login.EmailOrPasswordInvalid": "Nesprávne prihlasovacie údaje",
     "Actions.Loading": "Spracováva sa",
     "Actions.Save": "Uložiť",
-    "Actions.Crate": "Vytvoriť",
+    "Actions.Create": "Vytvoriť",
     "InternshipHandler.Create": "Vytvorte nového manažéra praxe",
     "InternshipHandler.Description": "Vyplnte údaje a vytvorte nového manažéra praxe"
 }

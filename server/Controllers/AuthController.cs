@@ -44,7 +44,7 @@ public class AuthController(
     }
     
     /// <summary>
-    /// Register a student user.
+    /// Register a internship handler user.
     /// </summary>
     /// <param name="request">JSON containing user info</param>
     /// <response code="200">Returns a user object.</response>
