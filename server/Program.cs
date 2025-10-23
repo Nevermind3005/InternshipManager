@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -71,6 +72,15 @@ builder.Services.AddAuthorizationBuilder()
         return isPasswordDirty == "False";
     }));
 
+builder.Services.AddFluentEmail("server@server.com", "Main Server")
+    .AddRazorRenderer()
+    .AddSmtpSender(() => new SmtpClient("host.docker.internal", 2525)
+    {
+        DeliveryMethod = SmtpDeliveryMethod.Network,
+        EnableSsl = false,
+        UseDefaultCredentials = false
+    });
+
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
@@ -85,6 +95,7 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddTransient<IMailService, MailService>();
 
 var app = builder.Build();
 

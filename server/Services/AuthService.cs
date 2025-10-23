@@ -9,6 +9,7 @@ using server.Foundation.Configuration;
 using server.Foundation.Result;
 using server.Foundation.Utils;
 using server.Models.Auth;
+using server.Models.Mail;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
 using server.Models.User.Student;
@@ -20,7 +21,8 @@ public class AuthService(
     ApplicationDbContext context,
     IMapper mapper,
     IOptions<AuthConfiguration> authConfiguration,
-    IDetectionService detectionService
+    IDetectionService detectionService,
+    IMailService mailService
     ) : IAuthService
 {
     public async Task<Result<UserResDto>> RegisterStudentAsync(StudentRegisterReqDto request)
@@ -43,8 +45,20 @@ public class AuthService(
         var dbUser = await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
         
-        // TODO replace with proper password sending via mail
-        Console.WriteLine(password);
+        var mailTemplateModel = new StudentRegisterMail
+        {
+            FirstName = request.Person.FirstName,
+            LastName = request.Person.LastName,
+            GeneratedPassword = password
+        };
+
+        await mailService.SendMailTemplateAsync(request.Email, "Password","Templates/StudentRegisterMail.cshtml", mailTemplateModel);
+        
+        if (request.AltMail is not null)
+        {
+            await mailService.SendMailTemplateAsync(request.AltMail, "Password", "Templates/StudentRegisterMail.cshtml",
+                mailTemplateModel);
+        }
 
         var response = mapper.Map<UserResDto>(dbUser.Entity);
         
