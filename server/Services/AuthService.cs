@@ -47,8 +47,8 @@ public class AuthService(
         
         var mailTemplateModel = new StudentRegisterMail
         {
-            FirstName = request.Person.FirstName,
-            LastName = request.Person.LastName,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             GeneratedPassword = password
         };
 

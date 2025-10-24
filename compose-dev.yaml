@@ -1,0 +1,88 @@
+services:
+  database:
+    container_name: internship-database-dev
+    image: postgres:18.0
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dev_internship_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+    networks:
+      - network
+  backend:
+    image: backend-dev
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/Templates:/app/Templates
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:3000
+      - ConnectionStrings__InternshipDatabase=Host=database;Port=5432;Username=postgres;Password=postgres;Database=dev_internship_database
+      - Consumers__FrontendURL=https://localhost
+      - Auth__SigningKey=lk6vEFmvgRpvMjLzaVD3bIUtNQM3LTiLofLZzTY6kvmufbYRGCYZCBQckBQHjDJG
+      - Auth__Issuer=https://api.localhost/api/v1/auth
+      - Auth__Audience=https://api.localhost/api/v1
+      - Auth__Lifetime__AccessToken=30
+      - Auth__Lifetime__RefreshToken=10080
+      - Mail__From=noreply@imanager.sk
+      - Mail__Name=InternshipManager
+      - Mail__Host=mail-server
+      - Mail__Port=25
+    restart:
+      unless-stopped
+    networks:
+      - network
+    depends_on:
+      - database
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    container_name: frontend
+    restart: unless-stopped
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE=https://api.localhost/api/v1
+    networks:
+      - network
+    depends_on:
+      - backend
+  caddy:
+    image: caddy:2.10.2-alpine
+    container_name: caddy-server
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile-dev:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - network
+    depends_on:
+      - frontend
+      - backend
+  mail-server:
+    image: rnwood/smtp4dev
+    container_name: mail-server
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    networks:
+      - network
+volumes:
+  caddy_data:
+  caddy_config:
+  database-data:
+networks:
+  network:
+    driver: bridge
