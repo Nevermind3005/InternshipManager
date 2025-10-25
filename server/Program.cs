@@ -72,9 +72,9 @@ builder.Services.AddAuthorizationBuilder()
         return isPasswordDirty == "False";
     }));
 
-builder.Services.AddFluentEmail("server@server.com", "Main Server")
+builder.Services.AddFluentEmail(builder.Configuration.GetValue<string>("Mail:From"), builder.Configuration.GetValue<string>("Mail:Name"))
     .AddRazorRenderer()
-    .AddSmtpSender(() => new SmtpClient("host.docker.internal", 2525)
+    .AddSmtpSender(() => new SmtpClient(builder.Configuration.GetValue<string>("Mail:Host"), builder.Configuration.GetValue<int>("Mail:Port"))
     {
         DeliveryMethod = SmtpDeliveryMethod.Network,
         EnableSsl = false,

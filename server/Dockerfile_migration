@@ -1,0 +1,27 @@
+﻿# Stage 1: Build and create EF migration bundle
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+
+# Copy project file and restore dependencies
+COPY ["server.csproj", "./"]
+RUN dotnet restore "server.csproj"
+
+# Copy all source code
+COPY . .
+
+# Build the project
+RUN dotnet build "server.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Install EF tools and create migration bundle
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+RUN dotnet ef migrations bundle --project server.csproj --output /app/efbundle
+
+# Stage 2: Runtime image just for running migrations
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+COPY --from=build /app/efbundle .
+
+# Run migrations on container start
+ENTRYPOINT ["./efbundle"]
