@@ -74,7 +74,7 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddFluentEmail(builder.Configuration.GetValue<string>("Mail:From"), builder.Configuration.GetValue<string>("Mail:Name"))
     .AddRazorRenderer()
-    .AddSmtpSender(() => new SmtpClient(builder.Configuration.GetValue<string>("Mail:Host"), builder.Configuration.GetValue<int>("Mail:port"))
+    .AddSmtpSender(() => new SmtpClient(builder.Configuration.GetValue<string>("Mail:Host"), builder.Configuration.GetValue<int>("Mail:Port"))
     {
         DeliveryMethod = SmtpDeliveryMethod.Network,
         EnableSsl = false,
