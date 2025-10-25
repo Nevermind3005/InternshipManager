@@ -1,8 +1,10 @@
 import RegisterForm from '@/components/forms/RegisterForm';
+import { requireRole } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/register')({
     component: RouteComponent,
+    beforeLoad: requireRole(['None'])
 });
 
 function RouteComponent() {
