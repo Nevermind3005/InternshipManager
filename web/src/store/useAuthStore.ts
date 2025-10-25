@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
 export type Role = "None" | "Student" | "Company" | "InternshipHandler";
+export const Roles_All : Role[] = ["None", "Student", "Company", "InternshipHandler"];
 
 interface IAuthTokenState {
     accessToken: string,
