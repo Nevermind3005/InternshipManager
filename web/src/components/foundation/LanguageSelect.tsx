@@ -22,7 +22,7 @@ const LanguageSelect = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-1/2 justify-center">
+                <Button variant="outline" className="w-28 justify-center">
                     <Globe className="h-4 w-4" />
                     <span className="pb-[1px]">{currentLang?.label ?? "Select language"}</span>
                 </Button>

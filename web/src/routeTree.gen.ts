@@ -10,20 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TestRouteImport } from './routes/test'
-import { Route as SidebarRouteImport } from './routes/sidebar'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
+import { Route as AccountRouteRouteImport } from './routes/account/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountIndexRouteImport } from './routes/account/index'
+import { Route as AccountProfileIndexRouteImport } from './routes/account/profile/index'
 
 const TestRoute = TestRouteImport.update({
   id: '/test',
   path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SidebarRoute = SidebarRouteImport.update({
-  id: '/sidebar',
-  path: '/sidebar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -41,70 +38,95 @@ const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
   path: '/changeDefaultPassword',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRouteRoute = AccountRouteRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountIndexRoute = AccountIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AccountRouteRoute,
+} as any)
+const AccountProfileIndexRoute = AccountProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => AccountRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/sidebar': typeof SidebarRoute
   '/test': typeof TestRoute
+  '/account/': typeof AccountIndexRoute
+  '/account/profile': typeof AccountProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/sidebar': typeof SidebarRoute
   '/test': typeof TestRoute
+  '/account': typeof AccountIndexRoute
+  '/account/profile': typeof AccountProfileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
-  '/sidebar': typeof SidebarRoute
   '/test': typeof TestRoute
+  '/account/': typeof AccountIndexRoute
+  '/account/profile/': typeof AccountProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/changeDefaultPassword'
     | '/login'
     | '/register'
-    | '/sidebar'
     | '/test'
+    | '/account/'
+    | '/account/profile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/changeDefaultPassword'
     | '/login'
     | '/register'
-    | '/sidebar'
     | '/test'
+    | '/account'
+    | '/account/profile'
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/changeDefaultPassword'
     | '/login'
     | '/register'
-    | '/sidebar'
     | '/test'
+    | '/account/'
+    | '/account/profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRouteRoute: typeof AccountRouteRouteWithChildren
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
-  SidebarRoute: typeof SidebarRoute
   TestRoute: typeof TestRoute
 }
 
@@ -115,13 +137,6 @@ declare module '@tanstack/react-router' {
       path: '/test'
       fullPath: '/test'
       preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sidebar': {
-      id: '/sidebar'
-      path: '/sidebar'
-      fullPath: '/sidebar'
-      preLoaderRoute: typeof SidebarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -145,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChangeDefaultPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -152,15 +174,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/': {
+      id: '/account/'
+      path: '/'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AccountIndexRouteImport
+      parentRoute: typeof AccountRouteRoute
+    }
+    '/account/profile/': {
+      id: '/account/profile/'
+      path: '/profile'
+      fullPath: '/account/profile'
+      preLoaderRoute: typeof AccountProfileIndexRouteImport
+      parentRoute: typeof AccountRouteRoute
+    }
   }
 }
 
+interface AccountRouteRouteChildren {
+  AccountIndexRoute: typeof AccountIndexRoute
+  AccountProfileIndexRoute: typeof AccountProfileIndexRoute
+}
+
+const AccountRouteRouteChildren: AccountRouteRouteChildren = {
+  AccountIndexRoute: AccountIndexRoute,
+  AccountProfileIndexRoute: AccountProfileIndexRoute,
+}
+
+const AccountRouteRouteWithChildren = AccountRouteRoute._addFileChildren(
+  AccountRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRouteRoute: AccountRouteRouteWithChildren,
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
-  SidebarRoute: SidebarRoute,
   TestRoute: TestRoute,
 }
 export const routeTree = rootRouteImport
