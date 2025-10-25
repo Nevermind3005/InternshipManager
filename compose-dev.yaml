@@ -13,6 +13,18 @@ services:
       - database-data:/var/lib/postgresql/data/
     networks:
       - network
+  migration-engine:
+    container_name: migration-engine
+    image: migration-engine
+    build:
+      context: ./server
+      dockerfile: Dockerfile_migration
+    environment:
+      - ConnectionStrings__InternshipDatabase=Host=database;Port=5432;Username=postgres;Password=postgres;Database=dev_internship_database
+    networks:
+      - network
+    depends_on:
+      - database
   backend:
     image: backend-dev
     build:
@@ -55,6 +67,7 @@ services:
       - network
     depends_on:
       - backend
+      - migration-engine
   caddy:
     image: caddy:2.10.2-alpine
     container_name: caddy-server
