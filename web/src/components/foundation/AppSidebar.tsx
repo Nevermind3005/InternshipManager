@@ -52,8 +52,8 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                 <SidebarGroup>
                     <SidebarMenu>
                         {navMain.map((item) => (
-                            <PermissionGuard roles={item.roles}>
-                                <SidebarMenuItem key={item.title}>
+                            <PermissionGuard roles={item.roles} key={item.title}>
+                                <SidebarMenuItem>
                                     <SidebarMenuButton asChild>
                                         <Link to={item.url}>
                                             <item.icon className="h-4 w-4" />

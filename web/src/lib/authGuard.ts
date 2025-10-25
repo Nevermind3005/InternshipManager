@@ -5,7 +5,6 @@ import { redirect } from "@tanstack/react-router";
 export const requireRole = (allowedRoles: Role[]) => {
     return () => {
         const { role } = useAuthStore.getState();
-        console.log(role);
         if (!allowedRoles.includes(role)) {
             throw redirect({
                 to: '/',

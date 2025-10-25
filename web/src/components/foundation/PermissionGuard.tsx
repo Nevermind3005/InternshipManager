@@ -13,8 +13,6 @@ export function PermissionGuard({
 }: IPermissionGuardProps) {
     const role = useAuthStore((state) => state.role);
 
-    console.log(role);
-
     const hasRequiredRoles = roles.length === 0 || roles.includes(role);
 
     if (hasRequiredRoles) {
