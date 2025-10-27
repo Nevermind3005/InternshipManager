@@ -9,7 +9,9 @@ using server.Foundation.Configuration;
 using server.Foundation.Result;
 using server.Foundation.Utils;
 using server.Models.Auth;
+using server.Models.Mail;
 using server.Models.User;
+using server.Models.User.InternshipHandler;
 using server.Models.User.Student;
 using Wangkanai.Detection.Services;
 
@@ -19,7 +21,8 @@ public class AuthService(
     ApplicationDbContext context,
     IMapper mapper,
     IOptions<AuthConfiguration> authConfiguration,
-    IDetectionService detectionService
+    IDetectionService detectionService,
+    IMailService mailService
     ) : IAuthService
 {
     public async Task<Result<UserResDto>> RegisterStudentAsync(StudentRegisterReqDto request)
@@ -34,40 +37,65 @@ public class AuthService(
         var password = AuthStatics.GenerateRandomPassword();
         var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
 
-        var person = mapper.Map<Person>(request.Person);
+        var user = mapper.Map<User>(request);
+        user.PasswordHash = passwordHash;
+        user.Role = ERole.Student;
+        user.IsPasswordDirty = true;
+
+        var dbUser = await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
         
-        var user = new User
+        var mailTemplateModel = new StudentRegisterMail
         {
-            PasswordHash = passwordHash,
-            Email = request.Email,
-            Role = ERole.Student,
-            Person = person
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            GeneratedPassword = password
         };
 
-        var address = mapper.Map<Address>(request.Address);
-
-        var student = new Student
+        await mailService.SendMailTemplateAsync(request.Email, "Password","Templates/StudentRegisterMail.cshtml", mailTemplateModel);
+        
+        if (request.AltMail is not null)
         {
-            AltMail = request.AltMail,
-            Address = address,
-            User = user
-        };
+            await mailService.SendMailTemplateAsync(request.AltMail, "Password", "Templates/StudentRegisterMail.cshtml",
+                mailTemplateModel);
+        }
 
-        var dbStudent = await context.Students.AddAsync(student);
+        var response = mapper.Map<UserResDto>(dbUser.Entity);
+        
+        return Result<UserResDto>.Success(response);
+    }
+
+    public async Task<Result<UserResDto>> RegisterInternshipHandlerAsync(InternshipHandlerRegisterReqDto request)
+    {
+        // Check if user already exists, if so return failure
+        if (await context.Users.AnyAsync(u => u.Email == request.Email))
+        {
+            return Result<UserResDto>.Failure(Error.UserAlreadyExists);
+        }
+
+        // Generate random password and hash it with bCrypt
+        var password = AuthStatics.GenerateRandomPassword();
+        var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+
+        var user = mapper.Map<User>(request);
+        user.PasswordHash = passwordHash;
+        user.Role = ERole.InternshipHandler;
+        user.IsPasswordDirty = true;
+        
+        var dbUser = await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
         
         // TODO replace with proper password sending via mail
         Console.WriteLine(password);
 
-        // We don't need student info in response
-        var response = mapper.Map<UserResDto>(dbStudent.Entity.User);
+        var response = mapper.Map<UserResDto>(dbUser.Entity);
         
         return Result<UserResDto>.Success(response);
     }
 
     public async Task<Result<UserResDto>> GetUserByIdAsync(Guid userId)
     {
-        var user = await context.Users.Include(u => u.Person).FirstOrDefaultAsync(u => u.Id == userId);
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user is null)
         {
@@ -91,8 +119,15 @@ public class AuthService(
         {
             return Result<TokenResDto>.Failure(Error.InvalidCredentials);
         }
+
+        var redirector = "/";
+
+        if (user.IsPasswordDirty)
+        {
+            redirector = "/changeDefaultPassword";
+        }
         
-        var tokens = await CreateTokenResponse(user, "/");
+        var tokens = await CreateTokenResponse(user, redirector);
         
         return Result<TokenResDto>.Success(tokens);
     }
@@ -124,6 +159,32 @@ public class AuthService(
         return Result<TokenResDto>.Success(result);
     }
 
+    public async Task<Result<TokenResDto>> ChangeDefaultPassword(ChangeDefaultPasswordReqDto request)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (user is null)
+        {
+            return Result<TokenResDto>.Failure(Error.NotFound);
+        }
+
+        if (!user.IsPasswordDirty)
+        {
+            return Result<TokenResDto>.Failure(Error.BadRequest);
+        }
+        
+        var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(request.Password);
+
+        user.PasswordHash = passwordHash;
+        user.IsPasswordDirty = false;
+
+        await context.SaveChangesAsync();
+        
+        var tokens = await CreateTokenResponse(user, "/");
+        
+        return Result<TokenResDto>.Success(tokens);
+    }
+
     /// <summary>
     /// Creates a signed JWT token using the provided <see cref="user"/> information.
     /// </summary>
@@ -137,7 +198,8 @@ public class AuthService(
             new(ClaimTypes.Name, user.Email),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Role, user.Role.ToString()),
-            new(JwtRegisteredClaimNames.Jti, tokenId)
+            new(JwtRegisteredClaimNames.Jti, tokenId),
+            new("IsPasswordDirty", user.IsPasswordDirty.ToString())
         };
 
         var expiresIn = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.AccessToken);

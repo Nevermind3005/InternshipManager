@@ -22,44 +22,6 @@ namespace server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("server.Entities.Person", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("first_name");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("last_name");
-
-                    b.Property<string>("Phone")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("phone");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_persons");
-
-                    b.ToTable("persons", (string)null);
-                });
-
             modelBuilder.Entity("server.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -116,7 +78,7 @@ namespace server.Migrations
                     b.ToTable("refresh_tokens", (string)null);
                 });
 
-            modelBuilder.Entity("server.Entities.Student", b =>
+            modelBuilder.Entity("server.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,40 +94,27 @@ namespace server.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_students");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_students_user_id");
-
-                    b.ToTable("students", (string)null);
-                });
-
-            modelBuilder.Entity("server.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
                         .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("first_name");
+
+                    b.Property<bool>("IsPasswordDirty")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_password_dirty");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("last_name");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -173,9 +122,10 @@ namespace server.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("password_hash");
 
-                    b.Property<Guid>("PersonId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("person_id");
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("phone");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -193,10 +143,6 @@ namespace server.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_users_email");
 
-                    b.HasIndex("PersonId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_users_person_id");
-
                     b.ToTable("users", (string)null);
                 });
 
@@ -212,18 +158,11 @@ namespace server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("server.Entities.Student", b =>
+            modelBuilder.Entity("server.Entities.User", b =>
                 {
-                    b.HasOne("server.Entities.User", "User")
-                        .WithOne()
-                        .HasForeignKey("server.Entities.Student", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_students_users_user_id");
-
                     b.OwnsOne("server.Entities.Address", "Address", b1 =>
                         {
-                            b1.Property<Guid>("StudentId")
+                            b1.Property<Guid>("UserId")
                                 .HasColumnType("uuid")
                                 .HasColumnName("id");
 
@@ -251,37 +190,16 @@ namespace server.Migrations
                                 .HasColumnType("character varying(16)")
                                 .HasColumnName("address_zip_code");
 
-                            b1.HasKey("StudentId");
+                            b1.HasKey("UserId");
 
-                            b1.ToTable("students");
+                            b1.ToTable("users");
 
                             b1.WithOwner()
-                                .HasForeignKey("StudentId")
-                                .HasConstraintName("fk_students_students_id");
+                                .HasForeignKey("UserId")
+                                .HasConstraintName("fk_users_users_id");
                         });
 
-                    b.Navigation("Address")
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("server.Entities.User", b =>
-                {
-                    b.HasOne("server.Entities.Person", "Person")
-                        .WithOne("User")
-                        .HasForeignKey("server.Entities.User", "PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_users_persons_person_id");
-
-                    b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("server.Entities.Person", b =>
-                {
-                    b.Navigation("User")
-                        .IsRequired();
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("server.Entities.User", b =>

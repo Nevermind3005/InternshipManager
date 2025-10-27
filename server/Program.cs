@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using server.Data;
 using server.Foundation.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using server.Foundation.Utils;
 using server.Services;
 
 const string corsAllowFrontendPolicy = "AllowFrontend";
@@ -62,6 +64,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(AuthStatics.PolicyNoDefaultPassword, policy =>
+    policy.RequireAssertion(context =>
+    {
+        var isPasswordDirty = context.User.FindFirst("IsPasswordDirty")?.Value;
+        return isPasswordDirty == "False";
+    }));
+
+builder.Services.AddFluentEmail(builder.Configuration.GetValue<string>("Mail:From"), builder.Configuration.GetValue<string>("Mail:Name"))
+    .AddRazorRenderer()
+    .AddSmtpSender(() => new SmtpClient(builder.Configuration.GetValue<string>("Mail:Host"), builder.Configuration.GetValue<int>("Mail:Port"))
+    {
+        DeliveryMethod = SmtpDeliveryMethod.Network,
+        EnableSsl = false,
+        UseDefaultCredentials = false
+    });
+
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1);
@@ -76,6 +95,7 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddTransient<IMailService, MailService>();
 
 var app = builder.Build();
 

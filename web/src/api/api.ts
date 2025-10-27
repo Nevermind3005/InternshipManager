@@ -4,7 +4,10 @@ export const API = {
     Endpoints: {
         Auth: {
             Login: () => 'Auth/login',
-            RegisterStudent: () => 'Auth/register/student'
+            RegisterStudent: () => 'Auth/register/student',
+            RefreshToken: () => 'Auth/refreshToken',
+            ChangeDefaultPassword: () => 'Auth/changeDefaultPassword',
+            CreateInternshipHandler: () => 'Auth/register/internshipHandler'
         }
     }
 };

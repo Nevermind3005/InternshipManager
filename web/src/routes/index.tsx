@@ -3,4 +3,7 @@ import LandingPage from '../components/LandingPage';
 
 export const Route = createFileRoute('/')({
     component: LandingPage,
+    loader: () => ({
+        crumb: 'Home'
+    })
 });

@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace server.Models.User;
+namespace server.Models.User.InternshipHandler;
 
-public class PersonResDto
+public class InternshipHandlerRegisterReqDto
 {
     [Required]
-    public Guid Id { get; set; }
-    
+    [MaxLength(256)]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+
     [Required]
     [MaxLength(128)]
     public string FirstName { get; set; } = string.Empty;
@@ -14,8 +16,4 @@ public class PersonResDto
     [Required]
     [MaxLength(128)]
     public string LastName { get; set; } = string.Empty;
-    
-    [Required]
-    [MaxLength(20)]
-    public string Phone { get; set; } = string.Empty;
 }

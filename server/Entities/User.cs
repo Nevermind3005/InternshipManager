@@ -9,16 +9,32 @@ public class User : EntityBase
     [EmailAddress]
     [MaxLength(256)]
     public string Email { get; set; } = string.Empty;
+    
+    [MaxLength(256)]
+    public string? AltMail { get; set; }
 
     [Required]
     [MaxLength(256)]
     public string PasswordHash { get; set; } = string.Empty;
     
     [Required]
-    public ERole Role { get; set; }
+    public bool IsPasswordDirty { get; set; }
     
-    public Guid PersonId { get; set; }
-    public Person Person { get; set; } = null!;
+    [Required]
+    public ERole Role { get; set; }
+
+    [Required]
+    [MaxLength(128)]
+    public string FirstName { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(128)]
+    public string LastName { get; set; } = string.Empty;
+
+    [MaxLength(20)]
+    public string? Phone { get; set; }
+    
+    public Address? Address { get; set; } = null;
 
     public ICollection<RefreshToken> RefreshTokens = [];
 }

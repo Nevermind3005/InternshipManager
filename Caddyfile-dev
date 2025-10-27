@@ -1,0 +1,11 @@
+localhost {
+    tls internal
+    reverse_proxy frontend:5173
+    encode zstd gzip
+}
+
+api.localhost {
+    tls internal
+    reverse_proxy backend:3000
+    encode zstd gzip
+}

@@ -26,6 +26,7 @@
     "SignUp.PostalCode": "Postal Code",
     "SignUp.AlreadyHaveAnAccount": "Already have an account?",
     "SignUp.SignIn": "Sign in",
+    "Field.Email": "Email",
     "ForgotPassword.ForgottenPassword": "Forgotten Password",
     "ForgotPassword.GetNewPassword": "Enter your email, and get a new password",
     "ForgotPassword.Reset": "Reset Password",
@@ -52,5 +53,7 @@
     "Actions.Register": "Register",
     "Footer.About": "About",
     "Footer.Privacy": "Privacy",
-    "Footer.Contact": "Contact"
+    "Footer.Contact": "Contact",
+    "InternshipHandler.Create": "Create new internship handler",
+    "InternshipHandler.Description": "Enter fields bellow and create new internship handler"
 }
