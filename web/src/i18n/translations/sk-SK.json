@@ -42,5 +42,19 @@
     "Actions.Save": "Uložiť",
     "Actions.Create": "Vytvoriť",
     "InternshipHandler.Create": "Vytvorte nového manažéra praxe",
-    "InternshipHandler.Description": "Vyplnte údaje a vytvorte nového manažéra praxe"
+    "InternshipHandler.Description": "Vyplnte údaje a vytvorte nového manažéra praxe",
+    "Roles.Student.Label": "Študent",
+    "Roles.Student.Blurb": "Zaznamenávaj aktivity a sleduj schválenia.",
+    "Roles.Teacher.Label": "Učiteľ",
+    "Roles.Teacher.Blurb": "Dohliadaj na skupiny a kontroluj záznamy.",
+    "Roles.Company.Label": "Spoločnosť",
+    "Roles.Company.Blurb": "Schvaľuj odpracované hodiny a poskytuj spätnú väzbu.",
+    "Landing.Title": "Maj prax na jednom mieste",
+    "Landing.Subtitle": "Študenti spravujú stáže, učitelia sledujú progres a firmy ľahko spolupracujú",
+    "Landing.ChooseRole": "Vyber si svoju rolu",
+    "Actions.LogIn": "Prihlásiť sa",
+    "Actions.Register": "Registrovať sa",
+    "Footer.About": "O nás",
+    "Footer.Privacy": "Súkromie",
+    "Footer.Contact": "Kontakt"
 }
