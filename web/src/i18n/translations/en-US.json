@@ -38,5 +38,19 @@
     "Error.Validation.StudyPlan.Code.TooLong": "Max length of the Code should be 8",
     "Error.Login.EmailOrPasswordInvalid": "Invalid login credentials",
     "Actions.Loading": "Loading",
-    "Actions.Save": "Save"
+    "Actions.Save": "Save",
+    "Roles.Student.Label": "Student",
+    "Roles.Student.Blurb": "Log activities and track approvals.",
+    "Roles.Teacher.Label": "Teacher",
+    "Roles.Teacher.Blurb": "Oversee cohorts and review logs.",
+    "Roles.Company.Label": "Company",
+    "Roles.Company.Blurb": "Approve hours and give feedback.",
+    "Landing.Title": "Track internships in one place",
+    "Landing.Subtitle": "Students manage placements, teachers monitor progress, and companies collaborate easily",
+    "Landing.ChooseRole": "Choose your role",
+    "Actions.LogIn": "Log in",
+    "Actions.Register": "Register",
+    "Footer.About": "About",
+    "Footer.Privacy": "Privacy",
+    "Footer.Contact": "Contact"
 }

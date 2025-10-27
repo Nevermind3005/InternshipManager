@@ -38,5 +38,19 @@
     "Error.Validation.StudyPlan.Code.TooLong": "Maximálna dĺžka kódu by nemala presiahnuť 8",
     "Error.Login.EmailOrPasswordInvalid": "Nesprávne prihlasovacie údaje",
     "Actions.Loading": "Spracováva sa",
-    "Actions.Save": "Uložiť"
+    "Actions.Save": "Uložiť",
+    "Roles.Student.Label": "Študent",
+    "Roles.Student.Blurb": "Zaznamenávaj aktivity a sleduj schválenia.",
+    "Roles.Teacher.Label": "Učiteľ",
+    "Roles.Teacher.Blurb": "Dohliadaj na skupiny a kontroluj záznamy.",
+    "Roles.Company.Label": "Spoločnosť",
+    "Roles.Company.Blurb": "Schvaľuj odpracované hodiny a poskytuj spätnú väzbu.",
+    "Landing.Title": "Maj prax na jednom mieste",
+    "Landing.Subtitle": "Študenti spravujú stáže, učitelia sledujú progres a firmy ľahko spolupracujú",
+    "Landing.ChooseRole": "Vyber si svoju rolu",
+    "Actions.LogIn": "Prihlásiť sa",
+    "Actions.Register": "Registrovať sa",
+    "Footer.About": "O nás",
+    "Footer.Privacy": "Súkromie",
+    "Footer.Contact": "Kontakt"
 }
