@@ -8,6 +8,7 @@ import { ThemeInitializer } from './components/foundation/ThemeInitializer';
 import { useLanguageStore } from './store/useLanguageStore';
 import { IntlProvider } from 'react-intl';
 import { locales } from './i18n/IntlConfig';
+import { Toaster } from 'sonner';
 
 /* ~Begin ReactQuery */
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ function App() {
             <QueryClientProvider client={queryClient}>
                 <ThemeInitializer />
                 <IntlProvider locale={locale} messages={locales[locale]}>
+                    <Toaster position="top-center" richColors />
                     <RouterProvider router={router} />
                 </IntlProvider>
             </QueryClientProvider>
