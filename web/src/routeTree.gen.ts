@@ -9,28 +9,34 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ManagementRouteImport } from './routes/management'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CompanyFormRouteImport } from './routes/companyForm'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
 import { Route as AccountRouteRouteImport } from './routes/account/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as AccountProfileIndexRouteImport } from './routes/account/profile/index'
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ManagementRoute = ManagementRouteImport.update({
+  id: '/management',
+  path: '/management',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompanyFormRoute = CompanyFormRouteImport.update({
+  id: '/companyForm',
+  path: '/companyForm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
@@ -63,18 +69,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/companyForm': typeof CompanyFormRoute
   '/login': typeof LoginRoute
+  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
-  '/test': typeof TestRoute
   '/account/': typeof AccountIndexRoute
   '/account/profile': typeof AccountProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/companyForm': typeof CompanyFormRoute
   '/login': typeof LoginRoute
+  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
-  '/test': typeof TestRoute
   '/account': typeof AccountIndexRoute
   '/account/profile': typeof AccountProfileIndexRoute
 }
@@ -83,9 +91,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/companyForm': typeof CompanyFormRoute
   '/login': typeof LoginRoute
+  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
-  '/test': typeof TestRoute
   '/account/': typeof AccountIndexRoute
   '/account/profile/': typeof AccountProfileIndexRoute
 }
@@ -95,18 +104,20 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/changeDefaultPassword'
+    | '/companyForm'
     | '/login'
+    | '/management'
     | '/register'
-    | '/test'
     | '/account/'
     | '/account/profile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/changeDefaultPassword'
+    | '/companyForm'
     | '/login'
+    | '/management'
     | '/register'
-    | '/test'
     | '/account'
     | '/account/profile'
   id:
@@ -114,9 +125,10 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/changeDefaultPassword'
+    | '/companyForm'
     | '/login'
+    | '/management'
     | '/register'
-    | '/test'
     | '/account/'
     | '/account/profile/'
   fileRoutesById: FileRoutesById
@@ -125,20 +137,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRouteRoute: typeof AccountRouteRouteWithChildren
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
+  CompanyFormRoute: typeof CompanyFormRoute
   LoginRoute: typeof LoginRoute
+  ManagementRoute: typeof ManagementRoute
   RegisterRoute: typeof RegisterRoute
-  TestRoute: typeof TestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -146,11 +152,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/management': {
+      id: '/management'
+      path: '/management'
+      fullPath: '/management'
+      preLoaderRoute: typeof ManagementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/companyForm': {
+      id: '/companyForm'
+      path: '/companyForm'
+      fullPath: '/companyForm'
+      preLoaderRoute: typeof CompanyFormRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/changeDefaultPassword': {
@@ -209,9 +229,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRouteRoute: AccountRouteRouteWithChildren,
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
+  CompanyFormRoute: CompanyFormRoute,
   LoginRoute: LoginRoute,
+  ManagementRoute: ManagementRoute,
   RegisterRoute: RegisterRoute,
-  TestRoute: TestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -15,16 +15,22 @@ interface ISidebarNav {
 
 const navMain : ISidebarNav[] = [
     {
-        title: "Home",
+        title: "Sidebar.Home",
         url: "/",
         icon: Home,
         roles: Roles_All
     },
     {
-        title: "Admin Only",
-        url: "#",
+        title: "Sidebar.Management",
+        url: "/management",
         icon: Lock,
         roles: ["InternshipHandler"]
+    },
+    {
+        title: "Sidebar.CompanyForm",
+        url: "/companyForm",
+        icon: Lock,
+        roles: ["Student"]
     }
 ];
 
@@ -57,7 +63,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                                     <SidebarMenuButton asChild>
                                         <Link to={item.url}>
                                             <item.icon className="h-4 w-4" />
-                                            {item.title}
+                                            <FormattedMessage id={item.title} />
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
