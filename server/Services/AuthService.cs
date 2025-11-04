@@ -85,9 +85,15 @@ public class AuthService(
         var dbUser = await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
         
-        // TODO replace with proper password sending via mail
-        Console.WriteLine(password);
-
+        var mailTemplateModel = new StudentRegisterMail
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            GeneratedPassword = password
+        };
+        
+        await mailService.SendMailTemplateAsync(request.Email, "Password","Templates/StudentRegisterMail.cshtml", mailTemplateModel);
+        
         var response = mapper.Map<UserResDto>(dbUser.Entity);
         
         return Result<UserResDto>.Success(response);
@@ -183,6 +189,38 @@ public class AuthService(
         var tokens = await CreateTokenResponse(user, "/");
         
         return Result<TokenResDto>.Success(tokens);
+    }
+
+    public async Task<Result> LogoutAsync(string accessToken)
+    {
+        var principal = AuthStatics.GetPrincipalFromExpiredToken(authConfiguration.Value.Issuer, authConfiguration.Value.Audience, authConfiguration.Value.SigningKey, accessToken);
+        
+        if (principal is null)
+        {
+            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+        }
+    
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var tokenId = principal.FindFirstValue(JwtRegisteredClaimNames.Jti);
+        
+        if (userId is null || tokenId is null)
+        {
+            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+        }
+        
+        var refreshToken = await context.RefreshTokens
+            .Where(rt => rt.UserId == new Guid(userId) && rt.JwtId == new Guid(tokenId))
+            .FirstOrDefaultAsync();
+
+        if (refreshToken is null)
+        {
+            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+        }
+        
+        context.RefreshTokens.Remove(refreshToken);
+        await context.SaveChangesAsync();
+        
+        return Result.Success();
     }
 
     /// <summary>
