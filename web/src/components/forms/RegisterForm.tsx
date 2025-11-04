@@ -9,8 +9,8 @@ import type { IStudentRegisterReq } from "@/models/user/student/IStudentRegister
 import { useRegisterStudent } from "@/api/hooks/useRegisterStudent";
 import { LoaderIcon } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { HTTPError } from "ky";
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { errorResponseHandler } from "@/lib/errorResponseHandler";
 
 
 // TODO later add error messages and translations
@@ -18,8 +18,8 @@ const formSchema = z.object({
     email: z
         .string()
         .email()
-        .nonempty()
-        .regex(new RegExp(String.raw`^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$`), "Not a student mail"),
+        .nonempty(),
+    //.regex(new RegExp(String.raw`^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$`), "Not a student mail"),
     alternativeEmail: z.union( [
         z.literal( '' ),
         z.string().email(),
@@ -57,6 +57,7 @@ const formSchema = z.object({
 const RegisterForm = () => {
     const { mutate: register, isPending } = useRegisterStudent();
     const navigate = useNavigate();
+    const intl = useIntl();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -90,20 +91,7 @@ const RegisterForm = () => {
             // TODO later navigate to a success page
             onSuccess: () => navigate({ to: "/" }),
             onError: async (error) => {
-                let message = "Something went wrong";
-                if (error instanceof HTTPError) {
-                    try {
-                        const data = await error.response.json();
-                        // TODO later use key from backend for translation and show the translation
-                        message = data.detail || data.message || message;
-                    } catch {
-                        message = error.message;
-                    }
-                } else {
-                    message = error.message;
-                }
-                // TODO later use shadcn toast instead console log
-                console.log(message);
+                errorResponseHandler(error, intl);
             }
         });
     };
