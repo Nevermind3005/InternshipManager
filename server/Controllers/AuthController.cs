@@ -123,7 +123,7 @@ public class AuthController(
             return Unauthorized(new { message = "Invalid token" });
         }
         
-        // Zavolaj service na vymazanie refresh tokenov (ak máš implementované)
+        
         var result = await authService.LogoutAsync(token);
 
         if (result.IsFailure)
