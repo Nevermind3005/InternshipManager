@@ -280,4 +280,35 @@ public class AuthService(
 
         return tokens;
     }
+    
+    public async Task<Result> ResetUserPasswordAsync(UserResetPasswordReqDto request)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (user is null)
+        {
+            return Result.Failure(Error.NotFound);
+        }
+        
+        var password = AuthStatics.GenerateRandomPassword();
+
+        var hashedPassword = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+
+        user.PasswordHash = hashedPassword;
+        
+        user.IsPasswordDirty = true;
+        
+        await context.SaveChangesAsync();
+
+        var mailTemplateModel = new StudentRegisterMail
+        {
+            FirstName = "",
+            LastName = "",
+            GeneratedPassword = password
+        };
+        
+        await mailService.SendMailTemplateAsync(user.Email, "Password Reset","Templates/UserResetPasswordMail.cshtml", mailTemplateModel);
+        
+        return Result.Success();
+    }
 }

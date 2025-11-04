@@ -38,7 +38,7 @@ public class AuthController(
         
         return CreatedAtAction(
             nameof(GetUserById), 
-            new { id = result.Value.Id }, 
+            new { id = result.Value.Id, Version = "1" },
             result.Value
         );
     }
@@ -135,6 +135,25 @@ public class AuthController(
         }
 
         return Ok(result.Value);
+    }
+    
+    /// <summary>
+    /// Generates a new password for user, which is then sent to the user's mail address.
+    /// </summary>
+    /// <param name="request">JSON containing email address of the account requesed to reset password</param>
+    /// <response code="200">Password reset was successful.</response>
+    /// <response code="404">If the user with specified email was not found.</response>
+    [HttpPost("resetPassword")]
+    public async Task<ActionResult> ResetPassword(UserResetPasswordReqDto request)
+    {
+        var result = await authService.ResetUserPasswordAsync(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+        
+        return Ok();
     }
 
 }

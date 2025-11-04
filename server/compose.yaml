@@ -19,6 +19,11 @@
     environment:
       - 'ConnectionStrings__InternshipDatabase=Host=database;Port=5432;Username=postgres;Password=postgres;Database=dev_internship_database'
       - 'Consumers__FrontendURL=http://localhost:5173'
+      - Mail__From=noreply@imanager.sk
+      - Mail__Name=InternshipManager
+      - Mail__Host=localhost
+      - Mail__Port=25
+
     ports:
       - "8080:8080"
       - "8081:8081"
