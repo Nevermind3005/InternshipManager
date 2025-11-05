@@ -197,7 +197,7 @@ public class AuthService(
         
         if (principal is null)
         {
-            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+            return Result.Failure(Error.InvalidAuthToken);
         }
     
         var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -205,7 +205,7 @@ public class AuthService(
         
         if (userId is null || tokenId is null)
         {
-            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+            return Result.Failure(Error.InvalidAuthToken);
         }
         
         var refreshToken = await context.RefreshTokens
@@ -214,7 +214,7 @@ public class AuthService(
 
         if (refreshToken is null)
         {
-            return Result<TokenResDto>.Failure(Error.InvalidAuthToken);
+            return Result.Failure(Error.InvalidAuthToken);
         }
         
         context.RefreshTokens.Remove(refreshToken);
