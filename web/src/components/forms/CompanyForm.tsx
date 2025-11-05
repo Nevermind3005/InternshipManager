@@ -5,8 +5,8 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import type { IStudentRegisterReq } from "@/models/user/student/IStudentRegisterReq";
-import { useRegisterStudent } from "@/api/hooks/useRegisterStudent";
+import type { ICompanyRegisterReq } from "@/models/user/ICompanyRegisterReq";
+import { useRegisterCompany } from "@/api/hooks/useRegisterCompany";
 import { LoaderIcon } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -15,27 +15,10 @@ import { errorResponseHandler } from "@/lib/errorResponseHandler";
 
 // TODO later add error messages and translations
 const formSchema = z.object({
-    email: z
-        .string()
-        .email()
-        .nonempty()
-        .regex(new RegExp(String.raw`^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$`), "Not a student mail"),
-    alternativeEmail: z.union( [
-        z.literal( '' ),
-        z.string().email(),
-    ] ),
-    firstName: z
+    companyName: z
         .string()
         .nonempty()
-        .max(128),
-    lastName: z
-        .string()
-        .nonempty()
-        .max(128),
-    phone: z
-        .string()
-        .nonempty()
-        .max(20),
+        .max(255),
     city: z
         .string()
         .nonempty()
@@ -51,40 +34,58 @@ const formSchema = z.object({
     zipCode: z
         .string()
         .nonempty()
-        .max(16)
+        .max(16),
+    contactPersonFirstName: z
+        .string()
+        .nonempty()
+        .max(128),
+    contactPersonLastName: z
+        .string()
+        .nonempty()
+        .max(128),
+    contactPersonEmail: z
+        .string()
+        .email()
+        .nonempty(),
+    contactPersonPhone: z
+        .string()
+        .nonempty()
+        .max(20)
 });
 
-const RegisterForm = () => {
-    const { mutate: register, isPending } = useRegisterStudent();
+const CompanyRegisterForm = () => {
+    const { mutate: register, isPending } = useRegisterCompany();
     const navigate = useNavigate();
     const intl = useIntl();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: "",
-            alternativeEmail: "",
-            firstName : "",
-            lastName: "",
-            phone: "",
+            companyName: "",
             city: "",
             street: "",
             buildingNumber: "",
-            zipCode: ""
+            zipCode: "",
+            contactPersonFirstName: "",
+            contactPersonLastName: "",
+            contactPersonEmail: "",
+            contactPersonPhone: ""
         }
     });
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
-        const reqJson: IStudentRegisterReq =  {
-            email: data.email,
-            altMail: data.alternativeEmail.trim().length === 0 ? null : data.alternativeEmail,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            phone: data.phone,
+        const reqJson: ICompanyRegisterReq = {
+            companyName: data.companyName,
             address: {
                 city: data.city,
                 street: data.street,
                 buildingNumber: data.buildingNumber,
                 zipCode: data.zipCode
+            },
+            contactPerson: {
+                firstName: data.contactPersonFirstName,
+                lastName: data.contactPersonLastName,
+                email: data.contactPersonEmail,
+                phone: data.contactPersonPhone
             }
         };
         register(reqJson, {
@@ -99,26 +100,27 @@ const RegisterForm = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle><FormattedMessage id="SignUp.SignUp" /></CardTitle>
-                <CardDescription><FormattedMessage id="SignUp.Description" /></CardDescription>
+                <CardTitle><FormattedMessage id="CompanySignUp.SignUp" /></CardTitle>
+                <CardDescription><FormattedMessage id="CompanySignUp.Description" /></CardDescription>
             </CardHeader>
             <CardContent>
-                <form id="StudentRegisterForm" onSubmit={form.handleSubmit(onSubmit)}>
+                <form id="CompanyRegisterForm" onSubmit={form.handleSubmit(onSubmit)}>
                     <FieldGroup>
+                        {/* Company Name */}
                         <Controller
-                            name="email"
+                            name="companyName"
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="StudentRegisterForm_Email">
-                                        <FormattedMessage id="SignUp.PrimaryEmail" />
+                                    <FieldLabel htmlFor="CompanyRegisterForm_CompanyName">
+                                        <FormattedMessage id="CompanySignUp.CompanyName" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
-                                        id="StudentRegisterForm_Email"
+                                        id="CompanyRegisterForm_CompanyName"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="name.surname@student.ukf.sk"
-                                        autoComplete="on"
+                                        placeholder="ABC s.r.o."
+                                        autoComplete="organization"
                                     />
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
@@ -126,94 +128,8 @@ const RegisterForm = () => {
                                 </Field>
                             )}
                         />
-                        <Controller
-                            name="alternativeEmail"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="StudentRegister_AlternativeEmail">
-                                        <FormattedMessage id="SignUp.AltEmail" />
-                                    </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id="StudentRegister_AlternativeEmail"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="name.surname@example.sk"
-                                        autoComplete="on"
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
-                                    )}
-                                </Field>
-                            )}
-                        />
-                        <Field>
-                            <Field className="grid grid-cols-2 gap-4">
-                                <Controller
-                                    name="firstName"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="StudentRegisterForm_FirstName">
-                                                <FormattedMessage id="SignUp.firstName" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="StudentRegisterForm_FirstName"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="John"
-                                                autoComplete="on"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                                <Controller
-                                    name="lastName"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="StudentRegisterForm_LastName">
-                                                <FormattedMessage id="SignUp.lastName" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="StudentRegisterForm_LastName"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Doe"
-                                                autoComplete="on"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                            </Field>
-                        </Field>
-                        <Controller
-                            name="phone"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="StudentRegisterForm_Phone">
-                                        <FormattedMessage id="SignUp.PhoneNumber" />
-                                    </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id="StudentRegisterForm_Phone"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="+421xxxxxxxxx"
-                                        autoComplete="on"
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
-                                    )}
-                                </Field>
-                            )}
-                        />
+
+                        {/* Address Section */}
                         <Field>
                             <Field className="grid grid-cols-2 gap-4">
                                 <Controller
@@ -221,15 +137,15 @@ const RegisterForm = () => {
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="StudentRegisterForm_City">
-                                                <FormattedMessage id="SignUp.City" />
+                                            <FieldLabel htmlFor="CompanyRegisterForm_City">
+                                                <FormattedMessage id="CompanySignUp.City" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
-                                                id="StudentRegisterForm_City"
+                                                id="CompanyRegisterForm_City"
                                                 aria-invalid={fieldState.invalid}
                                                 placeholder="Nitra"
-                                                autoComplete="on"
+                                                autoComplete="address-level2"
                                             />
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
@@ -242,15 +158,15 @@ const RegisterForm = () => {
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="StudentRegisterForm_Street">
-                                                <FormattedMessage id="SignUp.Street" />
+                                            <FieldLabel htmlFor="CompanyRegisterForm_Street">
+                                                <FormattedMessage id="CompanySignUp.Street" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
-                                                id="StudentRegisterForm_Street"
+                                                id="CompanyRegisterForm_Street"
                                                 aria-invalid={fieldState.invalid}
                                                 placeholder="Štefánikova trieda"
-                                                autoComplete="on"
+                                                autoComplete="address-line1"
                                             />
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
@@ -260,6 +176,7 @@ const RegisterForm = () => {
                                 />
                             </Field>
                         </Field>
+
                         <Field>
                             <Field className="grid grid-cols-2 gap-4">
                                 <Controller
@@ -267,15 +184,15 @@ const RegisterForm = () => {
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="StudentRegisterForm_BuildingNumber">
-                                                <FormattedMessage id="SignUp.BuildingNumber" />
+                                            <FieldLabel htmlFor="CompanyRegisterForm_BuildingNumber">
+                                                <FormattedMessage id="CompanySignUp.BuildingNumber" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
-                                                id="StudentRegisterForm_BuildingNumber"
+                                                id="CompanyRegisterForm_BuildingNumber"
                                                 aria-invalid={fieldState.invalid}
                                                 placeholder="77/54"
-                                                autoComplete="on"
+                                                autoComplete="off"
                                             />
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
@@ -288,15 +205,15 @@ const RegisterForm = () => {
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="StudentRegisterForm_zipCode">
-                                                <FormattedMessage id="SignUp.PostalCode" />
+                                            <FieldLabel htmlFor="CompanyRegisterForm_ZipCode">
+                                                <FormattedMessage id="CompanySignUp.PostalCode" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
-                                                id="StudentRegisterForm_zipCode"
+                                                id="CompanyRegisterForm_ZipCode"
                                                 aria-invalid={fieldState.invalid}
                                                 placeholder="949 01"
-                                                autoComplete="on"
+                                                autoComplete="postal-code"
                                             />
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
@@ -306,18 +223,117 @@ const RegisterForm = () => {
                                 />
                             </Field>
                         </Field>
+
+                        {/* Contact Person Section */}
                         <Field>
-                            <Button type="submit" form="StudentRegisterForm" disabled={isPending}>
+                            <FieldLabel className="text-base font-semibold">
+                                <FormattedMessage id="CompanySignUp.ContactPerson" />
+                            </FieldLabel>
+                        </Field>
+
+                        <Field>
+                            <Field className="grid grid-cols-2 gap-4">
+                                <Controller
+                                    name="contactPersonFirstName"
+                                    control={form.control}
+                                    render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="CompanyRegisterForm_ContactFirstName">
+                                                <FormattedMessage id="CompanySignUp.ContactFirstName" />
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="CompanyRegisterForm_ContactFirstName"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Ján"
+                                                autoComplete="given-name"
+                                            />
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                    )}
+                                />
+                                <Controller
+                                    name="contactPersonLastName"
+                                    control={form.control}
+                                    render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="CompanyRegisterForm_ContactLastName">
+                                                <FormattedMessage id="CompanySignUp.ContactLastName" />
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="CompanyRegisterForm_ContactLastName"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Novák"
+                                                autoComplete="family-name"
+                                            />
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                    )}
+                                />
+                            </Field>
+                        </Field>
+
+                        <Controller
+                            name="contactPersonEmail"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="CompanyRegisterForm_ContactEmail">
+                                        <FormattedMessage id="CompanySignUp.ContactEmail" />
+                                    </FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="CompanyRegisterForm_ContactEmail"
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder="jan.novak@example.com"
+                                        autoComplete="email"
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                            )}
+                        />
+
+                        <Controller
+                            name="contactPersonPhone"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="CompanyRegisterForm_ContactPhone">
+                                        <FormattedMessage id="CompanySignUp.ContactPhone" />
+                                    </FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="CompanyRegisterForm_ContactPhone"
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder="+421xxxxxxxxx"
+                                        autoComplete="tel"
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                            )}
+                        />
+
+                        <Field>
+                            <Button type="submit" form="CompanyRegisterForm" disabled={isPending}>
                                 {isPending ? <LoaderIcon
                                     role="status"
                                     aria-label="Loading"
                                     className="size-4 animate-spin"
                                 /> : null}
-                                {isPending ? "Processing" : "Register"}
+                                {isPending ? <FormattedMessage id="CompanySignUp.Processing" /> : <FormattedMessage id="CompanySignUp.Register" />}
                             </Button>
                             <FieldDescription className="px-6 text-center">
-                                <FormattedMessage id="SignUp.AlreadyHaveAnAccount" />
-                                <Link to="/login">{' '}<FormattedMessage id="SignUp.SignIn" />
+                                <FormattedMessage id="CompanySignUp.AlreadyHaveAnAccount" />
+                                <Link to="/login">{' '}<FormattedMessage id="CompanySignUp.SignIn" />
                                 </Link>
                             </FieldDescription>
                         </Field>
@@ -328,4 +344,4 @@ const RegisterForm = () => {
     );
 };
 
-export default RegisterForm;
+export default CompanyRegisterForm;
