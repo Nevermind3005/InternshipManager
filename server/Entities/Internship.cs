@@ -23,10 +23,10 @@ public class Internship : EntityBase
     public int Year { get; set; }
 
     [Required]
-    public ESemester Semester;
+    public ESemester Semester { get; set; }
 
     [Required]
-    public EInternshipState State;
+    public EInternshipState State { get; set; }
     
     public Guid StudentId { get; set; }
     public User Student { get; set; } = null!;

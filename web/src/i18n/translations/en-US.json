@@ -42,5 +42,19 @@
     "Actions.Save": "Save",
     "Actions.Create": "Create",
     "InternshipHandler.Create": "Create new internship handler",
-    "InternshipHandler.Description": "Enter fields bellow and create new internship handler"
+    "InternshipHandler.Description": "Enter fields bellow and create new internship handler",
+    "Field.SelectLanguage": "Select Language",
+    "Field.SelectDate": "Select Date",
+    "Field.Semester.Winter": "Winter",
+    "Field.Semester.Summer": "Summer",
+    "CreateInternship.Name": "Name",
+    "CreateInternship.Description": "Description",
+    "CreateInternship.StartDate": "Start",
+    "CreateInternship.EndDate": "End",
+    "CreateInternship.Year": "Year",
+    "CreateInternship.Semester": "Semester",
+    "CreateInternship.Company": "Company",
+    "CreateInternship.CompanyRepresentative": "Representative",
+    "CreateInternship.Create": "Create a new internship",
+    "CreateInternship.Title": "Fill field bellow and create an internship"
 }

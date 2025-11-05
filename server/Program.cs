@@ -95,6 +95,7 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IInternshipService, InternshipService>();
 builder.Services.AddTransient<IMailService, MailService>();
 
 var app = builder.Build();
