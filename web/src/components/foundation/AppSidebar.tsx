@@ -4,10 +4,8 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 import { PermissionGuard } from "./PermissionGuard";
 import { FormattedMessage } from "react-intl";
-import { Roles_All, useAuthStore, type Role } from "@/store/useAuthStore";
-import { authHttpClient } from "@/api/http";
-import { API } from "@/api/api";
-import router from "@/lib/router";
+import { Roles_All, type Role } from "@/store/useAuthStore";
+import { useLogout } from "@/hooks/useLogout";
 
 interface ISidebarNav {
     title: string;
@@ -32,22 +30,8 @@ const navMain : ISidebarNav[] = [
 ];
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
-    // Get role and clearStore from auth store
-    const role = useAuthStore((state) => state.role);
-    const clearStore = useAuthStore((state) => state.clearStore);
-    
-    // User is authenticated if role is NOT "None"
-    const isAuthenticated = role !== "None";
+    const { userLogout } = useLogout();
 
-    const handleLogout = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        await authHttpClient.post(API.Endpoints.Auth.Logout());
-        // Delete accessToken, refreshToken and set role to "None"
-        clearStore();
-        
-        // Redirect to home page
-        router.navigate({ to: '/' });
-    };
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -110,7 +94,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <div className="flex max-w-full p-4">
-                                <Button variant="destructive" onClick={(e) => handleLogout(e)} className="w-[95%] hover:bg-destructive/70 focus:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus:bg-destructive/80">
+                                <Button variant="destructive" onClick={userLogout} className="w-[95%] hover:bg-destructive/70 focus:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus:bg-destructive/80">
                                     <LogOut className="h-7 w-7" />
                                     <FormattedMessage id="Auth.Logout" />
                                 </Button>

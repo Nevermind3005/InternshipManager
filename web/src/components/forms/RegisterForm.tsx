@@ -18,8 +18,8 @@ const formSchema = z.object({
     email: z
         .string()
         .email()
-        .nonempty(),
-    //.regex(new RegExp(String.raw`^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$`), "Not a student mail"),
+        .nonempty()
+        .regex(new RegExp(String.raw`^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$`), "Not a student mail"),
     alternativeEmail: z.union( [
         z.literal( '' ),
         z.string().email(),
