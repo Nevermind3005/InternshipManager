@@ -3,5 +3,7 @@ namespace server.Data;
 public enum ERole
 {
     Student,
-    InternshipHandler
+    InternshipHandler,
+    CompanyRepresentative,
+    ExternalApplication
 }

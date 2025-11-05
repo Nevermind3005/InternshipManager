@@ -36,5 +36,11 @@ public class User : EntityBase
     
     public Address? Address { get; set; } = null;
 
+    public Guid? CompanyId { get; set; }
+
+    public List<Internship> StudentInternships = [];
+    
+    public List<Internship> RepresentativeInternships = [];
+    
     public ICollection<RefreshToken> RefreshTokens = [];
 }
