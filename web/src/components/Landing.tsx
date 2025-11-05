@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const Landing = () => {
     gsap.registerPlugin(SplitText);
-    const logo = useRef<HTMLHeadingElement | null>(null);
+    const logo = useRef<HTMLAnchorElement | null>(null);
     const mainHeader = useRef<HTMLHeadingElement | null>(null);
     const subHeader = useRef<HTMLHeadingElement | null>(null);
     const image = useRef<HTMLImageElement  | null>(null);
@@ -104,26 +104,19 @@ export const Landing = () => {
     return (
         <div className="bg-[#000000] h-full w-full overflow-hidden">
             <div className='flex w-full'>
-                <h2 ref={logo} className="text-[#ffffff] font-[Space_Grotesk] font-black text-2xl p-8 w-full">インターンハブ</h2>
-                <div className='flex w-full justify-end'>
-                    <a href='/' className="text-[#ffffff] font-[Space_Grotesk] font-black text-xl p-8">About</a>
-                    <a href='/register' className="text-[#ffffff] font-[Space_Grotesk] font-black text-xl p-8">Join</a>
+                <a ref={logo} href='#' className="text-[#ffffff] font-[Space_Grotesk] font-black text-2xl xl:p-8 md:p-6 p-4">インターンハブ</a>
+                <div className='flex justify-end ml-auto'>
+                    <a href='#about' className="text-[#ffffff] font-[Space_Grotesk] font-black text-xl xl:p-8 md:p-6 p-4">About</a>
+                    <a href='/register' className="text-[#ffffff] font-[Space_Grotesk] font-black text-xl xl:p-8 md:p-6 p-4">Join</a>
                 </div>
             </div>
-            {/* <div>
-                <h2 className="text-[#ffffff] font-[Helvetica] font-black text-8xl p-8">MANGE INTERNSHIPS EFFORTLESSLY</h2>
-            </div>
-            <div>
-            ONE PLATFORM TO POST, APPLY, AND TRACK INTERNSHIPS
-                <h2 className="text-[#ffffff] font-[Space_Grotesk] font-black text-6xl p-8">ONE PLATFORM TO POST, APPLY, AND TRACK INTERNSHIPS</h2>
-            </div> */}
-            <div className="relative w-full h-200">
-                <img ref={image} src="landing-main.jpg" alt="Background" className="landingImage absolute right-16 top-16 w-205 object-cover" />
-                <div className='w-[65%] absolute top-16 left-4 '>
-                    <h2 ref={mainHeader} className="text-[#ffffff] font-[Helvetica] font-black text-8xl p-8">MANGE INTERNSHIPS EFFORTLESSLY</h2>
+            <div className="relative w-full h-[75vh]">
+                <img ref={image} src="landing-main.jpg" alt="Background" className="landingImage absolute xl:right-16 right-4 xl:top-16 top-4 xl:w-[50%] w-[80%] xl:h-[70%] h-[75%] xl:scale-down object-cover" />
+                <div className='w-[65%] absolute xl:top-16 top-8 xl:left-4 left-2'>
+                    <h2 ref={mainHeader} className="text-[#ffffff] font-[Helvetica] font-black xl:text-8xl lg:text-7xl md:text-5xl text-4xl xl:p-8 p-4 xl:w-auto w-[90vw]">MANGE INTERNSHIPS EFFORTLESSLY</h2>
                 </div>
-                <div className="absolute bottom-16 left-4">
-                    <h2 ref={subHeader} className="text-[#ffffff] font-[Space_Grotesk] font-black text-6xl p-8">ONE PLATFORM TO POST, APPLY, AND TRACK INTERNSHIPS</h2>
+                <div className="absolute xl:bottom-16 bottom-0 xl:left-4">
+                    <h2 ref={subHeader} className="text-[#ffffff] font-[Space_Grotesk] font-black xl:text-6xl lg:text-5xl text-4xl p-8">ONE PLATFORM TO POST, APPLY, AND TRACK INTERNSHIPS</h2>
                 </div>
             </div>
             <div ref={scrollDown} className='flex justify-center items-center'>
@@ -132,7 +125,7 @@ export const Landing = () => {
                     <ArrowDown ref={arrow}/>
                 </div>
             </div>
-            <div className='h-1000'></div>
+            <div id="about" className='h-1000'></div>
         </div>
     );
 };
