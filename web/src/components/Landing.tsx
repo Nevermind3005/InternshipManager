@@ -3,23 +3,18 @@ import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { TextPlugin } from "gsap/TextPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import '../landing.css';
 import { ArrowDown } from 'lucide-react';
 
-gsap.registerPlugin(TextPlugin);
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(TextPlugin, ScrollTrigger, SplitText);
 
 export const Landing = () => {
-    gsap.registerPlugin(SplitText);
-    const logo = useRef<HTMLAnchorElement | null>(null);
-    const mainHeader = useRef<HTMLHeadingElement | null>(null);
-    const subHeader = useRef<HTMLHeadingElement | null>(null);
-    const image = useRef<HTMLImageElement  | null>(null);
-    const arrow = useRef<SVGSVGElement  | null>(null);
-    const scrollDown = useRef<HTMLHeadingElement | null>(null);
-
-    console.log("Absolute Cinema");
-
+    const logo = useRef(null);
+    const mainHeader = useRef(null);
+    const subHeader = useRef(null);
+    const image = useRef(null);
+    const arrow = useRef(null);
+    const scrollDown = useRef(null);
+    const sections = useRef<(HTMLElement | null)[]>([]);
     useEffect(() => {
         const mainSplit = new SplitText(mainHeader.current, { type: "chars" });
         gsap.from(mainSplit.chars, {
@@ -42,11 +37,11 @@ export const Landing = () => {
         });
 
         gsap.to(arrow.current, {
-            y: 7,              // move 100px to the right
-            duration: .35,       // duration of one direction
-            ease: "power1.inOut",// smooth easing
-            repeat: -1,          // infinite loop
-            yoyo: true           // reverse the animation
+            y: 7,
+            duration: .35,
+            ease: "power1.inOut",
+            repeat: -1,
+            yoyo: true
         });
 
         gsap.to(scrollDown.current, {
@@ -62,7 +57,6 @@ export const Landing = () => {
 
         gsap.set(logo.current, { text: "インターンハブ" });
 
-        // Animate to English after delay
         gsap.to(logo.current, {
             delay: .5,
             duration: 2,
@@ -70,62 +64,74 @@ export const Landing = () => {
             ease: "power2.inOut"
         });
 
-        // const subSplit = new SplitText(subHeader.current, { type: "chars" });
-        // gsap.from(subSplit.chars, {
-        //     duration: .5,
-        //     opacity: 0,
-        //     y: 50,
-        //     stagger: 0.05,
-        //     ease: "back.out",
-        // });
-
-        // gsap.fromTo(
-        //     subHeader.current,
-        //     { scale: 0.3, opacity: 0 },
-        //     {
-        //         scale: 1,
-        //         opacity: 1,
-        //         ease: "elastic.out(1, 0.4)",
-        //         duration: 1.5,
-        //         scrollTrigger: {
-        //             trigger: subHeader.current,
-        //             start: "top 80%", // when 80% of viewport height
-        //         },
-        //     }
-        // );
+        // Pin each section for a "full page scroll" feel
+        sections.current.forEach((sec, i) => {
+            ScrollTrigger.create({
+                trigger: sec,
+                start: "top top",
+                pin: true,
+                pinSpacing: false,
+                end: "+=100%",
+                markers: false,
+            });
+        });
 
         return () => {
             mainSplit.revert();
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-            // subSplit.revert();
         };
     }, []);
 
     return (
-        <div className="bg-[#000000] h-full w-full overflow-hidden">
-            <div className='flex w-full'>
-                <a ref={logo} href='#' className="text-[#ffffff] font-[Space_Grotesk] font-black text-2xl xl:p-8 md:p-6 p-4">インターンハブ</a>
-                <div className='flex justify-end ml-auto'>
-                    <a href='#about' className="text-[#ffffff] font-[Space_Grotesk] font-black text-xl xl:p-8 md:p-6 p-4">About</a>
-                    <a href='/register' className="text-[#ffffff] font-[Space_Grotesk] font-black text-xl xl:p-8 md:p-6 p-4">Join</a>
+        <div className="bg-[#000003] w-full overflow-x-hidden">
+            <section ref={el => sections.current[0] = el} className="h-screen flex flex-col justify-between">
+                <div className='flex w-full'>
+                    <a ref={logo} href='#' className="text-white font-[Space_Grotesk] font-black text-2xl xl:p-8 md:p-6 p-4">インターンハブ</a>
+                    <div className='flex justify-end ml-auto'>
+                        <a href='#about' className="text-white font-[Space_Grotesk] font-black text-xl xl:p-8 md:p-6 p-4">About</a>
+                        <a href='#join' className="text-white font-[Space_Grotesk] font-black text-xl xl:p-8 md:p-6 p-4">Join</a>
+                    </div>
                 </div>
-            </div>
-            <div className="relative w-full h-[75vh]">
-                <img ref={image} src="landing-main.jpg" alt="Background" className="landingImage absolute xl:right-16 right-4 xl:top-16 top-4 xl:w-[50%] w-[80%] xl:h-[70%] h-[75%] xl:scale-down object-cover" />
-                <div className='w-[65%] absolute xl:top-16 top-8 xl:left-4 left-2'>
-                    <h2 ref={mainHeader} className="text-[#ffffff] font-[Helvetica] font-black xl:text-8xl lg:text-7xl md:text-5xl text-4xl xl:p-8 p-4 xl:w-auto w-[90vw]">MANGE INTERNSHIPS EFFORTLESSLY</h2>
+                <div className="relative w-full h-[75vh]">
+                    <img ref={image} src="landing-main.jpg" alt="Background" className="landingImage absolute xl:right-16 right-4 xl:top-16 top-4 xl:w-[50%] w-[80%] xl:h-[70%] h-[75%] object-cover" />
+                    <div className='w-[65%] absolute xl:top-16 top-8 xl:left-4 left-2'>
+                        <h2 ref={mainHeader} className="text-white font-[Helvetica] font-black xl:text-8xl lg:text-7xl md:text-5xl text-4xl xl:p-8 p-4">MANAGE INTERNSHIPS EFFORTLESSLY</h2>
+                    </div>
+                    <div className="absolute xl:bottom-16 bottom-0 xl:left-4">
+                        <h2 ref={subHeader} className="text-white font-[Space_Grotesk] font-black xl:text-6xl lg:text-5xl text-4xl p-8">ONE PLATFORM TO POST, APPLY, AND TRACK INTERNSHIPS</h2>
+                    </div>
                 </div>
-                <div className="absolute xl:bottom-16 bottom-0 xl:left-4">
-                    <h2 ref={subHeader} className="text-[#ffffff] font-[Space_Grotesk] font-black xl:text-6xl lg:text-5xl text-4xl p-8">ONE PLATFORM TO POST, APPLY, AND TRACK INTERNSHIPS</h2>
+                <div ref={scrollDown} className='flex justify-center items-center pb-8'>
+                    <div className='flex flex-col justify-center items-center'>
+                        <h3 className='scrollDown text-white font-[Space_Grotesk] font-bold text-xl pt-8 pb-2'>Scroll Down</h3>
+                        <ArrowDown ref={arrow} />
+                    </div>
                 </div>
-            </div>
-            <div ref={scrollDown} className='flex justify-center items-center'>
-                <div className='flex flex-col justify-center items-center'>
-                    <h3 className='scrollDown text-[#ffffff] font-[Space_Grotesk] font-bold text-xl pt-8 pb-2'>Scroll Down</h3>
-                    <ArrowDown ref={arrow}/>
-                </div>
-            </div>
-            <div id="about" className='h-1000'></div>
+            </section>
+
+            {/* Section 2 */}
+            <section id='about' ref={el => sections.current[1] = el} className="h-screen flex flex-col justify-center items-center bg-[#1aa9bc] text-white">
+                <h2 className="text-6xl font-bold mb-4">About Our Platform</h2>
+                <p className="text-2xl w-3/4 text-center">
+          InternHub connects companies and interns through a seamless application, tracking, and management experience.
+                </p>
+            </section>
+
+            {/* Section 3 */}
+            <section ref={el => sections.current[2] = el} className="h-screen flex flex-col justify-center items-center bg-[#007500] text-white">
+                <h2 className="text-6xl font-bold mb-4">For Students</h2>
+                <p className="text-2xl w-3/4 text-center">
+          Apply to curated internships and manage all your applications in one place.
+                </p>
+            </section>
+
+            {/* Section 4 */}
+            <section id='join' ref={el => sections.current[3] = el} className="h-screen flex flex-col justify-center items-center bg-[#e6c700] text-white">
+                <h2 className="text-6xl font-bold mb-4">For Employers</h2>
+                <p className="text-2xl w-3/4 text-center">
+          Post positions, review applicants, and track intern performance with ease.
+                </p>
+            </section>
         </div>
     );
 };
