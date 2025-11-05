@@ -115,7 +115,7 @@ public class AuthController(
     [HttpPost("logout")]
     public async Task<ActionResult> Logout()
     {
-        // Získaj user ID z JWT tokenu
+        // Get user ID from JWT token
         var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
         
         if (token == null)
