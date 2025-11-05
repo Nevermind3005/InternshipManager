@@ -80,5 +80,19 @@
     "CompanySignUp.Processing": "Processing...",
     "CompanySignUp.Register": "Register",
     "CompanySignUp.AlreadyHaveAnAccount": "Already have an account?",
-    "CompanySignUp.SignIn": "Sign In"
+    "CompanySignUp.SignIn": "Sign In",
+    "Field.SelectLanguage": "Select Language",
+    "Field.SelectDate": "Select Date",
+    "Field.Semester.Winter": "Winter",
+    "Field.Semester.Summer": "Summer",
+    "CreateInternship.Name": "Name",
+    "CreateInternship.Description": "Description",
+    "CreateInternship.StartDate": "Start",
+    "CreateInternship.EndDate": "End",
+    "CreateInternship.Year": "Year",
+    "CreateInternship.Semester": "Semester",
+    "CreateInternship.Company": "Company",
+    "CreateInternship.CompanyRepresentative": "Representative",
+    "CreateInternship.Create": "Create a new internship",
+    "CreateInternship.Title": "Fill field bellow and create an internship"
 }

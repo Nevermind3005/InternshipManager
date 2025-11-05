@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useLanguageStore, type Language } from "@/store/useLanguageStore";
 import { Check, Globe } from "lucide-react";
+import { FormattedMessage } from "react-intl";
 
 const LanguageSelect = () => {
     const { locale, setLocale } = useLanguageStore();
@@ -31,7 +32,7 @@ const LanguageSelect = () => {
                 align="start"
                 className="w-[--radix-dropdown-menu-trigger-width]"
             >
-                <DropdownMenuLabel>Select Language</DropdownMenuLabel>
+                <DropdownMenuLabel><FormattedMessage id="Field.SelectLanguage"/></DropdownMenuLabel>
                 {availableLanguages.map((lang) => (
                     <DropdownMenuItem
                         key={lang.code}
