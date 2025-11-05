@@ -8,6 +8,7 @@ export const API = {
             RefreshToken: () => 'Auth/refreshToken',
             ChangeDefaultPassword: () => 'Auth/changeDefaultPassword',
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
+            Logout: () => 'Auth/logout',
             RegisterCompany: () => 'Auth/register/company',
             CreateInternshipHandler: () => 'Auth/register/internshipHandler'
         },

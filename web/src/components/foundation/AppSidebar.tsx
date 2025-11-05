@@ -1,10 +1,11 @@
-import { ClipboardCheckIcon, FingerprintIcon, GalleryVerticalEnd, Home, Lock, type LucideProps } from "lucide-react";
+import { ClipboardCheckIcon, FingerprintIcon, LogOut, GalleryVerticalEnd, Home, Lock, type LucideProps } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from "../ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 import { PermissionGuard } from "./PermissionGuard";
 import { FormattedMessage } from "react-intl";
 import { Roles_All, type Role } from "@/store/useAuthStore";
+import { useLogout } from "@/hooks/useLogout";
 
 interface ISidebarNav {
     title: string;
@@ -47,6 +48,8 @@ const navMain : ISidebarNav[] = [
 ];
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+    const { userLogout } = useLogout();
+
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -98,6 +101,20 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                                     <Link to="/register">
                                         <FormattedMessage id="SignUp.SignUp" />
                                     </Link>
+                                </Button>
+                            </div>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </div>
+            </PermissionGuard>
+            <PermissionGuard roles={["Student", "Company", "InternshipHandler"]}>
+                <div className="border-t">
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <div className="flex max-w-full p-4">
+                                <Button variant="destructive" onClick={userLogout} className="w-[95%] hover:bg-destructive/70 focus:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus:bg-destructive/80">
+                                    <LogOut className="h-7 w-7" />
+                                    <FormattedMessage id="Auth.Logout" />
                                 </Button>
                             </div>
                         </SidebarMenuItem>

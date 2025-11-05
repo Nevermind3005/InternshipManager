@@ -1,5 +1,6 @@
 {
     "App.Title": "Sephiroth",
+    "Auth.Logout": "Logout",
     "Route.Home": "Home",
     "Route.Login": "Login",
     "Route.Self": "Profile",
