@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd, Home, Lock,LogOut, type LucideProps } from "lucide-react";
+import { ClipboardCheckIcon, FingerprintIcon, LogOut, GalleryVerticalEnd, Home, Lock, type LucideProps } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from "../ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
@@ -16,16 +16,34 @@ interface ISidebarNav {
 
 const navMain : ISidebarNav[] = [
     {
-        title: "Home",
+        title: "Sidebar.Home",
         url: "/",
         icon: Home,
         roles: Roles_All
+    },
+    {
+        title: "Internships",
+        url: "/internships",
+        icon: ClipboardCheckIcon,
+        roles: ["Student", "InternshipHandler", "Company"]
+    },
+    {
+        title: "Account",
+        url: "/account",
+        icon: FingerprintIcon,
+        roles: ["Student", "InternshipHandler", "Company"]
     },
     {
         title: "Admin Only",
         url: "#",
         icon: Lock,
         roles: ["InternshipHandler"]
+    },
+    {
+        title: "Sidebar.CompanyForm",
+        url: "/companyForm",
+        icon: Lock,
+        roles: ["Student"]
     }
 ];
 
@@ -60,7 +78,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                                     <SidebarMenuButton asChild>
                                         <Link to={item.url}>
                                             <item.icon className="h-4 w-4" />
-                                            {item.title}
+                                            <FormattedMessage id={item.title} />
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

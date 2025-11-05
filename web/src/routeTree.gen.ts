@@ -9,23 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ManagementRouteImport } from './routes/management'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as CompanyFormRouteImport } from './routes/companyForm'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
+import { Route as InternshipsRouteRouteImport } from './routes/internships/route'
 import { Route as AccountRouteRouteImport } from './routes/account/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InternshipsIndexRouteImport } from './routes/internships/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
+import { Route as InternshipsNewIndexRouteImport } from './routes/internships/new/index'
 import { Route as AccountProfileIndexRouteImport } from './routes/account/profile/index'
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManagementRoute = ManagementRouteImport.update({
+  id: '/management',
+  path: '/management',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -33,9 +37,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompanyFormRoute = CompanyFormRouteImport.update({
+  id: '/companyForm',
+  path: '/companyForm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
   id: '/changeDefaultPassword',
   path: '/changeDefaultPassword',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InternshipsRouteRoute = InternshipsRouteRouteImport.update({
+  id: '/internships',
+  path: '/internships',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRouteRoute = AccountRouteRouteImport.update({
@@ -48,10 +62,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InternshipsIndexRoute = InternshipsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InternshipsRouteRoute,
+} as any)
 const AccountIndexRoute = AccountIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AccountRouteRoute,
+} as any)
+const InternshipsNewIndexRoute = InternshipsNewIndexRouteImport.update({
+  id: '/new/',
+  path: '/new/',
+  getParentRoute: () => InternshipsRouteRoute,
 } as any)
 const AccountProfileIndexRoute = AccountProfileIndexRouteImport.update({
   id: '/profile/',
@@ -62,88 +86,112 @@ const AccountProfileIndexRoute = AccountProfileIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRouteRouteWithChildren
+  '/internships': typeof InternshipsRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/companyForm': typeof CompanyFormRoute
   '/login': typeof LoginRoute
+  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
-  '/test': typeof TestRoute
   '/account/': typeof AccountIndexRoute
+  '/internships/': typeof InternshipsIndexRoute
   '/account/profile': typeof AccountProfileIndexRoute
+  '/internships/new': typeof InternshipsNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/companyForm': typeof CompanyFormRoute
   '/login': typeof LoginRoute
+  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
-  '/test': typeof TestRoute
   '/account': typeof AccountIndexRoute
+  '/internships': typeof InternshipsIndexRoute
   '/account/profile': typeof AccountProfileIndexRoute
+  '/internships/new': typeof InternshipsNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRouteRouteWithChildren
+  '/internships': typeof InternshipsRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/companyForm': typeof CompanyFormRoute
   '/login': typeof LoginRoute
+  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
-  '/test': typeof TestRoute
   '/account/': typeof AccountIndexRoute
+  '/internships/': typeof InternshipsIndexRoute
   '/account/profile/': typeof AccountProfileIndexRoute
+  '/internships/new/': typeof InternshipsNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/account'
+    | '/internships'
     | '/changeDefaultPassword'
+    | '/companyForm'
     | '/login'
+    | '/management'
     | '/register'
-    | '/test'
     | '/account/'
+    | '/internships/'
     | '/account/profile'
+    | '/internships/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/changeDefaultPassword'
+    | '/companyForm'
     | '/login'
+    | '/management'
     | '/register'
-    | '/test'
     | '/account'
+    | '/internships'
     | '/account/profile'
+    | '/internships/new'
   id:
     | '__root__'
     | '/'
     | '/account'
+    | '/internships'
     | '/changeDefaultPassword'
+    | '/companyForm'
     | '/login'
+    | '/management'
     | '/register'
-    | '/test'
     | '/account/'
+    | '/internships/'
     | '/account/profile/'
+    | '/internships/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRouteRoute: typeof AccountRouteRouteWithChildren
+  InternshipsRouteRoute: typeof InternshipsRouteRouteWithChildren
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
+  CompanyFormRoute: typeof CompanyFormRoute
   LoginRoute: typeof LoginRoute
+  ManagementRoute: typeof ManagementRoute
   RegisterRoute: typeof RegisterRoute
-  TestRoute: typeof TestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/register': {
       id: '/register'
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/management': {
+      id: '/management'
+      path: '/management'
+      fullPath: '/management'
+      preLoaderRoute: typeof ManagementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -153,11 +201,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/companyForm': {
+      id: '/companyForm'
+      path: '/companyForm'
+      fullPath: '/companyForm'
+      preLoaderRoute: typeof CompanyFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/changeDefaultPassword': {
       id: '/changeDefaultPassword'
       path: '/changeDefaultPassword'
       fullPath: '/changeDefaultPassword'
       preLoaderRoute: typeof ChangeDefaultPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/internships': {
+      id: '/internships'
+      path: '/internships'
+      fullPath: '/internships'
+      preLoaderRoute: typeof InternshipsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -174,12 +236,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/internships/': {
+      id: '/internships/'
+      path: '/'
+      fullPath: '/internships/'
+      preLoaderRoute: typeof InternshipsIndexRouteImport
+      parentRoute: typeof InternshipsRouteRoute
+    }
     '/account/': {
       id: '/account/'
       path: '/'
       fullPath: '/account/'
       preLoaderRoute: typeof AccountIndexRouteImport
       parentRoute: typeof AccountRouteRoute
+    }
+    '/internships/new/': {
+      id: '/internships/new/'
+      path: '/new'
+      fullPath: '/internships/new'
+      preLoaderRoute: typeof InternshipsNewIndexRouteImport
+      parentRoute: typeof InternshipsRouteRoute
     }
     '/account/profile/': {
       id: '/account/profile/'
@@ -205,13 +281,28 @@ const AccountRouteRouteWithChildren = AccountRouteRoute._addFileChildren(
   AccountRouteRouteChildren,
 )
 
+interface InternshipsRouteRouteChildren {
+  InternshipsIndexRoute: typeof InternshipsIndexRoute
+  InternshipsNewIndexRoute: typeof InternshipsNewIndexRoute
+}
+
+const InternshipsRouteRouteChildren: InternshipsRouteRouteChildren = {
+  InternshipsIndexRoute: InternshipsIndexRoute,
+  InternshipsNewIndexRoute: InternshipsNewIndexRoute,
+}
+
+const InternshipsRouteRouteWithChildren =
+  InternshipsRouteRoute._addFileChildren(InternshipsRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRouteRoute: AccountRouteRouteWithChildren,
+  InternshipsRouteRoute: InternshipsRouteRouteWithChildren,
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
+  CompanyFormRoute: CompanyFormRoute,
   LoginRoute: LoginRoute,
+  ManagementRoute: ManagementRoute,
   RegisterRoute: RegisterRoute,
-  TestRoute: TestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
