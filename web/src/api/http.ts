@@ -70,6 +70,7 @@ const createAuthKyInstance = () => {
         },
         retry: {
             statusCodes: [401],
+            methods: ['get', 'post', 'put', 'delete', 'patch'],
         }
     });
     return customKy;

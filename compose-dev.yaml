@@ -40,14 +40,13 @@ services:
       - Auth__SigningKey=lk6vEFmvgRpvMjLzaVD3bIUtNQM3LTiLofLZzTY6kvmufbYRGCYZCBQckBQHjDJG
       - Auth__Issuer=https://api.localhost/api/v1/auth
       - Auth__Audience=https://api.localhost/api/v1
-      - Auth__Lifetime__AccessToken=30
+      - Auth__Lifetime__AccessToken=1
       - Auth__Lifetime__RefreshToken=10080
       - Mail__From=noreply@imanager.sk
       - Mail__Name=InternshipManager
       - Mail__Host=mail-server
       - Mail__Port=25
-    restart:
-      unless-stopped
+    restart: unless-stopped
     networks:
       - network
     depends_on:

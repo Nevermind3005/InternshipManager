@@ -96,6 +96,7 @@ builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInternshipService, InternshipService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddTransient<IMailService, MailService>();
 
 var app = builder.Build();
@@ -111,7 +112,10 @@ app.UseAuthorization();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference((options, context) =>
+    {
+        options.AddServer(new ScalarServer($"https://{context.Request.Host}"));
+    });
 }
 
 app.UseHttpsRedirection();

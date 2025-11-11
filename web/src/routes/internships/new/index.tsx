@@ -1,8 +1,10 @@
 import CreateInternshipForm from '@/components/forms/CreateInternshipForm';
+import { requireRole } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/internships/new/')({
     component: RouteComponent,
+    beforeLoad: requireRole(['Student']),
     loader: () => ({
         crumb: 'New'
     })
