@@ -1,5 +1,6 @@
 {
     "App.Title": "INTERNHUB",
+    "Auth.Logout": "Odhlásiť sa",
     "Route.Home": "Domov",
     "Route.Login": "Prihlásiť sa",
     "Route.Self": "Profil",

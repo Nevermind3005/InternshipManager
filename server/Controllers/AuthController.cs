@@ -129,6 +129,34 @@ public class AuthController(
 
         return Ok(result.Value);
     }
+    
+    /// <summary>
+    /// Logout user from the system.
+    /// </summary>
+    /// <response code="200">Returns success message.</response>
+    /// <response code="401">If the user is not authenticated.</response>
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<ActionResult> Logout()
+    {
+        // Get user ID from JWT token
+        var token = Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        
+        if (token == null)
+        {
+            return Unauthorized(new { message = "Invalid token" });
+        }
+        
+        
+        var result = await authService.LogoutAsync(token);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(new { message = "Logged out successfully" });
+    }
 
     [Authorize]
     [HttpPost("changeDefaultPassword")]

@@ -9,6 +9,7 @@ export const API = {
             ChangeDefaultPassword: () => 'Auth/changeDefaultPassword',
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
             RegisterRepresentative: () => 'Auth/register/representative',
+            Logout: () => 'Auth/logout'
         },
         Internship: {
             Create: () => 'Internship',
