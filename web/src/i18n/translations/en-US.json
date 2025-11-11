@@ -91,5 +91,10 @@
     "CreateInternship.Company": "Company",
     "CreateInternship.CompanyRepresentative": "Representative",
     "CreateInternship.Create": "Create a new internship",
-    "CreateInternship.Title": "Fill field bellow and create an internship"
+    "CreateInternship.Title": "Fill field bellow and create an internship",
+    "CreateInternship.RepresentativeNotFound": "Representative with given email doesn't exist yet.",
+    "CreateInternship.RepresentativeNotFoundDescription": "Dont worry, all you have to do is click the button bellow and fill their information",
+    "CompanySignUp.FindRepresentative": "Find",
+    "CompanySignUp.Representative.Create": "Create Representative",
+    "CreateInternship.RepresentativeFound": "Representative with given email found."
 }

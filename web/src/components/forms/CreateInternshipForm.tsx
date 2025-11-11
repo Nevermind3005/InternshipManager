@@ -12,11 +12,18 @@ import YearSelectField from "../foundation/fields/YearSelectField";
 import { SemesterSelectField } from "../foundation/fields/SemesterSelectField";
 import { getSeason, toDateOnlyString } from "@/lib/foundationUtils";
 import type { IInternshipReq } from "@/models/internship/IInternshipReq";
-import { HTTPError } from "ky";
 import CompanySelectField from "../foundation/fields/CompanySelectField";
 import CompanyRegisterForm from "./CompanyForm";
 import { Button } from "../ui/button";
 import { useState } from "react";
+import type { IUserRes } from "@/models/user/IUserRes";
+import { authHttpClient } from "@/api/http";
+import { API } from "@/api/api";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { AlertCircleIcon } from "lucide-react";
+import CompanyRepresentativeForm from "./CompanyRepresentativeForm";
+import { errorResponseHandler } from "@/lib/errorResponseHandler";
+import { useNavigate } from "@tanstack/react-router";
 
 const formSchema = z.object({
     name: z
@@ -34,19 +41,62 @@ const formSchema = z.object({
         .string(),
     semester: z
         .string(),
-    companyRepresentativeEmail: z
+    email: z
         .string()
-        .email()
-        .nonempty(),
+        .email(),
     companyId: z
         .string()
-        .uuid()
+        .uuid(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    companyRepresentativeId: z.string().uuid().optional(),
 });
 
 const CreateInternshipForm = () => {
     const [ isCompanyDialogOpen, setIsCompanyDialogOpen ] = useState(false);
+    const [ isRepresentativeDialogOpen, setIsRepresentativeDialogOpen ] = useState(false);
     const { mutate: createInternship, isPending } = useCreateInternship();
     const intl = useIntl();
+    const [representativeFound, setRepresentativeFound] = useState<boolean | null>(null);
+    const [foundRepresentative, setFoundRepresentative] = useState<IUserRes | null>(null);
+    const [isSearching, setIsSearching] = useState(false);
+    const navigate = useNavigate();
+    
+
+    const findRepresentativeByEmail = async () => {
+        const companyId = form.getValues("companyId");
+        const email = form.getValues('email');
+
+        if (!email || !companyId) {
+            return;
+        }
+
+        try {
+            const response = await authHttpClient.get(API.Endpoints.Company.GetRepresentativeByEmail(companyId, email));
+            if (response.ok) {
+                const representative: IUserRes = await response.json();
+                setFoundRepresentative(representative);
+                setRepresentativeFound(true);
+                form.setValue("companyRepresentativeId", representative.id);
+                form.setValue("firstName", undefined);
+                form.setValue("lastName", undefined);
+                form.setValue("phoneNumber", undefined);
+            } else if (response.status === 404) {
+                setRepresentativeFound(false);
+                setFoundRepresentative(null);
+                form.setValue("companyRepresentativeId", undefined);
+            } else {
+                throw new Error("Failed to search representative");
+            }
+        } catch (error) {
+            console.error("Representative not found: ", error);
+            setRepresentativeFound(false);
+            setFoundRepresentative(null);
+        } finally {
+            setIsSearching(false);
+        }
+    };
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -72,25 +122,15 @@ const CreateInternshipForm = () => {
             endDate: toDateOnlyString(data.endDate),
             year: parseInt(data.year),
             semester: data.semester,
-            companyRepresentativeId: data.companyRepresentativeEmail,
+            companyRepresentativeId: foundRepresentative!.id,
             companyId: data.companyId
         };
         createInternship(reqJson, {
             onError: async (error) => {
-                let message = "Something went wrong";
-                if (error instanceof HTTPError) {
-                    try {
-                        const data = await error.response.json();
-                        // TODO later use key from backend for translation and show the translation
-                        message = data.detail || data.message || message;
-                    } catch {
-                        message = error.message;
-                    }
-                } else {
-                    message = error.message;
-                }
-                // TODO later use shadcn toast instead console log
-                console.log(message);
+                errorResponseHandler(error, intl);
+            },
+            onSuccess: () => {
+                navigate({ to: '/internships' });
             }
         });
     };
@@ -124,7 +164,7 @@ const CreateInternshipForm = () => {
                                                     <FieldError errors={[fieldState.error]} />
                                                 )}
                                             </Field>
-                                            <Button type="button" onClick={() => setIsCompanyDialogOpen(true)}>
+                                            <Button className="w-35" type="button" onClick={() => setIsCompanyDialogOpen(true)}>
                                                 <FormattedMessage id="CompanySignUp.Create" />
                                             </Button>
 
@@ -136,19 +176,28 @@ const CreateInternshipForm = () => {
                         { hasCompany ? (<>
                             <Field>
                                 <Controller
-                                    name="companyRepresentativeEmail"
+                                    name="email"
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
                                             <FieldLabel htmlFor="CreateInternship_CompanyRepresentative">
                                                 <FormattedMessage id="CreateInternship.CompanyRepresentative" />
                                             </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="CreateInternship_CompanyRepresentative"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="jane.doe@company.eu"
-                                            />
+                                            <div className="flex space-x-4">
+                                                <Input
+                                                    {...field}
+                                                    id="CreateInternship_CompanyRepresentative"
+                                                    aria-invalid={fieldState.invalid}
+                                                    placeholder="jane.doe@company.eu"
+                                                    onChange={(e) => {
+                                                        field.onChange(e);
+                                                        setIsSearching(true);
+                                                    }}
+                                                />
+                                                <Button className="w-35" type="button" onClick={() => findRepresentativeByEmail()}>
+                                                    <FormattedMessage id="CompanySignUp.FindRepresentative" />
+                                                </Button>
+                                            </div>
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
                                             )}
@@ -156,143 +205,178 @@ const CreateInternshipForm = () => {
                                     )}
                                 />
                             </Field>
-                            <Field>
-                                <Controller
-                                    name="name"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CreateInternship_Name">
-                                                <FormattedMessage id="CreateInternship.Name" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="CreateInternship_Name"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Doing some cool sh*t"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
+                            { /** Representative not found -> make student input their info */ }
+                            {representativeFound === false && !isSearching && (
+                                <>
+                                    <Field>
+                                        <Alert>
+                                            <AlertCircleIcon />
+                                            <AlertTitle><FormattedMessage id="CreateInternship.RepresentativeNotFound" /></AlertTitle>
+                                            <AlertDescription>
+                                                <FormattedMessage id="CreateInternship.RepresentativeNotFoundDescription" />
+                                            </AlertDescription>
+                                        </Alert>
+                                    </Field>
+                                    <Button type="button" onClick={() => setIsRepresentativeDialogOpen(true)}>
+                                        <FormattedMessage id="CompanySignUp.Representative.Create" />
+                                    </Button>
+                                </>
+                            )}
+                            { /** Representative found -> show their info */ }
+                            {representativeFound === true && !isSearching && foundRepresentative && (
+                                <>
+                                    <Field>
+                                        <Alert>
+                                            <AlertCircleIcon />
+                                            <AlertTitle><FormattedMessage id="CreateInternship.RepresentativeFound" /></AlertTitle>
+                                            <AlertDescription>
+                                                <FormattedMessage id="SignUp.firstName" />: {foundRepresentative.firstName}
+                                            </AlertDescription>
+                                            <AlertDescription>
+                                                <FormattedMessage id="SignUp.lastName" />: {foundRepresentative.lastName}
+                                            </AlertDescription>
+                                        </Alert>
+                                    </Field>
+                                    <Field>
+                                        <Controller
+                                            name="name"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="CreateInternship_Name">
+                                                        <FormattedMessage id="CreateInternship.Name" />
+                                                    </FieldLabel>
+                                                    <Input
+                                                        {...field}
+                                                        id="CreateInternship_Name"
+                                                        aria-invalid={fieldState.invalid}
+                                                        placeholder="Doing some cool sh*t"
+                                                    />
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
                                             )}
-                                        </Field>
-                                    )}
-                                />
-                            </Field>
-                            <Field>
-                                <Controller
-                                    name="description"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CreateInternship_Description">
-                                                <FormattedMessage id="CreateInternship.Description" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="CreateInternship_Description"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="..."
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
+                                        />
+                                    </Field>
+                                    <Field>
+                                        <Controller
+                                            name="description"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="CreateInternship_Description">
+                                                        <FormattedMessage id="CreateInternship.Description" />
+                                                    </FieldLabel>
+                                                    <Input
+                                                        {...field}
+                                                        id="CreateInternship_Description"
+                                                        aria-invalid={fieldState.invalid}
+                                                        placeholder="..."
+                                                    />
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
                                             )}
+                                        />
+                                    </Field>
+                                    <Field>
+                                        <Field className="grid grid-cols-2 gap-4">
+                                            <Controller
+                                                name="startDate"
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field data-invalid={fieldState.invalid}>
+                                                        <FieldLabel htmlFor="CreateInternship_StartDate">
+                                                            <FormattedMessage id="CreateInternship.StartDate" />
+                                                        </FieldLabel>
+                                                        <DatePickerField
+                                                            {...field}
+                                                            placeholder={intl.formatMessage({ id: 'Field.SelectDate' })}
+                                                            id="CreateInternship_StartDate"
+                                                            aria-invalid={fieldState.invalid}
+                                                        />
+                                                        {fieldState.invalid && (
+                                                            <FieldError errors={[fieldState.error]} />
+                                                        )}
+                                                    </Field>
+                                                )}
+                                            />
+                                            <Controller
+                                                name="endDate"
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field data-invalid={fieldState.invalid}>
+                                                        <FieldLabel htmlFor="CreateInternship_EndDate">
+                                                            <FormattedMessage id="CreateInternship.EndDate" />
+                                                        </FieldLabel>
+                                                        <DatePickerField
+                                                            {...field}
+                                                            id="CreateInternship_EndDate"
+                                                            placeholder={intl.formatMessage({ id: 'Field.SelectDate' })}
+                                                            aria-invalid={fieldState.invalid}
+                                                        />
+                                                        {fieldState.invalid && (
+                                                            <FieldError errors={[fieldState.error]} />
+                                                        )}
+                                                    </Field>
+                                                )}
+                                            />
                                         </Field>
-                                    )}
-                                />
-                            </Field>
-                            <Field>
-                                <Field className="grid grid-cols-2 gap-4">
-                                    <Controller
-                                        name="startDate"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="CreateInternship_StartDate">
-                                                    <FormattedMessage id="CreateInternship.StartDate" />
-                                                </FieldLabel>
-                                                <DatePickerField
-                                                    {...field}
-                                                    placeholder={intl.formatMessage({ id: 'Field.SelectDate' })}
-                                                    id="CreateInternship_StartDate"
-                                                    aria-invalid={fieldState.invalid}
-                                                />
-                                                {fieldState.invalid && (
-                                                    <FieldError errors={[fieldState.error]} />
+                                    </Field>
+                                    <Field>
+                                        <Field className="grid grid-cols-2 gap-4">
+                                            <Controller
+                                                name="year"
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field data-invalid={fieldState.invalid}>
+                                                        <FieldLabel htmlFor="CreateInternship_Year">
+                                                            <FormattedMessage id="CreateInternship.Year" />
+                                                        </FieldLabel>
+                                                        <YearSelectField
+                                                            {...field}
+                                                            id="CreateInternship_Year"
+                                                            aria-invalid={fieldState.invalid}
+                                                        />
+                                                        {fieldState.invalid && (
+                                                            <FieldError errors={[fieldState.error]} />
+                                                        )}
+                                                    </Field>
                                                 )}
-                                            </Field>
-                                        )}
-                                    />
-                                    <Controller
-                                        name="endDate"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="CreateInternship_EndDate">
-                                                    <FormattedMessage id="CreateInternship.EndDate" />
-                                                </FieldLabel>
-                                                <DatePickerField
-                                                    {...field}
-                                                    id="CreateInternship_EndDate"
-                                                    placeholder={intl.formatMessage({ id: 'Field.SelectDate' })}
-                                                    aria-invalid={fieldState.invalid}
-                                                />
-                                                {fieldState.invalid && (
-                                                    <FieldError errors={[fieldState.error]} />
+                                            />
+                                            <Controller
+                                                name="semester"
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field data-invalid={fieldState.invalid}>
+                                                        <FieldLabel htmlFor="CreateInternship_Semester">
+                                                            <FormattedMessage id="CreateInternship.Semester" />
+                                                        </FieldLabel>
+                                                        <SemesterSelectField
+                                                            {...field}
+                                                            id="CreateInternship_Semester"
+                                                            aria-invalid={fieldState.invalid}
+                                                        />
+                                                        {fieldState.invalid && (
+                                                            <FieldError errors={[fieldState.error]} />
+                                                        )}
+                                                    </Field>
                                                 )}
-                                            </Field>
-                                        )}
-                                    />
-                                </Field>
-                            </Field>
-                            <Field>
-                                <Field className="grid grid-cols-2 gap-4">
-                                    <Controller
-                                        name="year"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="CreateInternship_Year">
-                                                    <FormattedMessage id="CreateInternship.Year" />
-                                                </FieldLabel>
-                                                <YearSelectField
-                                                    {...field}
-                                                    id="CreateInternship_Year"
-                                                    aria-invalid={fieldState.invalid}
-                                                />
-                                                {fieldState.invalid && (
-                                                    <FieldError errors={[fieldState.error]} />
-                                                )}
-                                            </Field>
-                                        )}
-                                    />
-                                    <Controller
-                                        name="semester"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="CreateInternship_Semester">
-                                                    <FormattedMessage id="CreateInternship.Semester" />
-                                                </FieldLabel>
-                                                <SemesterSelectField
-                                                    {...field}
-                                                    id="CreateInternship_Semester"
-                                                    aria-invalid={fieldState.invalid}
-                                                />
-                                                {fieldState.invalid && (
-                                                    <FieldError errors={[fieldState.error]} />
-                                                )}
-                                            </Field>
-                                        )}
-                                    />
-                                </Field>
-                            </Field>
-                            <Field>
-                                <LoadingButton isPending={isPending} form="CreateInternship"><FormattedMessage id="Actions.Create"/></LoadingButton>
-                            </Field>
+                                            />
+                                        </Field>
+                                    </Field>
+                                    <Field>
+                                        <LoadingButton isPending={isPending} form="CreateInternship"><FormattedMessage id="Actions.Create"/></LoadingButton>
+                                    </Field>
+                                </>
+                            )}
                         </>) : null }
                     </FieldGroup>
                 </form>
                 <CompanyRegisterForm open={isCompanyDialogOpen} onOpenChange={setIsCompanyDialogOpen} />
+                <CompanyRepresentativeForm open={isRepresentativeDialogOpen} onOpenChange={setIsRepresentativeDialogOpen} email={form.getValues('email')} companyId={form.getValues('companyId')}/>
             </CardContent>    
         </Card>
     );

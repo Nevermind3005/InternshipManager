@@ -7,6 +7,7 @@ using server.Foundation.Result;
 using server.Models.Auth;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
+using server.Models.User.Representative;
 using server.Models.User.Student;
 using server.Services;
 using Wangkanai.Detection.Services;
@@ -54,6 +55,30 @@ public class AuthController(
     public async Task<ActionResult<UserResDto>> RegisterInternshipHandler(InternshipHandlerRegisterReqDto request)
     {
         var result = await authService.RegisterInternshipHandlerAsync(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+        
+        return CreatedAtAction(
+            nameof(GetUserById), 
+            new { id = result.Value.Id }, 
+            result.Value
+        );
+    }
+    
+    /// <summary>
+    /// Register a company representative handler user.
+    /// </summary>
+    /// <param name="request">JSON containing user info</param>
+    /// <response code="200">Returns a user object.</response>
+    /// <response code="400">If a user with given email already exists.</response>
+    [Authorize(Roles = nameof(ERole.Student))]
+    [HttpPost("register/representative")]
+    public async Task<ActionResult<UserResDto>> RegisterCompanyRepresentative(CompanyRepresentativeRegisterReqDto request)
+    {
+        var result = await authService.RegisterCompanyRepresentativeAsync(request);
 
         if (result.IsFailure)
         {

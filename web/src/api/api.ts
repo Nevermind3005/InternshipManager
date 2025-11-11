@@ -8,7 +8,7 @@ export const API = {
             RefreshToken: () => 'Auth/refreshToken',
             ChangeDefaultPassword: () => 'Auth/changeDefaultPassword',
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
-            RegisterCompany: () => 'Auth/register/company',
+            RegisterRepresentative: () => 'Auth/register/representative',
         },
         Internship: {
             Create: () => 'Internship',
@@ -17,7 +17,8 @@ export const API = {
         Company: {
             Create: () => 'Company',
             GetById: (id: string) => `Company/${id}`,
-            GetAll: () => 'Company'
+            GetAll: () => 'Company',
+            GetRepresentativeByEmail: (id: string, email: string) => `Company/${id}/representative/${email}`
         }
     }
 };
