@@ -54,8 +54,8 @@ const DatePickerField = forwardRef<HTMLButtonElement, DatePickerFieldProps>(
                             setOpen(false);
                         }}
                         captionLayout="dropdown"
-                        fromYear={1900}
-                        toYear={new Date().getFullYear()}
+                        startMonth={new Date(2000, 0)}
+                        endMonth={new Date(new Date().getFullYear() + 50, 0)}
                         disabled={disabled}
                     />
                 </PopoverContent>

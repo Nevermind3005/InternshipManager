@@ -4,6 +4,7 @@ using server.Data;
 using server.Entities;
 using server.Foundation.Result;
 using server.Models.Company;
+using server.Models.User;
 
 namespace server.Services;
 
@@ -46,5 +47,22 @@ public class CompanyService(
         var result = mapper.Map<List<CompanyResDto>>(companies);
 
         return Result<List<CompanyResDto>>.Success(result);
+    }
+
+    public async Task<Result<UserResDto>> GetCompanyRepresentativeByEmail(Guid companyId, string representativeEmail)
+    {
+        var representative = await context.Users
+            .Where(u => u.Role == ERole.CompanyRepresentative)
+            .Where(u => u.CompanyId == companyId)
+            .Where(u => u.Email == representativeEmail).FirstOrDefaultAsync();
+
+        if (representative is null)
+        {
+            return Result<UserResDto>.Failure(Error.NotFound);
+        }
+
+        var result = mapper.Map<UserResDto>(representative);
+        
+        return Result<UserResDto>.Success(result);
     }
 }

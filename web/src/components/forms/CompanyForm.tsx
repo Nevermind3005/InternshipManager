@@ -1,17 +1,22 @@
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import type { ICompanyRegisterReq } from "@/models/user/ICompanyRegisterReq";
-import { useRegisterCompany } from "@/api/hooks/useRegisterCompany";
 import { LoaderIcon } from "lucide-react";
-import { Link, useNavigate } from "@tanstack/react-router";
 import { FormattedMessage, useIntl } from 'react-intl';
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
+import { useCreateCompany } from "@/api/hooks/useCreateCompany";
+import type { ICompanyReq } from "@/models/company/ICompanyReq";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { useEffect } from "react";
 
+interface ICompanyRegisterFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
 
 // TODO later add error messages and translations
 const formSchema = z.object({
@@ -35,27 +40,10 @@ const formSchema = z.object({
         .string()
         .nonempty()
         .max(16),
-    contactPersonFirstName: z
-        .string()
-        .nonempty()
-        .max(128),
-    contactPersonLastName: z
-        .string()
-        .nonempty()
-        .max(128),
-    contactPersonEmail: z
-        .string()
-        .email()
-        .nonempty(),
-    contactPersonPhone: z
-        .string()
-        .nonempty()
-        .max(20)
 });
 
-const CompanyRegisterForm = () => {
-    const { mutate: register, isPending } = useRegisterCompany();
-    const navigate = useNavigate();
+const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps) => {
+    const { mutate: create, isPending } = useCreateCompany();
     const intl = useIntl();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -65,32 +53,31 @@ const CompanyRegisterForm = () => {
             street: "",
             buildingNumber: "",
             zipCode: "",
-            contactPersonFirstName: "",
-            contactPersonLastName: "",
-            contactPersonEmail: "",
-            contactPersonPhone: ""
         }
     });
 
+    const { reset } = form;
+
+    useEffect(() => {
+        if (!open) {
+            reset();
+        }
+    }, [open, reset]);
+
     const onSubmit = (data: z.infer<typeof formSchema>) => {
-        const reqJson: ICompanyRegisterReq = {
-            companyName: data.companyName,
+        const reqJson: ICompanyReq = {
+            name: data.companyName,
             address: {
                 city: data.city,
                 street: data.street,
                 buildingNumber: data.buildingNumber,
                 zipCode: data.zipCode
             },
-            contactPerson: {
-                firstName: data.contactPersonFirstName,
-                lastName: data.contactPersonLastName,
-                email: data.contactPersonEmail,
-                phone: data.contactPersonPhone
-            }
         };
-        register(reqJson, {
-            // TODO later navigate to a success page
-            onSuccess: () => navigate({ to: "/" }),
+        create(reqJson, {
+            onSuccess() {
+                onOpenChange(false);
+            },
             onError: async (error) => {
                 errorResponseHandler(error, intl);
             }
@@ -98,12 +85,12 @@ const CompanyRegisterForm = () => {
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle><FormattedMessage id="CompanySignUp.SignUp" /></CardTitle>
-                <CardDescription><FormattedMessage id="CompanySignUp.Description" /></CardDescription>
-            </CardHeader>
-            <CardContent>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle><FormattedMessage id="CompanySignUp.SignUp" /></DialogTitle>
+                    <DialogDescription><FormattedMessage id="CompanySignUp.Description" /></DialogDescription>
+                </DialogHeader>
                 <form id="CompanyRegisterForm" onSubmit={form.handleSubmit(onSubmit)}>
                     <FieldGroup>
                         {/* Company Name */}
@@ -223,124 +210,25 @@ const CompanyRegisterForm = () => {
                                 />
                             </Field>
                         </Field>
-
-                        {/* Contact Person Section */}
                         <Field>
-                            <FieldLabel className="text-base font-semibold">
-                                <FormattedMessage id="CompanySignUp.ContactPerson" />
-                            </FieldLabel>
-                        </Field>
-
-                        <Field>
-                            <Field className="grid grid-cols-2 gap-4">
-                                <Controller
-                                    name="contactPersonFirstName"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CompanyRegisterForm_ContactFirstName">
-                                                <FormattedMessage id="CompanySignUp.ContactFirstName" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="CompanyRegisterForm_ContactFirstName"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Ján"
-                                                autoComplete="given-name"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                                <Controller
-                                    name="contactPersonLastName"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CompanyRegisterForm_ContactLastName">
-                                                <FormattedMessage id="CompanySignUp.ContactLastName" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="CompanyRegisterForm_ContactLastName"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Novák"
-                                                autoComplete="family-name"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                            </Field>
-                        </Field>
-
-                        <Controller
-                            name="contactPersonEmail"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="CompanyRegisterForm_ContactEmail">
-                                        <FormattedMessage id="CompanySignUp.ContactEmail" />
-                                    </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id="CompanyRegisterForm_ContactEmail"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="jan.novak@example.com"
-                                        autoComplete="email"
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
-                                    )}
-                                </Field>
-                            )}
-                        />
-
-                        <Controller
-                            name="contactPersonPhone"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="CompanyRegisterForm_ContactPhone">
-                                        <FormattedMessage id="CompanySignUp.ContactPhone" />
-                                    </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id="CompanyRegisterForm_ContactPhone"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="+421xxxxxxxxx"
-                                        autoComplete="tel"
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
-                                    )}
-                                </Field>
-                            )}
-                        />
-
-                        <Field>
-                            <Button type="submit" form="CompanyRegisterForm" disabled={isPending}>
-                                {isPending ? <LoaderIcon
-                                    role="status"
-                                    aria-label="Loading"
-                                    className="size-4 animate-spin"
-                                /> : null}
-                                {isPending ? <FormattedMessage id="CompanySignUp.Processing" /> : <FormattedMessage id="CompanySignUp.Register" />}
-                            </Button>
-                            <FieldDescription className="px-6 text-center">
-                                <FormattedMessage id="CompanySignUp.AlreadyHaveAnAccount" />
-                                <Link to="/login">{' '}<FormattedMessage id="CompanySignUp.SignIn" />
-                                </Link>
-                            </FieldDescription>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                                <Button type="submit" form="CompanyRegisterForm" disabled={isPending}>
+                                    {isPending ? <LoaderIcon
+                                        role="status"
+                                        aria-label="Loading"
+                                        className="size-4 animate-spin"
+                                    /> : null}
+                                    {isPending ? <FormattedMessage id="CompanySignUp.Processing" /> : <FormattedMessage id="Actions.Save" />}
+                                </Button>                            
+                            </DialogFooter>
                         </Field>
                     </FieldGroup>
                 </form>
-            </CardContent>
-        </Card>
+            </DialogContent>
+        </Dialog>
     );
 };
 

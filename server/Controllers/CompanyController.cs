@@ -62,5 +62,19 @@ public class CompanyController(
 
         return Ok(result.Value);
     }
+    
+    [HttpGet("{id:guid}/representative/{email}")]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.Student)}")]
+    public async Task<ActionResult<CompanyResDto>> GetCompanyRepresentative(Guid id, string email)
+    {
+        var result = await companyService.GetCompanyRepresentativeByEmail(id, email);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(result.Value);
+    }
 
 }

@@ -1,5 +1,5 @@
 {
-    "App.Title": "Sephiroth",
+    "App.Title": "INTERNHUB",
     "Route.Home": "Domov",
     "Route.Login": "Prihlásiť sa",
     "Route.Self": "Profil",
@@ -79,7 +79,6 @@
     "Footer.Contact": "Kontakt",
     "Sidebar.Home": "Domov",
     "Sidebar.Management": "Manažment",
-    "Sidebar.CompanyForm": "Vytvoriť profil spoločnosti",
     "CompanySignUp.SignUp": "Registrácia firmy",
     "CompanySignUp.Description": "Zaregistrujte svoju firmu a získajte prístup do systému",
     "CompanySignUp.CompanyName": "Názov firmy",
@@ -93,7 +92,6 @@
     "CompanySignUp.ContactEmail": "Email",
     "CompanySignUp.ContactPhone": "Telefónne číslo",
     "CompanySignUp.Processing": "Spracovávam...",
-    "CompanySignUp.Register": "Registrovať",
-    "CompanySignUp.AlreadyHaveAnAccount": "Už máte účet?",
-    "CompanySignUp.SignIn": "Prihlásiť sa"
+    "CompanySignUp.Create": "Vytvoriť firmu",
+    "CompanySignUp.Register": "Registrovať"
 }

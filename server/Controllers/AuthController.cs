@@ -92,7 +92,6 @@ public class AuthController(
     /// <param name="request">JSON containing login access and refresh tokens</param>
     /// <response code="200">Returns the authentication tokens.</response>
     /// <response code="401">If there was a problem with tokens.</response>
-    [Authorize]
     [HttpPost("refreshToken")]
     public async Task<ActionResult<TokenResDto>> RefreshTokens(RefreshTokenReqDto request)
     {
