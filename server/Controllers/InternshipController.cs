@@ -70,7 +70,7 @@ public class InternshipController(
     }
     
     [HttpGet]
-    [Authorize(Roles = nameof(ERole.Student))]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
     public async Task<ActionResult<PagedResult<InternshipResDto>>> GetInternships(
             [FromQuery] InternshipFilter filter,
             [FromQuery] int skip = 0,

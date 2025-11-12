@@ -71,7 +71,7 @@ public class InternshipService(
         
         if (!string.IsNullOrEmpty(filter.LastName))
         {
-            query = query.Where(i => EF.Functions.ILike(i.Student.LastName, $"%{filter.FirstName}%"));
+            query = query.Where(i => EF.Functions.ILike(i.Student.LastName, $"%{filter.LastName}%"));
         }
         
         if (!string.IsNullOrEmpty(filter.Company))
