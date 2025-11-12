@@ -2,6 +2,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Options;
 using server.Foundation.Configuration;
+using server.Foundation.Result;
 using server.Models;
 
 namespace server.Services;
@@ -19,15 +20,23 @@ public class S3Service(IOptions<S3Configuration> s3Config) : IS3Service
     );
     private readonly string _bucketName = s3Config.Value.BucketName;
 
-    public async Task UploadFileAsync(Stream fileStream, Guid owner, string key)
+    public async Task<Result<FileUploadResDto>> UploadFileAsync(Stream fileStream, Guid owner, string key)
     {
+        var inBucketKey = $"{owner.ToString()}/{key}";
         var request = new PutObjectRequest
         {
             BucketName = _bucketName,
-            Key = $"{owner.ToString()}/{key}",
+            Key = inBucketKey,
             InputStream = fileStream
         };
-        await _s3Client.PutObjectAsync(request);
+        var res = await _s3Client.PutObjectAsync(request);
+
+        if (res is null)
+        {
+            return Result<FileUploadResDto>.Failure(Error.BadRequest);
+        }
+        
+        return Result<FileUploadResDto>.Success(new FileUploadResDto { FileKey = inBucketKey });
     }
 
     public async Task<FileResponse> DownloadFileAsync(string key)

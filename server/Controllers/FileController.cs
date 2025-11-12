@@ -3,6 +3,8 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using server.Data;
+using server.Foundation.Result;
+using server.Models;
 using server.Services;
 
 namespace server.Controllers;
@@ -17,7 +19,7 @@ public class FileController(
     
     [Authorize(Roles = $"{nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
     [HttpPost("upload")]
-    public async Task<IActionResult> Upload(IFormFile file)
+    public async Task<ActionResult<FileUploadResDto>> Upload(IFormFile file)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -27,8 +29,14 @@ public class FileController(
         }
         
         await using var stream = file.OpenReadStream();
-        await s3Service.UploadFileAsync(stream, new Guid(userId), file.FileName);
-        return Ok("Ok");
+        var res = await s3Service.UploadFileAsync(stream, new Guid(userId), file.FileName);
+
+        if (res.IsFailure)
+        {
+            return res.ToProblemDetails();
+        }
+        
+        return Ok(res.Value);
     }
 
     [Authorize]
