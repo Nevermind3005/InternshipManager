@@ -1,9 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/account/')({
+    beforeLoad: () => {
+        throw redirect({ to: '/account/profile' });
+    },
     component: RouteComponent,
 });
 
 function RouteComponent() {
-    return <div>Hello "/account/"!</div>;
+    return null;
 }

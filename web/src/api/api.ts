@@ -15,6 +15,9 @@ export const API = {
         Internship: {
             Create: () => 'Internship',
             GetById: (id: string) => `Internship/${id}`
+        },
+        Users: {
+            PersonalInformation: () => 'Users/me/personal-information'
         }
     }
 };
