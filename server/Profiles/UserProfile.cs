@@ -1,5 +1,6 @@
 using AutoMapper;
 using server.Entities;
+using server.Models;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
 using server.Models.User.Student;
@@ -13,5 +14,11 @@ public class UserProfile : Profile
         CreateMap<User, UserResDto>();
         CreateMap<StudentRegisterReqDto, User>();
         CreateMap<InternshipHandlerRegisterReqDto, User>();
+        CreateMap<User, PersonalInformationResDto>()
+            .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone ?? string.Empty))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address ?? new Address()));
+        CreateMap<UpdatePersonalInformationReqDto, User>()
+            .ForMember(dest => dest.Address, opt => opt.Ignore())
+            .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone));
     }
 }

@@ -96,6 +96,7 @@ builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInternshipService, InternshipService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IMailService, MailService>();
 
 var app = builder.Build();
