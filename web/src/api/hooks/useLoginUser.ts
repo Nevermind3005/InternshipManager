@@ -12,13 +12,14 @@ const login = async (req: IUserLoginReq) => {
         json: req
     }).json<ILoginRes>();
 
-    const { setAccessToken, setRefreshToken, setRole } = useAuthStore.getState();
+    const { setAccessToken, setRefreshToken, setRole, setUserId } = useAuthStore.getState();
 
     const jwtPayload = jwtDecode<IJwtPayload>(data.accessToken);
 
     setAccessToken(data.accessToken);
     setRefreshToken(data.refreshToken);
     setRole(jwtPayload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+    setUserId(jwtPayload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]);
 
     return { redirector: data.redirector };
 };

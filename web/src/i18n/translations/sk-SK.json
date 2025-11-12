@@ -119,5 +119,18 @@
     "Profile.Cancel": "Zrušiť",
     "Profile.CancelEdit": "Zrušiť úpravu",
     "Profile.LoadError": "Chyba pri načítaní profilu",
-    "Profile.UpdateSuccess": "Osobné údaje boli aktualizované"
+    "Profile.UpdateSuccess": "Osobné údaje boli aktualizované",
+    "Profile.UnknownUser": "Neznámy používateľ",
+    "Profile.ChangePassword.Title": "Zmeniť heslo",
+    "Profile.ChangePassword.Description": "Aktualizujte svoje heslo a udržte účet v bezpečí.",
+    "Profile.ChangePassword.Current": "Aktuálne heslo",
+    "Profile.ChangePassword.New": "Nové heslo",
+    "Profile.ChangePassword.Confirm": "Potvrdiť nové heslo",
+    "Profile.ChangePassword.Submit": "Aktualizovať heslo",
+    "Profile.ChangePassword.Clear": "Vyčistiť formulár",
+    "Profile.ChangePassword.Success": "Vaše heslo bolo aktualizované",
+    "Profile.ChangePassword.Show": "Zobraziť heslo",
+    "Profile.ChangePassword.Hide": "Skryť heslo",
+    "Profile.ChangePassword.Match": "Heslá sa zhodujú",
+    "Profile.ChangePassword.NotMatch": "Heslá sa nezhodujú"
 }

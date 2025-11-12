@@ -9,15 +9,15 @@ export const API = {
             ChangeDefaultPassword: () => 'Auth/changeDefaultPassword',
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
             Logout: () => 'Auth/logout',
-            RegisterCompany: () => 'Auth/register/company',
-            CreateInternshipHandler: () => 'Auth/register/internshipHandler'
+            RegisterCompany: () => 'Auth/register/company'
         },
         Internship: {
             Create: () => 'Internship',
             GetById: (id: string) => `Internship/${id}`
         },
         Users: {
-            PersonalInformation: () => 'Users/me/personal-information'
+            PersonalInformation: () => 'Users/me/personal-information',
+            ChangePassword: () => 'Users/me/change-password'
         }
     }
 };

@@ -1,5 +1,6 @@
 import AppSidebar from '@/components/foundation/AppSidebar';
 import LanguageSelect from '@/components/foundation/LanguageSelect';
+import UserBadge from '@/components/foundation/UserBadge';
 import ThemeSwitch from '@/components/ThemeSwitch';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
@@ -49,13 +50,10 @@ const RootLayout = () => {
                         </Breadcrumb>
                     </div>
                     <div className="ml-auto px-3">
-                        <div className="flex">
-                            <div className='px-2'>
-                                <ThemeSwitch />
-                            </div>
-                            <div className='px-2'>
-                                <LanguageSelect />
-                            </div>
+                        <div className="flex items-center gap-3">
+                            <UserBadge />
+                            <ThemeSwitch />
+                            <LanguageSelect />
                         </div>
                     </div>
                 </header>

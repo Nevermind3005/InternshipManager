@@ -118,5 +118,18 @@
     "Profile.Cancel": "Cancel",
     "Profile.CancelEdit": "Cancel Edit",
     "Profile.LoadError": "Error loading profile",
-    "Profile.UpdateSuccess": "Your personal information has been updated"
+    "Profile.UpdateSuccess": "Your personal information has been updated",
+    "Profile.UnknownUser": "Unknown user",
+    "Profile.ChangePassword.Title": "Change Password",
+    "Profile.ChangePassword.Description": "Update your password to keep your account secure.",
+    "Profile.ChangePassword.Current": "Current Password",
+    "Profile.ChangePassword.New": "New Password",
+    "Profile.ChangePassword.Confirm": "Confirm New Password",
+    "Profile.ChangePassword.Submit": "Update Password",
+    "Profile.ChangePassword.Clear": "Clear Form",
+    "Profile.ChangePassword.Success": "Your password has been updated",
+    "Profile.ChangePassword.Show": "Show password",
+    "Profile.ChangePassword.Hide": "Hide password",
+    "Profile.ChangePassword.Match": "Passwords match",
+    "Profile.ChangePassword.NotMatch": "Passwords do not match"
 }

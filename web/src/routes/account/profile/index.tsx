@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { FormattedMessage } from 'react-intl';
 import ChangePersonalInformationForm from '@/components/forms/ChangePersonalInformationForm';
+import ChangePasswordForm from '@/components/forms/ChangePasswordForm';
 import ProfileSummaryCard from '@/components/profile/ProfileSummaryCard';
 
 export const Route = createFileRoute('/account/profile/')({
@@ -23,7 +24,10 @@ function RouteComponent() {
             </header>
 
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] xl:gap-8">
-                <ProfileSummaryCard />
+                <div className="flex flex-col gap-6">
+                    <ProfileSummaryCard />
+                    <ChangePasswordForm />
+                </div>
                 <ChangePersonalInformationForm />
             </div>
         </div>
