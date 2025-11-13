@@ -68,6 +68,7 @@ public class InternshipController(
 
         return Ok(result.Value);
     }
+
     
     [HttpGet]
     [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
