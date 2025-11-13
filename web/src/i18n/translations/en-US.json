@@ -123,8 +123,18 @@
     "Internship.TableHeader.Actions": "Actions",
     "Internship.Edit": "Edit internship",
     "Internship.EditDescription": "Update internship details",
-    "Internship.LoadError": "Error loading internship",
+    "Internship.LoadError": "Failed to load internship",
     "Internship.UpdateSuccess": "Internship updated successfully",
     "Actions.Saving": "Saving...",
-    "Actions.Back": "Back"
+    "Actions.Back": "Back",
+    "Internship.View": "View Internship",
+    "Internship.ViewDescription": "View internship and student information",
+    "Internship.InternshipInformation": "Internship Information",
+    "Internship.StudentInformation": "Student Information",
+    "Internship.NoDescription": "No description provided",
+    "Internship.Approve": "Approve",
+    "Internship.Decline": "Decline",
+    "Internship.ApproveSuccess": "Internship approved successfully",
+    "Internship.DeclineSuccess": "Internship declined successfully",
+    "Internship.ActionNotAvailable": "This internship has already been processed"
 }

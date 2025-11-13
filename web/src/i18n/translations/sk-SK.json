@@ -120,8 +120,18 @@
     "Internship.TableHeader.Actions": "Akcie",
     "Internship.Edit": "Upraviť prax",
     "Internship.EditDescription": "Aktualizujte údaje o praxi",
-    "Internship.LoadError": "Chyba pri načítaní praxe",
+    "Internship.LoadError": "Nepodarilo sa načítať prax",
     "Internship.UpdateSuccess": "Prax bola úspešne aktualizovaná",
     "Actions.Saving": "Ukladám...",
-    "Actions.Back": "Späť"
+    "Actions.Back": "Späť",
+    "Internship.View": "Zobraziť stáž",
+    "Internship.ViewDescription": "Zobraziť informácie o stáži a študentovi",
+    "Internship.InternshipInformation": "Informácie o stáži",
+    "Internship.StudentInformation": "Informácie o študentovi",
+    "Internship.NoDescription": "Nie je poskytnutý žiadny popis",
+    "Internship.Approve": "Schváliť",
+    "Internship.Decline": "Odmietnuť",
+    "Internship.ApproveSuccess": "Stáž bola úspešne schválená",
+    "Internship.DeclineSuccess": "Stáž bola úspešne odmietnutá",
+    "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná"
 }

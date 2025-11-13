@@ -20,6 +20,7 @@ import { Route as InternshipsIndexRouteImport } from './routes/internships/index
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as InternshipsNewIndexRouteImport } from './routes/internships/new/index'
 import { Route as AccountProfileIndexRouteImport } from './routes/account/profile/index'
+import { Route as InternshipsViewInternshipIdRouteImport } from './routes/internships/view/$internshipId'
 import { Route as InternshipsEditInternshipIdRouteImport } from './routes/internships/edit/$internshipId'
 import { Route as InternshipsDetailInternshipIdRouteImport } from './routes/internships/detail/$internshipId'
 
@@ -78,6 +79,12 @@ const AccountProfileIndexRoute = AccountProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => AccountRouteRoute,
 } as any)
+const InternshipsViewInternshipIdRoute =
+  InternshipsViewInternshipIdRouteImport.update({
+    id: '/view/$internshipId',
+    path: '/view/$internshipId',
+    getParentRoute: () => InternshipsRouteRoute,
+  } as any)
 const InternshipsEditInternshipIdRoute =
   InternshipsEditInternshipIdRouteImport.update({
     id: '/edit/$internshipId',
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/internships/': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
+  '/internships/view/$internshipId': typeof InternshipsViewInternshipIdRoute
   '/account/profile': typeof AccountProfileIndexRoute
   '/internships/new': typeof InternshipsNewIndexRoute
 }
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/internships': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
+  '/internships/view/$internshipId': typeof InternshipsViewInternshipIdRoute
   '/account/profile': typeof AccountProfileIndexRoute
   '/internships/new': typeof InternshipsNewIndexRoute
 }
@@ -132,6 +141,7 @@ export interface FileRoutesById {
   '/internships/': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
+  '/internships/view/$internshipId': typeof InternshipsViewInternshipIdRoute
   '/account/profile/': typeof AccountProfileIndexRoute
   '/internships/new/': typeof InternshipsNewIndexRoute
 }
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/internships/'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
+    | '/internships/view/$internshipId'
     | '/account/profile'
     | '/internships/new'
   fileRoutesByTo: FileRoutesByTo
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/internships'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
+    | '/internships/view/$internshipId'
     | '/account/profile'
     | '/internships/new'
   id:
@@ -177,6 +189,7 @@ export interface FileRouteTypes {
     | '/internships/'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
+    | '/internships/view/$internshipId'
     | '/account/profile/'
     | '/internships/new/'
   fileRoutesById: FileRoutesById
@@ -270,6 +283,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountProfileIndexRouteImport
       parentRoute: typeof AccountRouteRoute
     }
+    '/internships/view/$internshipId': {
+      id: '/internships/view/$internshipId'
+      path: '/view/$internshipId'
+      fullPath: '/internships/view/$internshipId'
+      preLoaderRoute: typeof InternshipsViewInternshipIdRouteImport
+      parentRoute: typeof InternshipsRouteRoute
+    }
     '/internships/edit/$internshipId': {
       id: '/internships/edit/$internshipId'
       path: '/edit/$internshipId'
@@ -305,6 +325,7 @@ interface InternshipsRouteRouteChildren {
   InternshipsIndexRoute: typeof InternshipsIndexRoute
   InternshipsDetailInternshipIdRoute: typeof InternshipsDetailInternshipIdRoute
   InternshipsEditInternshipIdRoute: typeof InternshipsEditInternshipIdRoute
+  InternshipsViewInternshipIdRoute: typeof InternshipsViewInternshipIdRoute
   InternshipsNewIndexRoute: typeof InternshipsNewIndexRoute
 }
 
@@ -312,6 +333,7 @@ const InternshipsRouteRouteChildren: InternshipsRouteRouteChildren = {
   InternshipsIndexRoute: InternshipsIndexRoute,
   InternshipsDetailInternshipIdRoute: InternshipsDetailInternshipIdRoute,
   InternshipsEditInternshipIdRoute: InternshipsEditInternshipIdRoute,
+  InternshipsViewInternshipIdRoute: InternshipsViewInternshipIdRoute,
   InternshipsNewIndexRoute: InternshipsNewIndexRoute,
 }
 

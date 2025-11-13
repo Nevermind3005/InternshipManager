@@ -15,7 +15,10 @@ export const API = {
             Create: () => 'Internship',
             GetAll: () => 'Internship',
             GetById: (id: string) => `Internship/${id}`,
-            Update: (id: string) => `Internship/${id}`
+            Update: (id: string) => `Internship/${id}`,
+            ViewById: (id: string) => `PublicInternship/view/${id}`,
+            Approve: (id: string) => `PublicInternship/view/${id}/approve`,
+            Decline: (id: string) => `PublicInternship/view/${id}/decline`
         },
         Company: {
             Create: () => 'Company',

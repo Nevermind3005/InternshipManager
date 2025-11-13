@@ -9,6 +9,7 @@ export interface IInternshipRes {
   endDate: Date,
   year: number,
   semester: string,
+  state: string,
   studentId: string,
   student: IUserRes,
   companyRepresentativeId: string,
