@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
@@ -68,8 +68,6 @@ const ChangePasswordForm = () => {
         });
     };
 
-    const { errors } = form.formState;
-
     return (
         <Card className="h-full">
             <CardHeader>
@@ -79,107 +77,134 @@ const ChangePasswordForm = () => {
             <CardContent>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <FieldGroup>
-                        <Field data-invalid={Boolean(errors.currentPassword)}>
-                            <FieldLabel htmlFor="ChangePassword_Current">
-                                <FormattedMessage id="Profile.ChangePassword.Current" />
-                            </FieldLabel>
-                            <div className="relative">
-                                <Input
-                                    id="ChangePassword_Current"
-                                    type={showCurrentPassword ? "text" : "password"}
-                                    autoComplete="current-password"
-                                    {...form.register("currentPassword")}
-                                    disabled={isPending}
-                                />
-                                <Button
-                                    type="button"
-                                    size="icon"
-                                    variant="ghost"
-                                    className="absolute inset-y-0 right-1 my-auto h-8 w-8"
-                                    onClick={() => setShowCurrentPassword((prev) => !prev)}
-                                    tabIndex={-1}
-                                >
-                                    {showCurrentPassword ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
-                                    <span className="sr-only">
-                                        {showCurrentPassword ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                    </span>
-                                </Button>
-                            </div>
-                            <FieldError errors={errors.currentPassword ? [errors.currentPassword] : undefined} />
-                        </Field>
-                        <Field data-invalid={Boolean(errors.newPassword)}>
-                            <FieldLabel htmlFor="ChangePassword_New">
-                                <FormattedMessage id="Profile.ChangePassword.New" />
-                            </FieldLabel>
-                            <div className="relative">
-                                <Input
-                                    id="ChangePassword_New"
-                                    type={showNewPasswords ? "text" : "password"}
-                                    autoComplete="new-password"
-                                    {...form.register("newPassword")}
-                                    disabled={isPending}
-                                />
-                                <Button
-                                    type="button"
-                                    size="icon"
-                                    variant="ghost"
-                                    className="absolute inset-y-0 right-1 my-auto h-8 w-8"
-                                    onClick={() => setShowNewPasswords((prev) => !prev)}
-                                    tabIndex={-1}
-                                >
-                                    {showNewPasswords ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
-                                    <span className="sr-only">
-                                        {showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                    </span>
-                                </Button>
-                            </div>
-                            <FieldError errors={errors.newPassword ? [errors.newPassword] : undefined} />
-                        </Field>
-                        <Field data-invalid={Boolean(errors.confirmPassword)}>
-                            <FieldLabel htmlFor="ChangePassword_Confirm">
-                                <FormattedMessage id="Profile.ChangePassword.Confirm" />
-                            </FieldLabel>
-                            <div className="relative">
-                                <Input
-                                    id="ChangePassword_Confirm"
-                                    type={showNewPasswords ? "text" : "password"}
-                                    autoComplete="new-password"
-                                    {...form.register("confirmPassword")}
-                                    disabled={isPending}
-                                />
-                                <Button
-                                    type="button"
-                                    size="icon"
-                                    variant="ghost"
-                                    className="absolute inset-y-0 right-1 my-auto h-8 w-8"
-                                    onClick={() => setShowNewPasswords((prev) => !prev)}
-                                    tabIndex={-1}
-                                >
-                                    {showNewPasswords ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
-                                    <span className="sr-only">
-                                        {showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                    </span>
-                                </Button>
-                            </div>
-                            <FieldError errors={errors.confirmPassword ? [errors.confirmPassword] : undefined} />
-                            <div className="mt-2 flex items-center gap-2 text-sm">
-                                {passwordsMatch ? (
-                                    <>
-                                        <CheckIcon className="size-4 text-emerald-500" aria-hidden="true" />
-                                        <span className="text-emerald-600 dark:text-emerald-400">
-                                            <FormattedMessage id="Profile.ChangePassword.Match" />
-                                        </span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <AlertCircle className="size-4 text-amber-500" aria-hidden="true" />
-                                        <span className="text-amber-600 dark:text-amber-400">
-                                            <FormattedMessage id="Profile.ChangePassword.NotMatch" />
-                                        </span>
-                                    </>
-                                )}
-                            </div>
-                        </Field>
+                        <Controller
+                            name="currentPassword"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="ChangePassword_Current">
+                                        <FormattedMessage id="Profile.ChangePassword.Current" />
+                                    </FieldLabel>
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            id="ChangePassword_Current"
+                                            type={showCurrentPassword ? "text" : "password"}
+                                            autoComplete="current-password"
+                                            aria-invalid={fieldState.invalid}
+                                            disabled={isPending}
+                                        />
+                                        <Button
+                                            type="button"
+                                            size="icon"
+                                            variant="ghost"
+                                            className="absolute inset-y-0 right-1 my-auto h-8 w-8"
+                                            onClick={() => setShowCurrentPassword((prev) => !prev)}
+                                            tabIndex={-1}
+                                        >
+                                            {showCurrentPassword ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
+                                            <span className="sr-only">
+                                                {showCurrentPassword ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            </span>
+                                        </Button>
+                                    </div>
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                            )}
+                        />
+                        <Controller
+                            name="newPassword"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="ChangePassword_New">
+                                        <FormattedMessage id="Profile.ChangePassword.New" />
+                                    </FieldLabel>
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            id="ChangePassword_New"
+                                            type={showNewPasswords ? "text" : "password"}
+                                            autoComplete="new-password"
+                                            aria-invalid={fieldState.invalid}
+                                            disabled={isPending}
+                                        />
+                                        <Button
+                                            type="button"
+                                            size="icon"
+                                            variant="ghost"
+                                            className="absolute inset-y-0 right-1 my-auto h-8 w-8"
+                                            onClick={() => setShowNewPasswords((prev) => !prev)}
+                                            tabIndex={-1}
+                                        >
+                                            {showNewPasswords ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
+                                            <span className="sr-only">
+                                                {showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            </span>
+                                        </Button>
+                                    </div>
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                            )}
+                        />
+                        <Controller
+                            name="confirmPassword"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="ChangePassword_Confirm">
+                                        <FormattedMessage id="Profile.ChangePassword.Confirm" />
+                                    </FieldLabel>
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            id="ChangePassword_Confirm"
+                                            type={showNewPasswords ? "text" : "password"}
+                                            autoComplete="new-password"
+                                            aria-invalid={fieldState.invalid}
+                                            disabled={isPending}
+                                        />
+                                        <Button
+                                            type="button"
+                                            size="icon"
+                                            variant="ghost"
+                                            className="absolute inset-y-0 right-1 my-auto h-8 w-8"
+                                            onClick={() => setShowNewPasswords((prev) => !prev)}
+                                            tabIndex={-1}
+                                        >
+                                            {showNewPasswords ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
+                                            <span className="sr-only">
+                                                {showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            </span>
+                                        </Button>
+                                    </div>
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                    <div className="mt-2 flex items-center gap-2 text-sm">
+                                        {passwordsMatch ? (
+                                            <>
+                                                <CheckIcon className="size-4 text-emerald-500" aria-hidden="true" />
+                                                <span className="text-emerald-600 dark:text-emerald-400">
+                                                    <FormattedMessage id="Profile.ChangePassword.Match" />
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <AlertCircle className="size-4 text-amber-500" aria-hidden="true" />
+                                                <span className="text-amber-600 dark:text-amber-400">
+                                                    <FormattedMessage id="Profile.ChangePassword.NotMatch" />
+                                                </span>
+                                            </>
+                                        )}
+                                    </div>
+                                </Field>
+                            )}
+                        />
                     </FieldGroup>
                     <Button type="submit" disabled={isPending} className="w-full">
                         {isPending && (

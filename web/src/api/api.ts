@@ -16,8 +16,8 @@ export const API = {
             GetById: (id: string) => `Internship/${id}`
         },
         Users: {
-            PersonalInformation: () => 'Users/me/personal-information',
-            ChangePassword: () => 'Users/me/change-password'
+            PersonalInformation: () => 'User/me/personalInformation',
+            ChangePassword: () => 'User/me/changePassword'
         }
     }
 };
