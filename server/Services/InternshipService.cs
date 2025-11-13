@@ -115,4 +115,44 @@ public class InternshipService(
 
         return Result<PagedResult<InternshipResDto>>.Success(pagedResult);
     }
+
+    public async Task<Result<InternshipResDto>> UpdateInternshipAsync(Guid id, InternshipReqDto request)
+    {
+        var internship = await context.Internships
+            .Include(i => i.Company)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (internship is null)
+        {
+            return Result<InternshipResDto>.Failure(Error.NotFound);
+        }
+
+        // Find company with corresponding id and representative
+        var company = await context.Companies
+            .Where(c => c.Id == request.CompanyId &&
+                        c.Representatives.Any(u => u.Id == request.CompanyRepresentativeId))
+            .FirstOrDefaultAsync();
+
+        // Company not found - wrong company or representative id or representative doesn't belong to the company
+        if (company is null)
+        {
+            return Result<InternshipResDto>.Failure(Error.BadRequest);
+        }
+
+        // Update fields but preserve State and StudentId
+        internship.Name = request.Name;
+        internship.Description = request.Description;
+        internship.StartDate = request.StartDate;
+        internship.EndDate = request.EndDate;
+        internship.Year = request.Year;
+        internship.Semester = request.Semester;
+        internship.CompanyRepresentativeId = request.CompanyRepresentativeId;
+        internship.CompanyId = request.CompanyId;
+
+        await context.SaveChangesAsync();
+
+        var response = mapper.Map<InternshipResDto>(internship);
+        
+        return Result<InternshipResDto>.Success(response);
+    }
 }
