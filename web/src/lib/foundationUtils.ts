@@ -11,3 +11,14 @@ export const getSeason = (date = new Date()) => {
 export const toDateOnlyString = (date: Date) => {
     return date.toISOString().split('T')[0];
 };
+
+export const formatDateOnlyString = (dateValue: string) => {
+    const formatted = dateValue
+        ? new Date(dateValue).toLocaleDateString("sk-SK", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        })
+        : "";
+    return formatted;
+};

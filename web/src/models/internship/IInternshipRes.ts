@@ -1,5 +1,5 @@
+import type { ICompanyRes } from "../company/ICompanyRes";
 import type { IUserRes } from "../user/IUserRes";
-import type { ICompanyRes } from "./company/ICompanyRes";
 
 export interface IInternshipRes {
   id: string,
@@ -9,7 +9,10 @@ export interface IInternshipRes {
   endDate: Date,
   year: number,
   semester: string,
-  studentId: IUserRes,
-  companyRepresentativeId: ICompanyRes,
+  studentId: string,
+  student: IUserRes,
+  companyRepresentativeId: string,
+  companyRepresentative: IUserRes,
+  company: ICompanyRes
   companyId: IUserRes
 }
