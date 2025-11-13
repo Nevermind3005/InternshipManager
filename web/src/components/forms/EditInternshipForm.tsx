@@ -12,7 +12,7 @@ import { useGetInternship } from "@/api/hooks/useGetInternship";
 import DatePickerField from "../foundation/fields/DatePickerField";
 import YearSelectField from "../foundation/fields/YearSelectField";
 import { SemesterSelectField } from "../foundation/fields/SemesterSelectField";
-import { toDateOnlyString } from "@/lib/foundationUtils";
+import { toDateOnlyString, parseDateOnlyString } from "@/lib/foundationUtils";
 import type { IInternshipReq } from "@/models/internship/IInternshipReq";
 import CompanySelectField from "../foundation/fields/CompanySelectField";
 import CompanyRegisterForm from "./CompanyForm";
@@ -87,11 +87,15 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
     useEffect(() => {
         if (internship) {
             const startDate = typeof internship.startDate === 'string' 
-                ? new Date(internship.startDate) 
-                : new Date(internship.startDate);
+                ? parseDateOnlyString(internship.startDate) 
+                : internship.startDate instanceof Date 
+                    ? internship.startDate 
+                    : new Date(internship.startDate);
             const endDate = typeof internship.endDate === 'string' 
-                ? new Date(internship.endDate) 
-                : new Date(internship.endDate);
+                ? parseDateOnlyString(internship.endDate) 
+                : internship.endDate instanceof Date 
+                    ? internship.endDate 
+                    : new Date(internship.endDate);
 
             form.reset({
                 name: internship.name,
