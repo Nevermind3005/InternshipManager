@@ -25,6 +25,21 @@ services:
       - network
     depends_on:
       - database
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    networks:
+      - network
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
   backend:
     image: backend-dev
     build:
@@ -40,18 +55,23 @@ services:
       - Auth__SigningKey=lk6vEFmvgRpvMjLzaVD3bIUtNQM3LTiLofLZzTY6kvmufbYRGCYZCBQckBQHjDJG
       - Auth__Issuer=https://api.localhost/api/v1/auth
       - Auth__Audience=https://api.localhost/api/v1
-      - Auth__Lifetime__AccessToken=30
+      - Auth__Lifetime__AccessToken=1
       - Auth__Lifetime__RefreshToken=10080
       - Mail__From=noreply@imanager.sk
       - Mail__Name=InternshipManager
       - Mail__Host=mail-server
       - Mail__Port=25
-    restart:
-      unless-stopped
+      - S3__Endpoint=http://minio:9000
+      - S3__AccessKey=minioadmin
+      - S3__SecretKey=minioadmin
+      - S3__BucketName=internship-bucket
+    restart: unless-stopped
     networks:
       - network
     depends_on:
       - database
+      - migration-engine
+      - minio
   frontend:
     build:
       context: ./web
@@ -96,6 +116,7 @@ volumes:
   caddy_data:
   caddy_config:
   database-data:
+  minio_data:
 networks:
   network:
     driver: bridge

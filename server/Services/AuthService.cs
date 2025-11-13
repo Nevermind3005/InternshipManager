@@ -12,6 +12,7 @@ using server.Models.Auth;
 using server.Models.Mail;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
+using server.Models.User.Representative;
 using server.Models.User.Student;
 using Wangkanai.Detection.Services;
 
@@ -94,6 +95,34 @@ public class AuthService(
         
         await mailService.SendMailTemplateAsync(request.Email, "Password","Templates/StudentRegisterMail.cshtml", mailTemplateModel);
         
+        var response = mapper.Map<UserResDto>(dbUser.Entity);
+        
+        return Result<UserResDto>.Success(response);
+    }
+
+    public async Task<Result<UserResDto>> RegisterCompanyRepresentativeAsync(CompanyRepresentativeRegisterReqDto request)
+    {
+        // Check if user already exists, if so return failure
+        if (await context.Users.AnyAsync(u => u.Email == request.Email))
+        {
+            return Result<UserResDto>.Failure(Error.UserAlreadyExists);
+        }
+
+        // Generate random password and hash it with bCrypt
+        var password = AuthStatics.GenerateRandomPassword();
+        var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+
+        var user = mapper.Map<User>(request);
+        user.PasswordHash = passwordHash;
+        user.Role = ERole.CompanyRepresentative;
+        user.IsPasswordDirty = true;
+        
+        var dbUser = await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        
+        // TODO replace with proper password sending via mail
+        Console.WriteLine(password);
+
         var response = mapper.Map<UserResDto>(dbUser.Entity);
         
         return Result<UserResDto>.Success(response);

@@ -7,54 +7,56 @@ import { Button } from "../ui/button";
 import { LoaderIcon } from "lucide-react";
 import { FormattedMessage, useIntl } from 'react-intl';
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
-import { useCreateCompany } from "@/api/hooks/useCreateCompany";
-import type { ICompanyReq } from "@/models/company/ICompanyReq";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useEffect } from "react";
+import { useRegisterRepresentative } from "@/api/hooks/useRegisterRepresentative";
+import type { IRepresentativeRegisterReq } from "@/models/user/representative/IRepresentativeRegister";
 
-interface ICompanyRegisterFormProps {
+interface ICompanyRepresentativeFormProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    email: string;
+    companyId: string;
 }
 
 // TODO later add error messages and translations
 const formSchema = z.object({
-    companyName: z
+    email: z
         .string()
-        .nonempty()
-        .max(255),
-    city: z
-        .string()
-        .nonempty()
-        .max(182),
-    street: z
+        .email(),
+    firstName: z
         .string()
         .nonempty()
         .max(128),
-    buildingNumber: z
+    lastName: z
         .string()
         .nonempty()
-        .max(16),
-    zipCode: z
+        .max(128),
+    phone: z
         .string()
         .nonempty()
-        .max(16),
+        .max(20),
 });
 
-const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps) => {
-    const { mutate: create, isPending } = useCreateCompany();
+const CompanyRepresentativeForm = ({ open, onOpenChange, email, companyId } : ICompanyRepresentativeFormProps) => {
+    const { mutate: create, isPending } = useRegisterRepresentative();
     const intl = useIntl();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            companyName: "",
-            city: "",
-            street: "",
-            buildingNumber: "",
-            zipCode: "",
+            email: email,
+            firstName: "",
+            lastName: "",
+            phone: "",
         }
     });
+
+    useEffect(() => {
+        if (email) {
+            form.reset({ ...form.getValues(), email });
+        }
+    }, [email, form]);
 
     const { reset } = form;
 
@@ -65,14 +67,12 @@ const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps)
     }, [open, reset]);
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
-        const reqJson: ICompanyReq = {
-            name: data.companyName,
-            address: {
-                city: data.city,
-                street: data.street,
-                buildingNumber: data.buildingNumber,
-                zipCode: data.zipCode
-            },
+        const reqJson: IRepresentativeRegisterReq = {
+            companyId: companyId, 
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            phone: data.phone
         };
         create(reqJson, {
             onSuccess() {
@@ -93,21 +93,21 @@ const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps)
                 </DialogHeader>
                 <form id="CompanyRegisterForm" onSubmit={form.handleSubmit(onSubmit)}>
                     <FieldGroup>
-                        {/* Company Name */}
                         <Controller
-                            name="companyName"
+                            name="email"
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="CompanyRegisterForm_CompanyName">
-                                        <FormattedMessage id="CompanySignUp.CompanyName" />
+                                    <FieldLabel htmlFor="StudentRegisterForm_Email">
+                                        <FormattedMessage id="SignUp.PrimaryEmail" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
-                                        id="CompanyRegisterForm_CompanyName"
+                                        id="StudentRegisterForm_Email"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="ABC s.r.o."
-                                        autoComplete="organization"
+                                        placeholder="name.surname@student.ukf.sk"
+                                        autoComplete="on"
+                                        disabled
                                     />
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
@@ -115,24 +115,22 @@ const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps)
                                 </Field>
                             )}
                         />
-
-                        {/* Address Section */}
                         <Field>
                             <Field className="grid grid-cols-2 gap-4">
                                 <Controller
-                                    name="city"
+                                    name="firstName"
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CompanyRegisterForm_City">
-                                                <FormattedMessage id="CompanySignUp.City" />
+                                            <FieldLabel htmlFor="StudentRegisterForm_FirstName">
+                                                <FormattedMessage id="SignUp.firstName" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
-                                                id="CompanyRegisterForm_City"
+                                                id="StudentRegisterForm_FirstName"
                                                 aria-invalid={fieldState.invalid}
-                                                placeholder="Nitra"
-                                                autoComplete="address-level2"
+                                                placeholder="John"
+                                                autoComplete="on"
                                             />
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
@@ -141,19 +139,19 @@ const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps)
                                     )}
                                 />
                                 <Controller
-                                    name="street"
+                                    name="lastName"
                                     control={form.control}
                                     render={({ field, fieldState }) => (
                                         <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CompanyRegisterForm_Street">
-                                                <FormattedMessage id="CompanySignUp.Street" />
+                                            <FieldLabel htmlFor="StudentRegisterForm_LastName">
+                                                <FormattedMessage id="SignUp.lastName" />
                                             </FieldLabel>
                                             <Input
                                                 {...field}
-                                                id="CompanyRegisterForm_Street"
+                                                id="StudentRegisterForm_LastName"
                                                 aria-invalid={fieldState.invalid}
-                                                placeholder="Štefánikova trieda"
-                                                autoComplete="address-line1"
+                                                placeholder="Doe"
+                                                autoComplete="on"
                                             />
                                             {fieldState.invalid && (
                                                 <FieldError errors={[fieldState.error]} />
@@ -163,53 +161,27 @@ const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps)
                                 />
                             </Field>
                         </Field>
-
-                        <Field>
-                            <Field className="grid grid-cols-2 gap-4">
-                                <Controller
-                                    name="buildingNumber"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CompanyRegisterForm_BuildingNumber">
-                                                <FormattedMessage id="CompanySignUp.BuildingNumber" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="CompanyRegisterForm_BuildingNumber"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="77/54"
-                                                autoComplete="off"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
+                        <Controller
+                            name="phone"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="StudentRegisterForm_Phone">
+                                        <FormattedMessage id="SignUp.PhoneNumber" />
+                                    </FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="StudentRegisterForm_Phone"
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder="+421xxxxxxxxx"
+                                        autoComplete="on"
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
                                     )}
-                                />
-                                <Controller
-                                    name="zipCode"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="CompanyRegisterForm_ZipCode">
-                                                <FormattedMessage id="CompanySignUp.PostalCode" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="CompanyRegisterForm_ZipCode"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="949 01"
-                                                autoComplete="postal-code"
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                            </Field>
-                        </Field>
+                                </Field>
+                            )}
+                        />
                         <Field>
                             <DialogFooter>
                                 <DialogClose asChild>
@@ -232,4 +204,4 @@ const CompanyRegisterForm = ({ open, onOpenChange } : ICompanyRegisterFormProps)
     );
 };
 
-export default CompanyRegisterForm;
+export default CompanyRepresentativeForm;

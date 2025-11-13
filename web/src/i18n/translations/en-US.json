@@ -1,5 +1,5 @@
 {
-    "App.Title": "Sephiroth",
+    "App.Title": "INTERNHUB",
     "Auth.Logout": "Logout",
     "Route.Home": "Home",
     "Route.Login": "Login",
@@ -66,7 +66,6 @@
     "InternshipHandler.Description": "Enter fields bellow and create new internship handler",
     "Sidebar.Home": "Home",
     "Sidebar.Management": "Management",
-    "Sidebar.CompanyForm": "Create Company Profile",
     "CompanySignUp.SignUp": "Company Registration",
     "CompanySignUp.Description": "Register your company to gain access to the system",
     "CompanySignUp.CompanyName": "Company Name",
@@ -80,9 +79,7 @@
     "CompanySignUp.ContactEmail": "Email",
     "CompanySignUp.ContactPhone": "Phone Number",
     "CompanySignUp.Processing": "Processing...",
-    "CompanySignUp.Register": "Register",
-    "CompanySignUp.AlreadyHaveAnAccount": "Already have an account?",
-    "CompanySignUp.SignIn": "Sign In",
+    "CompanySignUp.Create": "Create company",
     "Field.SelectLanguage": "Select Language",
     "Field.SelectDate": "Select Date",
     "Field.Semester.Winter": "Winter",
@@ -131,5 +128,10 @@
     "Profile.ChangePassword.Show": "Show password",
     "Profile.ChangePassword.Hide": "Hide password",
     "Profile.ChangePassword.Match": "Passwords match",
-    "Profile.ChangePassword.NotMatch": "Passwords do not match"
+    "Profile.ChangePassword.NotMatch": "Passwords do not match",
+    "CreateInternship.RepresentativeNotFound": "Representative with given email doesn't exist yet.",
+    "CreateInternship.RepresentativeNotFoundDescription": "Dont worry, all you have to do is click the button bellow and fill their information",
+    "CompanySignUp.FindRepresentative": "Find",
+    "CompanySignUp.Representative.Create": "Create Representative",
+    "CreateInternship.RepresentativeFound": "Representative with given email found."
 }

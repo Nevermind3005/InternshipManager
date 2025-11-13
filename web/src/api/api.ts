@@ -8,8 +8,9 @@ export const API = {
             RefreshToken: () => 'Auth/refreshToken',
             ChangeDefaultPassword: () => 'Auth/changeDefaultPassword',
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
-            Logout: () => 'Auth/logout',
-            RegisterCompany: () => 'Auth/register/company'
+            RegisterCompany: () => 'Auth/register/company',
+            RegisterRepresentative: () => 'Auth/register/representative',
+            Logout: () => 'Auth/logout'
         },
         Internship: {
             Create: () => 'Internship',
@@ -18,6 +19,11 @@ export const API = {
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',
             ChangePassword: () => 'User/me/changePassword'
+        },
+        Company: {
+            Create: () => 'Company',
+            GetById: (id: string) => `Company/${id}`,
+            GetAll: () => 'Company',
+            GetRepresentativeByEmail: (id: string, email: string) => `Company/${id}/representative/${email}`
         }
-    }
 };

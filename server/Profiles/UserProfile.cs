@@ -3,6 +3,7 @@ using server.Entities;
 using server.Models;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
+using server.Models.User.Representative;
 using server.Models.User.Student;
 
 namespace server.Profiles;
@@ -20,5 +21,6 @@ public class UserProfile : Profile
         CreateMap<UpdatePersonalInformationReqDto, User>()
             .ForMember(dest => dest.Address, opt => opt.Ignore())
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone));
+        CreateMap<CompanyRepresentativeRegisterReqDto, User>();
     }
 }

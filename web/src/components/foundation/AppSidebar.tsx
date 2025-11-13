@@ -38,12 +38,6 @@ const navMain : ISidebarNav[] = [
         url: "#",
         icon: Lock,
         roles: ["InternshipHandler"]
-    },
-    {
-        title: "Sidebar.CompanyForm",
-        url: "/companyForm",
-        icon: Lock,
-        roles: ["Student"]
     }
 ];
 
@@ -57,12 +51,8 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link to="/">
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                    <GalleryVerticalEnd className="size-4" />
-                                </div>
-                                <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-medium">Internship Manager</span>
-                                    <span className="">v1.0.0</span>
+                                <div className="flex">
+                                    <span className="text-white font-[Space_Grotesk] font-black text-2xl xl:p-8 md:p-6 p-4"><FormattedMessage id="App.Title"/></span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
