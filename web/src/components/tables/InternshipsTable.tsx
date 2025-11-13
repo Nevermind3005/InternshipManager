@@ -7,7 +7,7 @@ import {
     type ColumnDef,
     type ColumnFiltersState,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, PencilIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +32,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "@tanstack/react-router";
 import { useGetAllInternships } from "@/api/hooks/useGetAllInternships";
 
-const getTableColumns = () => {
+const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
     const { role } = useAuthStore.getState();
 
     const columns: ColumnDef<IInternshipRes>[] = [
@@ -139,6 +139,31 @@ const getTableColumns = () => {
             },
             cell: ({ row }) => <div className=""><FormattedMessage id={`Internship.State.${row.getValue("state")}`}/></div>,
         },
+        ...(role === "InternshipHandler" ? [
+            {
+                id: "actions",
+                header: () => {
+                    return (
+                        <FormattedMessage id="Internship.TableHeader.Actions"/>
+                    );
+                },
+                cell: ({ row }: CellContext<IInternshipRes, unknown>) => (
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate({ to: `/internships/edit/${row.original.id}` })}
+                            className="h-8 w-8 p-0"
+                        >
+                            <PencilIcon className="h-4 w-4" />
+                            <span className="sr-only">
+                                <FormattedMessage id="Internship.Edit" />
+                            </span>
+                        </Button>
+                    </div>
+                ),
+            },
+        ] : []),
     ];
     return columns;
 };
@@ -157,7 +182,7 @@ export function DataTableDemo() {
         ),
     });
 
-    const columns = getTableColumns();
+    const columns = getTableColumns(navigate);
 
     const totalPages = companies ? Math.ceil(companies.totalCount / pagination.pageSize) : 0;
 

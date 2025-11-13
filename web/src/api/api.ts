@@ -14,7 +14,8 @@ export const API = {
         Internship: {
             Create: () => 'Internship',
             GetAll: () => 'Internship',
-            GetById: (id: string) => `Internship/${id}`
+            GetById: (id: string) => `Internship/${id}`,
+            Update: (id: string) => `Internship/${id}`
         },
         Company: {
             Create: () => 'Company',

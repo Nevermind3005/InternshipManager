@@ -20,6 +20,7 @@ import { Route as InternshipsIndexRouteImport } from './routes/internships/index
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as InternshipsNewIndexRouteImport } from './routes/internships/new/index'
 import { Route as AccountProfileIndexRouteImport } from './routes/account/profile/index'
+import { Route as InternshipsEditInternshipIdRouteImport } from './routes/internships/edit/$internshipId'
 import { Route as InternshipsDetailInternshipIdRouteImport } from './routes/internships/detail/$internshipId'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -77,6 +78,12 @@ const AccountProfileIndexRoute = AccountProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => AccountRouteRoute,
 } as any)
+const InternshipsEditInternshipIdRoute =
+  InternshipsEditInternshipIdRouteImport.update({
+    id: '/edit/$internshipId',
+    path: '/edit/$internshipId',
+    getParentRoute: () => InternshipsRouteRoute,
+  } as any)
 const InternshipsDetailInternshipIdRoute =
   InternshipsDetailInternshipIdRouteImport.update({
     id: '/detail/$internshipId',
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/account/': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
+  '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/account/profile': typeof AccountProfileIndexRoute
   '/internships/new': typeof InternshipsNewIndexRoute
 }
@@ -107,6 +115,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountIndexRoute
   '/internships': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
+  '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/account/profile': typeof AccountProfileIndexRoute
   '/internships/new': typeof InternshipsNewIndexRoute
 }
@@ -122,6 +131,7 @@ export interface FileRoutesById {
   '/account/': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
+  '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/account/profile/': typeof AccountProfileIndexRoute
   '/internships/new/': typeof InternshipsNewIndexRoute
 }
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/internships/'
     | '/internships/detail/$internshipId'
+    | '/internships/edit/$internshipId'
     | '/account/profile'
     | '/internships/new'
   fileRoutesByTo: FileRoutesByTo
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/internships'
     | '/internships/detail/$internshipId'
+    | '/internships/edit/$internshipId'
     | '/account/profile'
     | '/internships/new'
   id:
@@ -164,6 +176,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/internships/'
     | '/internships/detail/$internshipId'
+    | '/internships/edit/$internshipId'
     | '/account/profile/'
     | '/internships/new/'
   fileRoutesById: FileRoutesById
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountProfileIndexRouteImport
       parentRoute: typeof AccountRouteRoute
     }
+    '/internships/edit/$internshipId': {
+      id: '/internships/edit/$internshipId'
+      path: '/edit/$internshipId'
+      fullPath: '/internships/edit/$internshipId'
+      preLoaderRoute: typeof InternshipsEditInternshipIdRouteImport
+      parentRoute: typeof InternshipsRouteRoute
+    }
     '/internships/detail/$internshipId': {
       id: '/internships/detail/$internshipId'
       path: '/detail/$internshipId'
@@ -284,12 +304,14 @@ const AccountRouteRouteWithChildren = AccountRouteRoute._addFileChildren(
 interface InternshipsRouteRouteChildren {
   InternshipsIndexRoute: typeof InternshipsIndexRoute
   InternshipsDetailInternshipIdRoute: typeof InternshipsDetailInternshipIdRoute
+  InternshipsEditInternshipIdRoute: typeof InternshipsEditInternshipIdRoute
   InternshipsNewIndexRoute: typeof InternshipsNewIndexRoute
 }
 
 const InternshipsRouteRouteChildren: InternshipsRouteRouteChildren = {
   InternshipsIndexRoute: InternshipsIndexRoute,
   InternshipsDetailInternshipIdRoute: InternshipsDetailInternshipIdRoute,
+  InternshipsEditInternshipIdRoute: InternshipsEditInternshipIdRoute,
   InternshipsNewIndexRoute: InternshipsNewIndexRoute,
 }
 

@@ -48,6 +48,7 @@
     "Actions.Loading": "Spracováva sa",
     "Actions.Save": "Uložiť",
     "Actions.Create": "Vytvoriť",
+    "Actions.Cancel": "Zrušiť",
     "InternshipHandler.Create": "Vytvorte nového manažéra praxe",
     "InternshipHandler.Description": "Vyplnte údaje a vytvorte nového manažéra praxe",
     "Field.SelectLanguage": "Vyberte jazyk",
@@ -115,5 +116,12 @@
     "Internship.State.Failed": "Neobhájená",
     "Internship.TableHeader.CompanyName": "Firma",
     "Internship.TableHeader.FirstName": "Meno",
-    "Internship.TableHeader.LastName": "Priezvisko"
+    "Internship.TableHeader.LastName": "Priezvisko",
+    "Internship.TableHeader.Actions": "Akcie",
+    "Internship.Edit": "Upraviť prax",
+    "Internship.EditDescription": "Aktualizujte údaje o praxi",
+    "Internship.LoadError": "Chyba pri načítaní praxe",
+    "Internship.UpdateSuccess": "Prax bola úspešne aktualizovaná",
+    "Actions.Saving": "Ukladám...",
+    "Actions.Back": "Späť"
 }
