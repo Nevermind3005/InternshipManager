@@ -13,9 +13,9 @@ namespace server.Controllers;
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Authorize]
-public class UsersController(IUserService userService, IAuthService authService) : ControllerBase
+public class UserController(IUserService userService, IAuthService authService) : ControllerBase
 {
-    [HttpGet("me/personal-information")]
+    [HttpGet("me/personalInformation")]
     public async Task<ActionResult<PersonalInformationResDto>> GetPersonalInformation()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -35,7 +35,7 @@ public class UsersController(IUserService userService, IAuthService authService)
         return Ok(result.Value);
     }
 
-    [HttpPut("me/personal-information")]
+    [HttpPut("me/personalInformation")]
     public async Task<ActionResult> UpdatePersonalInformation(UpdatePersonalInformationReqDto request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -55,7 +55,7 @@ public class UsersController(IUserService userService, IAuthService authService)
         return NoContent();
     }
 
-    [HttpPost("me/change-password")]
+    [HttpPost("me/changePassword")]
     public async Task<ActionResult> ChangePassword(ChangePasswordReqDto request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

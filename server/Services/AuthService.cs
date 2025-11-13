@@ -207,9 +207,7 @@ public class AuthService(
             return Result.Failure(Error.InvalidCredentials);
         }
 
-        var passwordsMatch = BCrypt.Net.BCrypt.EnhancedVerify(request.NewPassword, user.PasswordHash);
-
-        if (passwordsMatch)
+        if (request.NewPassword == request.CurrentPassword)
         {
             return Result.Failure(Error.BadRequest);
         }

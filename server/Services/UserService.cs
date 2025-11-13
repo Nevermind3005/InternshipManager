@@ -17,7 +17,6 @@ public class UserService(
     {
         var user = await context.Users
             .AsNoTracking()
-            .Include(u => u.Address)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user is null)
@@ -25,17 +24,7 @@ public class UserService(
             return Result<PersonalInformationResDto>.Failure(Error.NotFound);
         }
 
-        var address = user.Address is null
-            ? new AddressResDto()
-            : mapper.Map<AddressResDto>(user.Address);
-
-        var response = new PersonalInformationResDto
-        {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Phone = user.Phone ?? string.Empty,
-            Address = address
-        };
+        var response = mapper.Map<PersonalInformationResDto>(user);
 
         return Result<PersonalInformationResDto>.Success(response);
     }
@@ -43,7 +32,6 @@ public class UserService(
     public async Task<Result> UpdatePersonalInformationAsync(Guid userId, UpdatePersonalInformationReqDto request)
     {
         var user = await context.Users
-            .Include(u => u.Address)
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user is null)
