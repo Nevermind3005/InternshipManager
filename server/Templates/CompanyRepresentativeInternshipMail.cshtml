@@ -1,0 +1,63 @@
+@model server.Models.Mail.CompanyRepresentativeInternshipMail
+
+<!DOCTYPE html>
+<html lang="sk">
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; }
+            .header { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+            .info-box {
+                padding: 15px;
+                margin: 15px 0;
+                background: #f4f4f4;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+            }
+            .info-row { margin: 10px 0; }
+            .info-label { font-weight: bold; display: inline-block; width: 150px; }
+            .button {
+                display: inline-block;
+                padding: 12px 24px;
+                margin: 20px 0;
+                background: #007bff;
+                color: white;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: bold;
+            }
+            .button:hover { background: #0056b3; }
+            .note { font-size: 14px; color: #666; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">Dobrý deň, @Model.RepresentativeFirstName @Model.RepresentativeLastName!</div>
+
+            <p>Boli ste upozornení na novú stáž v systéme <strong>InternshipManager</strong>.</p>
+
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">Názov stáže:</span>
+                    <span>@Model.InternshipName</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Študent:</span>
+                    <span>@Model.StudentFirstName @Model.StudentLastName</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email študenta:</span>
+                    <span>@Model.StudentEmail</span>
+                </div>
+            </div>
+
+            <p>Kliknite na tlačidlo nižšie pre zobrazenie detailov stáže a informácií o študentovi:</p>
+
+            <a href="@Model.InternshipLink" class="button">Zobraziť detaily stáže</a>
+
+            <p class="note">Tento odkaz je unikátny a priamo vás prevedie na formulár so všetkými potrebnými informáciami.</p>
+        </div>
+    </body>
+</html>
+
