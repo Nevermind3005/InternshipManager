@@ -24,10 +24,10 @@ const formSchema = z.object({
     name: z
         .string()
         .nonempty()
-        .max(120),
+        .max(128),
     description: z
         .string()
-        .max(128),
+        .max(1024),
     startDate: z
         .date(),
     endDate: z
@@ -36,6 +36,9 @@ const formSchema = z.object({
         .string(),
     semester: z
         .string(),
+}).refine((data) => data.endDate > data.startDate, {
+    message: "Internship.EndAfterStart",
+    path: ["endDate"]
 });
 
 interface EditInternshipFormProps {

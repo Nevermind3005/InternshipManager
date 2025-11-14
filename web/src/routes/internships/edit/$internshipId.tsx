@@ -3,6 +3,9 @@ import EditInternshipForm from '@/components/forms/EditInternshipForm';
 
 export const Route = createFileRoute('/internships/edit/$internshipId')({
     component: RouteComponent,
+    loader: () => ({
+        crumb: 'Edit'
+    })
 });
 
 function RouteComponent() {
