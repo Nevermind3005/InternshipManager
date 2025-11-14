@@ -13,6 +13,6 @@ export interface IInternshipRes {
   student: IUserRes,
   companyRepresentativeId: string,
   companyRepresentative: IUserRes,
-  company: ICompanyRes
-  companyId: IUserRes
+  company: ICompanyRes,
+  companyId: string
 }

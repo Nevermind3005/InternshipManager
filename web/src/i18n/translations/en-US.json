@@ -47,6 +47,7 @@
     "Errors.Common.BadRequest":" The requested operation was invalid.",
     "Actions.Loading": "Loading",
     "Actions.Save": "Save",
+    "Actions.Cancel": "Cancel",
     "Roles.Student.Label": "Student",
     "Roles.Student.Blurb": "Log activities and track approvals.",
     "Roles.Teacher.Label": "Teacher",
@@ -118,5 +119,12 @@
     "Internship.State.Failed": "Failed",
     "Internship.TableHeader.CompanyName": "Company",
     "Internship.TableHeader.FirstName": "FirstName",
-    "Internship.TableHeader.LastName": "LastName"
+    "Internship.TableHeader.LastName": "LastName",
+    "Internship.TableHeader.Actions": "Actions",
+    "Internship.Edit": "Edit internship",
+    "Internship.EditDescription": "Update internship details",
+    "Internship.LoadError": "Error loading internship",
+    "Internship.UpdateSuccess": "Internship updated successfully",
+    "Actions.Saving": "Saving...",
+    "Actions.Back": "Back"
 }
