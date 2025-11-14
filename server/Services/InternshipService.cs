@@ -16,6 +16,11 @@ public class InternshipService(
 {
     public async Task<Result<InternshipResDto>> CreateInternshipAsync(InternshipReqDto request)
     {
+        if (!HasValidDateRange(request))
+        {
+            return Result<InternshipResDto>.Failure(Error.BadRequest);
+        }
+        
         // Find company with corresponding id and representative
         var company = await context.Companies
             .Where(c => c.Id == request.CompanyId &&
@@ -118,8 +123,15 @@ public class InternshipService(
 
     public async Task<Result<InternshipResDto>> UpdateInternshipAsync(Guid id, InternshipReqDto request)
     {
+        if (!HasValidDateRange(request))
+        {
+            return Result<InternshipResDto>.Failure(Error.BadRequest);
+        }
+        
         var internship = await context.Internships
             .Include(i => i.Company)
+            .Include(i => i.Student)
+            .Include(i => i.CompanyRepresentative)
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (internship is null)
@@ -155,4 +167,7 @@ public class InternshipService(
         
         return Result<InternshipResDto>.Success(response);
     }
+    private static bool HasValidDateRange(InternshipReqDto request) =>
+        request.EndDate > request.StartDate;
+
 }
