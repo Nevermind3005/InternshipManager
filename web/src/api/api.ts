@@ -14,7 +14,9 @@ export const API = {
         },
         Internship: {
             Create: () => 'Internship',
-            GetById: (id: string) => `Internship/${id}`
+            GetAll: () => 'Internship',
+            GetById: (id: string) => `Internship/${id}`,
+            Update: (id: string) => `Internship/${id}`
         },
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',

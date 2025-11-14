@@ -56,7 +56,7 @@ public class InternshipController(
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = nameof(ERole.Student))]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
     public async Task<ActionResult<InternshipResDto>> GetInternshipsById(Guid id)
     {
         var result = await internshipService.GetInternshipByIdAsync(id);
@@ -70,7 +70,7 @@ public class InternshipController(
     }
     
     [HttpGet]
-    [Authorize(Roles = nameof(ERole.Student))]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
     public async Task<ActionResult<PagedResult<InternshipResDto>>> GetInternships(
             [FromQuery] InternshipFilter filter,
             [FromQuery] int skip = 0,
@@ -78,6 +78,20 @@ public class InternshipController(
         )
     {
         var result = await internshipService.GetInternshipsAsync(filter, skip, limit);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    public async Task<ActionResult<InternshipResDto>> UpdateInternshipAsync(Guid id, InternshipReqDto request)
+    {
+        var result = await internshipService.UpdateInternshipAsync(id, request);
 
         if (result.IsFailure)
         {

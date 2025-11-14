@@ -1,28 +1,19 @@
-"use client";
-
 import * as React from "react";
 import {
     flexRender,
     getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
     useReactTable,
+    type CellContext,
+    type ColumnDef,
     type ColumnFiltersState,
-    type SortingState,
-    type VisibilityState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ChevronDown, PencilIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -34,163 +25,179 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import type { IInternshipRes } from "@/models/internship/IInternshipRes";
+import { formatDateOnlyString } from "@/lib/foundationUtils";
+import { FormattedMessage } from "react-intl";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useNavigate } from "@tanstack/react-router";
+import { useGetAllInternships } from "@/api/hooks/useGetAllInternships";
 
-const data: Payment[] = [
-    {
-        id: "m5gr84i9",
-        amount: 316,
-        status: "success",
-        email: "ken99@example.com",
-    },
-    {
-        id: "3u1reuv4",
-        amount: 242,
-        status: "success",
-        email: "Abe45@example.com",
-    },
-    {
-        id: "derv1ws0",
-        amount: 837,
-        status: "processing",
-        email: "Monserrat44@example.com",
-    },
-    {
-        id: "5kma53ae",
-        amount: 874,
-        status: "success",
-        email: "Silas22@example.com",
-    },
-    {
-        id: "bhqecj4p",
-        amount: 721,
-        status: "failed",
-        email: "carmella@example.com",
-    },
-];
+const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
+    const { role } = useAuthStore.getState();
 
-export type Payment = {
-  id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-}
-
-export const columns: ColumnDef<Payment>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("status")}</div>
-        ),
-    },
-    {
-        accessorKey: "email",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-          Email
-                    <ArrowUpDown />
-                </Button>
-            );
+    const columns: ColumnDef<IInternshipRes>[] = [
+        {
+            accessorKey: "name",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.Name"/>
+                );
+            },
+            cell: ({ row }) => <div className="">{row.getValue("name")}</div>,
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-    },
-    {
-        accessorKey: "amount",
-        header: () => <div className="text-right">Amount</div>,
-        cell: ({ row }) => {
-            const amount = parseFloat(row.getValue("amount"));
-
-            // Format the amount as a dollar amount
-            const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-            }).format(amount);
-
-            return <div className="text-right font-medium">{formatted}</div>;
+        {
+            accessorKey: "description",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.Description"/>
+                );
+            },
+            cell: ({ row }) => <div className="">{row.getValue("description")}</div>,
         },
-    },
-    {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-            const payment = row.original;
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
+        ...(role === "InternshipHandler" || role === "Company" ? [
+            {
+                accessorFn: (row: IInternshipRes) => row.student?.firstName,
+                accessorKey: "firstName",
+                header: () => {
+                    return (
+                        <FormattedMessage id="Internship.TableHeader.FirstName"/>
+                    );
+                },
+                cell: ({ row }: CellContext<IInternshipRes, unknown>) => <div className="">{row.getValue("firstName")}</div>,
+            },
+            {
+                accessorFn: (row: IInternshipRes) => row.student?.lastName,
+                accessorKey: "lastName",
+                header: () => {
+                    return (
+                        <FormattedMessage id="Internship.TableHeader.LastName"/>
+                    );
+                },
+                cell: ({ row }: CellContext<IInternshipRes, unknown>) => <div className="">{row.getValue("lastName")}</div>,
+            },
+        ] : []),
+        {
+            accessorFn: row => row.company?.name,
+            accessorKey: "companyName",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.CompanyName"/>
+                );
+            },
+            cell: ({ row }) => <div className="">{row.getValue("companyName")}</div>,
+        },
+        {
+            accessorKey: "startDate",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.StartDate"/>
+                );
+            },
+            cell: ({ row }) => {
+                const dateValue: string = row.getValue("startDate");
+                const formatted = formatDateOnlyString(dateValue);
+                return <div>{formatted}</div>;
+            },
+        },
+        {
+            accessorKey: "endDate",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.EndDate"/>
+                );
+            },
+            cell: ({ row }) => {
+                const dateValue: string = row.getValue("endDate");
+                const formatted = formatDateOnlyString(dateValue);
+                return <div>{formatted}</div>;
+            },
+        },
+        {
+            accessorKey: "year",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.Year"/>
+                );
+            },
+            cell: ({ row }) => <div className="">{row.getValue("year")}</div>,
+        },
+        {
+            accessorKey: "semester",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.Semester"/>
+                );
+            },
+            cell: ({ row }) => <div className=""><FormattedMessage id={`Internship.Semester.${row.getValue("semester")}`}/></div>,
+        },
+        {
+            accessorKey: "state",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.State"/>
+                );
+            },
+            cell: ({ row }) => <div className=""><FormattedMessage id={`Internship.State.${row.getValue("state")}`}/></div>,
+        },
+        ...(role === "InternshipHandler" ? [
+            {
+                id: "actions",
+                header: () => {
+                    return (
+                        <FormattedMessage id="Internship.TableHeader.Actions"/>
+                    );
+                },
+                cell: ({ row }: CellContext<IInternshipRes, unknown>) => (
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate({ to: `/internships/edit/${row.original.id}` })}
+                            className="h-8 w-8 p-0"
                         >
-              Copy payment ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    },
-];
+                            <PencilIcon className="h-4 w-4" />
+                            <span className="sr-only">
+                                <FormattedMessage id="Internship.Edit" />
+                            </span>
+                        </Button>
+                    </div>
+                ),
+            },
+        ] : []),
+    ];
+    return columns;
+};
 
 export function DataTableDemo() {
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    );
-    const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-    const [rowSelection, setRowSelection] = React.useState({});
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
+
+    const navigate = useNavigate();
+
+    const { data: companies } = useGetAllInternships({
+        page: pagination.pageIndex + 1,
+        pageSize: 10,
+        filter: Object.fromEntries(
+            columnFilters.map(f => [f.id, String(f.value ?? "")])
+        ),
+    });
+
+    const columns = getTableColumns(navigate);
+
+    const totalPages = companies ? Math.ceil(companies.totalCount / pagination.pageSize) : 0;
 
     const table = useReactTable({
-        data,
+        data: companies?.items ?? [],
         columns,
-        onSortingChange: setSorting,
+        pageCount: companies ? Math.ceil(companies.totalCount / companies.pageSize) : 0,
+        manualPagination: true,
+        manualFiltering: true,
         onColumnFiltersChange: setColumnFilters,
+        onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,
         state: {
-            sorting,
             columnFilters,
-            columnVisibility,
-            rowSelection,
+            pagination,
         },
     });
 
@@ -198,10 +205,10 @@ export function DataTableDemo() {
         <div className="w-full">
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filter emails..."
-                    value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+                    placeholder="Filter names..."
+                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
-                        table.getColumn("email")?.setFilterValue(event.target.value)
+                        table.getColumn("name")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
@@ -258,6 +265,8 @@ export function DataTableDemo() {
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-900"
+                                    onClick={() => navigate({ to: `/internships/detail/${row.original.id}` })}
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
@@ -283,28 +292,50 @@ export function DataTableDemo() {
                 </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="text-muted-foreground flex-1 text-sm">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
-                </div>
-                <div className="space-x-2">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.setPageIndex(0)}
+                    disabled={pagination.pageIndex === 0}
+                >
+                    {"<<"}
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={pagination.pageIndex === 0}
+                >
+    Previous
+                </Button>
+
+                {Array.from({ length: totalPages }).map((_, i) => (
                     <Button
-                        variant="outline"
+                        key={i}
+                        variant={i === pagination.pageIndex ? "default" : "outline"}
                         size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
+                        onClick={() => table.setPageIndex(i)}
                     >
-            Previous
+                        {i + 1}
                     </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-            Next
-                    </Button>
-                </div>
+                ))}
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={pagination.pageIndex >= totalPages - 1}
+                >
+    Next
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.setPageIndex(totalPages - 1)}
+                    disabled={pagination.pageIndex >= totalPages - 1}
+                >
+                    {">>"}
+                </Button>
             </div>
         </div>
     );
