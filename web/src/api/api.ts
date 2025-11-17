@@ -20,6 +20,8 @@ export const API = {
         },
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',
+            PersonalInformationInternshipHandler: () => 'User/me/personalInformation/internshipHandler',
+            PersonalInformationCompanyRepresentative: () => 'User/me/personalInformation/companyRepresentative',
             ChangePassword: () => 'User/me/changePassword'
         },
         Company: {
@@ -27,5 +29,6 @@ export const API = {
             GetById: (id: string) => `Company/${id}`,
             GetAll: () => 'Company',
             GetRepresentativeByEmail: (id: string, email: string) => `Company/${id}/representative/${email}`
-        }
+        },
+    }
 };

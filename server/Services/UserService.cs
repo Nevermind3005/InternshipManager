@@ -56,4 +56,41 @@ public class UserService(
 
         return Result.Success();
     }
+
+    public async Task<Result> UpdateInternshipHandlerPersonalInfoAsync(Guid userId, UpdateInternshipHandlerPersonalInfoReqDto request)
+    {
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return Result.Failure(Error.NotFound);
+        }
+
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+
+        await context.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result> UpdateCompanyRepresentativePersonalInfoAsync(Guid userId, UpdateCompanyRepresentativePersonalInfoReqDto request)
+    {
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return Result.Failure(Error.NotFound);
+        }
+
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.Phone = request.Phone;
+
+        await context.SaveChangesAsync();
+
+        return Result.Success();
+    }
 }

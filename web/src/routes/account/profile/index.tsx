@@ -3,9 +3,11 @@ import { FormattedMessage } from 'react-intl';
 import ChangePersonalInformationForm from '@/components/forms/ChangePersonalInformationForm';
 import ChangePasswordForm from '@/components/forms/ChangePasswordForm';
 import ProfileSummaryCard from '@/components/profile/ProfileSummaryCard';
+import { requireRole } from '@/lib/authGuard';
 
 export const Route = createFileRoute('/account/profile/')({
     component: RouteComponent,
+    beforeLoad: requireRole(['Student', 'InternshipHandler', 'Company']),
     loader: () => ({
         crumb: 'Profile'
     })

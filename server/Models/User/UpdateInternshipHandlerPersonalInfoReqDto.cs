@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using server.Models;
 
 namespace server.Models.User;
 
-public class PersonalInformationResDto
+public class UpdateInternshipHandlerPersonalInfoReqDto
 {
     [Required]
     [MaxLength(128)]
@@ -12,9 +11,5 @@ public class PersonalInformationResDto
     [Required]
     [MaxLength(128)]
     public string LastName { get; set; } = string.Empty;
-    
-    [MaxLength(20)]
-    public string? Phone { get; set; }
-    
-    public AddressResDto? Address { get; set; }
 }
+

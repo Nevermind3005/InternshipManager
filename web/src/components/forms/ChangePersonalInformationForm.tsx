@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,71 +13,118 @@ import { toast } from "sonner";
 import { useGetPersonalInformation } from "@/api/hooks/useGetPersonalInformation";
 import { useUpdatePersonalInformation } from "@/api/hooks/useUpdatePersonalInformation";
 import type { IUpdatePersonalInformationReq } from "@/models/user/IUpdatePersonalInformationReq";
+import type { IUpdateInternshipHandlerPersonalInfoReq } from "@/models/user/IUpdateInternshipHandlerPersonalInfoReq";
+import type { IUpdateCompanyRepresentativePersonalInfoReq } from "@/models/user/IUpdateCompanyRepresentativePersonalInfoReq";
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
+import { useAuthStore } from "@/store/useAuthStore";
 
-const formSchema = z.object({
-    firstName: z
-        .string()
-        .nonempty("First name is required")
-        .max(128, "First name is too long"),
-    lastName: z
-        .string()
-        .nonempty("Last name is required")
-        .max(128, "Last name is too long"),
-    phone: z
-        .string()
-        .nonempty("Phone number is required")
-        .max(20, "Phone number is too long"),
-    city: z
-        .string()
-        .nonempty("City is required")
-        .max(128, "City name is too long"),
-    street: z
-        .string()
-        .nonempty("Street is required")
-        .max(128, "Street name is too long"),
-    buildingNumber: z
-        .string()
-        .nonempty("Building number is required")
-        .max(16, "Building number is too long"),
-    zipCode: z
-        .string()
-        .nonempty("ZIP code is required")
-        .max(16, "ZIP code is too long")
-});
+const createFormSchema = (role: string) => {
+    const baseSchema = {
+        firstName: z
+            .string()
+            .nonempty("First name is required")
+            .max(128, "First name is too long"),
+        lastName: z
+            .string()
+            .nonempty("Last name is required")
+            .max(128, "Last name is too long"),
+    };
+
+    if (role === 'InternshipHandler') {
+        // InternshipHandler: only firstName and lastName
+        return z.object(baseSchema);
+    } else if (role === 'Company') {
+        // Company Representative: firstName, lastName, and phone
+        return z.object({
+            ...baseSchema,
+            phone: z
+                .string()
+                .nonempty("Phone number is required")
+                .max(20, "Phone number is too long"),
+        });
+    } else {
+        // Student: all fields including address
+        return z.object({
+            ...baseSchema,
+            phone: z
+                .string()
+                .nonempty("Phone number is required")
+                .max(20, "Phone number is too long"),
+            city: z
+                .string()
+                .nonempty("City is required")
+                .max(128, "City name is too long"),
+            street: z
+                .string()
+                .nonempty("Street is required")
+                .max(128, "Street name is too long"),
+            buildingNumber: z
+                .string()
+                .nonempty("Building number is required")
+                .max(16, "Building number is too long"),
+            zipCode: z
+                .string()
+                .nonempty("ZIP code is required")
+                .max(16, "ZIP code is too long")
+        });
+    }
+};
 
 const ChangePersonalInformationForm = () => {
     const navigate = useNavigate();
     const intl = useIntl();
+    const role = useAuthStore((state) => state.role);
     const { data: personalInformation, isLoading, isError, error, refetch } = useGetPersonalInformation();
     const { mutate: updatePersonalInformation, isPending } = useUpdatePersonalInformation();
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
+    const formSchema = useMemo(() => createFormSchema(role), [role]);
+
+    const getDefaultValues = () => {
+        const base: any = {
             firstName: "",
             lastName: "",
-            phone: "",
-            city: "",
-            street: "",
-            buildingNumber: "",
-            zipCode: ""
+        };
+        
+        if (role !== 'InternshipHandler') {
+            base.phone = "";
         }
+        
+        if (role === 'Student') {
+            base.city = "";
+            base.street = "";
+            base.buildingNumber = "";
+            base.zipCode = "";
+        }
+        
+        return base;
+    };
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: getDefaultValues()
     });
 
     useEffect(() => {
         if (personalInformation) {
-            form.reset({
+            const resetData: any = {
                 firstName: personalInformation.firstName,
                 lastName: personalInformation.lastName,
-                phone: personalInformation.phone,
-                city: personalInformation.address?.city ?? "",
-                street: personalInformation.address?.street ?? "",
-                buildingNumber: personalInformation.address?.buildingNumber ?? "",
-                zipCode: personalInformation.address?.zipCode ?? ""
-            });
+            };
+            
+            if (role !== 'InternshipHandler') {
+                resetData.phone = personalInformation.phone ?? "";
+            }
+            
+            if (role === 'Student') {
+                resetData.city = personalInformation.address?.city ?? "";
+                resetData.street = personalInformation.address?.street ?? "";
+                resetData.buildingNumber = personalInformation.address?.buildingNumber ?? "";
+                resetData.zipCode = personalInformation.address?.zipCode ?? "";
+            }
+            
+            form.reset(resetData);
         }
-    }, [personalInformation, form]);
+    }, [personalInformation, form, role]);
 
     useEffect(() => {
         if (isError && error) {
@@ -86,17 +133,34 @@ const ChangePersonalInformationForm = () => {
     }, [isError, error, intl]);
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
-        const payload: IUpdatePersonalInformationReq = {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            phone: data.phone,
-            address: {
-                city: data.city,
-                street: data.street,
-                buildingNumber: data.buildingNumber,
-                zipCode: data.zipCode
-            }
-        };
+        let payload: IUpdatePersonalInformationReq | IUpdateInternshipHandlerPersonalInfoReq | IUpdateCompanyRepresentativePersonalInfoReq;
+
+        if (role === 'InternshipHandler') {
+            payload = {
+                firstName: data.firstName,
+                lastName: data.lastName,
+            } as IUpdateInternshipHandlerPersonalInfoReq;
+        } else if (role === 'Company') {
+            payload = {
+                firstName: data.firstName,
+                lastName: data.lastName,
+                phone: (data as any).phone,
+            } as IUpdateCompanyRepresentativePersonalInfoReq;
+        } else {
+            // Student
+            const studentData = data as any;
+            payload = {
+                firstName: studentData.firstName,
+                lastName: studentData.lastName,
+                phone: studentData.phone,
+                address: {
+                    city: studentData.city,
+                    street: studentData.street,
+                    buildingNumber: studentData.buildingNumber,
+                    zipCode: studentData.zipCode
+                }
+            } as IUpdatePersonalInformationReq;
+        }
 
         updatePersonalInformation(payload, {
             onSuccess: () => {
@@ -204,126 +268,132 @@ const ChangePersonalInformationForm = () => {
                             </Field>
                         </Field>
 
-                        <Controller
-                            name="phone"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="EditProfileForm_Phone">
-                                        <FormattedMessage id="Profile.PhoneNumber" />
-                                    </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id="EditProfileForm_Phone"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="+421xxxxxxxxx"
-                                        autoComplete="tel"
-                                        disabled={isPending}
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
-                                    )}
+                        {role !== 'InternshipHandler' && (
+                            <Controller
+                                name="phone"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="EditProfileForm_Phone">
+                                            <FormattedMessage id="Profile.PhoneNumber" />
+                                        </FieldLabel>
+                                        <Input
+                                            {...field}
+                                            id="EditProfileForm_Phone"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder="+421xxxxxxxxx"
+                                            autoComplete="tel"
+                                            disabled={isPending}
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
+                                )}
+                            />
+                        )}
+
+                        {role === 'Student' && (
+                            <>
+                                <Field>
+                                    <Field className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <Controller
+                                            name="city"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="EditProfileForm_City">
+                                                        <FormattedMessage id="Profile.City" />
+                                                    </FieldLabel>
+                                                    <Input
+                                                        {...field}
+                                                        id="EditProfileForm_City"
+                                                        aria-invalid={fieldState.invalid}
+                                                        placeholder="Nitra"
+                                                        autoComplete="address-level2"
+                                                        disabled={isPending}
+                                                    />
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
+                                            )}
+                                        />
+                                        <Controller
+                                            name="street"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="EditProfileForm_Street">
+                                                        <FormattedMessage id="Profile.Street" />
+                                                    </FieldLabel>
+                                                    <Input
+                                                        {...field}
+                                                        id="EditProfileForm_Street"
+                                                        aria-invalid={fieldState.invalid}
+                                                        placeholder="Štefánikova trieda"
+                                                        autoComplete="address-line1"
+                                                        disabled={isPending}
+                                                    />
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
+                                            )}
+                                        />
+                                    </Field>
                                 </Field>
-                            )}
-                        />
 
-                        <Field>
-                            <Field className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <Controller
-                                    name="city"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="EditProfileForm_City">
-                                                <FormattedMessage id="Profile.City" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="EditProfileForm_City"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Nitra"
-                                                autoComplete="address-level2"
-                                                disabled={isPending}
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
+                                <Field>
+                                    <Field className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <Controller
+                                            name="buildingNumber"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="EditProfileForm_BuildingNumber">
+                                                        <FormattedMessage id="Profile.BuildingNumber" />
+                                                    </FieldLabel>
+                                                    <Input
+                                                        {...field}
+                                                        id="EditProfileForm_BuildingNumber"
+                                                        aria-invalid={fieldState.invalid}
+                                                        placeholder="77/54"
+                                                        autoComplete="off"
+                                                        disabled={isPending}
+                                                    />
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
                                             )}
-                                        </Field>
-                                    )}
-                                />
-                                <Controller
-                                    name="street"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="EditProfileForm_Street">
-                                                <FormattedMessage id="Profile.Street" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="EditProfileForm_Street"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="Štefánikova trieda"
-                                                autoComplete="address-line1"
-                                                disabled={isPending}
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
+                                        />
+                                        <Controller
+                                            name="zipCode"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="EditProfileForm_ZipCode">
+                                                        <FormattedMessage id="Profile.PostalCode" />
+                                                    </FieldLabel>
+                                                    <Input
+                                                        {...field}
+                                                        id="EditProfileForm_ZipCode"
+                                                        aria-invalid={fieldState.invalid}
+                                                        placeholder="949 01"
+                                                        autoComplete="postal-code"
+                                                        disabled={isPending}
+                                                    />
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
                                             )}
-                                        </Field>
-                                    )}
-                                />
-                            </Field>
-                        </Field>
-
-                        <Field>
-                            <Field className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <Controller
-                                    name="buildingNumber"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="EditProfileForm_BuildingNumber">
-                                                <FormattedMessage id="Profile.BuildingNumber" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="EditProfileForm_BuildingNumber"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="77/54"
-                                                autoComplete="off"
-                                                disabled={isPending}
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                                <Controller
-                                    name="zipCode"
-                                    control={form.control}
-                                    render={({ field, fieldState }) => (
-                                        <Field data-invalid={fieldState.invalid}>
-                                            <FieldLabel htmlFor="EditProfileForm_ZipCode">
-                                                <FormattedMessage id="Profile.PostalCode" />
-                                            </FieldLabel>
-                                            <Input
-                                                {...field}
-                                                id="EditProfileForm_ZipCode"
-                                                aria-invalid={fieldState.invalid}
-                                                placeholder="949 01"
-                                                autoComplete="postal-code"
-                                                disabled={isPending}
-                                            />
-                                            {fieldState.invalid && (
-                                                <FieldError errors={[fieldState.error]} />
-                                            )}
-                                        </Field>
-                                    )}
-                                />
-                            </Field>
-                        </Field>
+                                        />
+                                    </Field>
+                                </Field>
+                            </>
+                        )}
 
                         <Field>
                             <div className="flex flex-col gap-3 md:flex-row">

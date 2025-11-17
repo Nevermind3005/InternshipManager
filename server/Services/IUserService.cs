@@ -7,4 +7,6 @@ public interface IUserService
 {
     Task<Result<PersonalInformationResDto>> GetPersonalInformationAsync(Guid userId);
     Task<Result> UpdatePersonalInformationAsync(Guid userId, UpdatePersonalInformationReqDto request);
+    Task<Result> UpdateInternshipHandlerPersonalInfoAsync(Guid userId, UpdateInternshipHandlerPersonalInfoReqDto request);
+    Task<Result> UpdateCompanyRepresentativePersonalInfoAsync(Guid userId, UpdateCompanyRepresentativePersonalInfoReqDto request);
 }
