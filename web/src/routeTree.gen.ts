@@ -13,7 +13,6 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ManagementRouteImport } from './routes/management'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EditProfileRouteImport } from './routes/editProfile'
-import { Route as CompanyFormRouteImport } from './routes/companyForm'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
 import { Route as InternshipsRouteRouteImport } from './routes/internships/route'
 import { Route as AccountRouteRouteImport } from './routes/account/route'
@@ -43,11 +42,6 @@ const LoginRoute = LoginRouteImport.update({
 const EditProfileRoute = EditProfileRouteImport.update({
   id: '/editProfile',
   path: '/editProfile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompanyFormRoute = CompanyFormRouteImport.update({
-  id: '/companyForm',
-  path: '/companyForm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
@@ -108,7 +102,6 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRouteRouteWithChildren
   '/internships': typeof InternshipsRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
-  '/companyForm': typeof CompanyFormRoute
   '/editProfile': typeof EditProfileRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
@@ -123,7 +116,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
-  '/companyForm': typeof CompanyFormRoute
   '/editProfile': typeof EditProfileRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
@@ -141,7 +133,6 @@ export interface FileRoutesById {
   '/account': typeof AccountRouteRouteWithChildren
   '/internships': typeof InternshipsRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
-  '/companyForm': typeof CompanyFormRoute
   '/editProfile': typeof EditProfileRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
@@ -160,7 +151,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/internships'
     | '/changeDefaultPassword'
-    | '/companyForm'
     | '/editProfile'
     | '/login'
     | '/management'
@@ -175,7 +165,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/changeDefaultPassword'
-    | '/companyForm'
     | '/editProfile'
     | '/login'
     | '/management'
@@ -192,7 +181,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/internships'
     | '/changeDefaultPassword'
-    | '/companyForm'
     | '/editProfile'
     | '/login'
     | '/management'
@@ -210,7 +198,6 @@ export interface RootRouteChildren {
   AccountRouteRoute: typeof AccountRouteRouteWithChildren
   InternshipsRouteRoute: typeof InternshipsRouteRouteWithChildren
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
-  CompanyFormRoute: typeof CompanyFormRoute
   EditProfileRoute: typeof EditProfileRoute
   LoginRoute: typeof LoginRoute
   ManagementRoute: typeof ManagementRoute
@@ -245,13 +232,6 @@ declare module '@tanstack/react-router' {
       path: '/editProfile'
       fullPath: '/editProfile'
       preLoaderRoute: typeof EditProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/companyForm': {
-      id: '/companyForm'
-      path: '/companyForm'
-      fullPath: '/companyForm'
-      preLoaderRoute: typeof CompanyFormRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/changeDefaultPassword': {
@@ -363,7 +343,6 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRouteRoute: AccountRouteRouteWithChildren,
   InternshipsRouteRoute: InternshipsRouteRouteWithChildren,
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
-  CompanyFormRoute: CompanyFormRoute,
   EditProfileRoute: EditProfileRoute,
   LoginRoute: LoginRoute,
   ManagementRoute: ManagementRoute,
