@@ -4,11 +4,14 @@ import { useAuthStore } from '@/store/useAuthStore';
 export const Route = createFileRoute('/internships')({
     component: RouteComponent,
     beforeLoad: ({ location }) => {
-        // Allow anonymous access to the view route
-        if (location.pathname.startsWith('/internships/view/')) {
-            return; // Skip role check for view route
+        // Allow anonymous access ONLY to the specific view route with an ID
+        // Pattern: /internships/view/{id} (and nothing deeper)
+        const viewRoutePattern = /^\/internships\/view\/[^/]+\/?$/;
+        if (viewRoutePattern.test(location.pathname)) {
+            return; // Skip role check for public view route
         }
-        // For other routes, require authentication
+        
+        // For all other routes, require authentication
         const { role } = useAuthStore.getState();
         const allowedRoles = ['Student', 'InternshipHandler', 'Company'];
         if (!allowedRoles.includes(role)) {

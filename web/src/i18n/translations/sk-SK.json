@@ -44,6 +44,9 @@
     "Errors.Common.NotFound": "Požadovaný zdroj nebol nájdený",
     "Errors.Auth.InvalidCredentials": "Email alebo heslo sú nesprávne.",
     "Errors.Auth.InvalidAuthToken": "Poskytnutý autentifikačný token je neplatný.",
+    "Errors.Auth.Unauthorized": "Nie ste oprávnený vykonať túto akciu.",
+    "Errors.Auth.TokenExpired": "Schvaľovací token vypršal.",
+    "Errors.Auth.TokenAlreadyUsed": "Schvaľovací token bol už použitý.",
     "Errors.Common.BadRequest": "Požadovaná operácia je neplatná.",
     "Actions.Loading": "Spracováva sa",
     "Actions.Save": "Uložiť",
@@ -133,5 +136,6 @@
     "Internship.Decline": "Odmietnuť",
     "Internship.ApproveSuccess": "Stáž bola úspešne schválená",
     "Internship.DeclineSuccess": "Stáž bola úspešne odmietnutá",
-    "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná"
+    "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná",
+    "Internship.TokenRequired": "Na vykonanie tejto akcie je potrebný platný schvaľovací token"
 }

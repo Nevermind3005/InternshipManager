@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using server.Data;
 using server.Entities;
 using server.Foundation.Result;
@@ -16,7 +17,8 @@ public class InternshipService(
     ApplicationDbContext context,
     IMapper mapper,
     IMailService mailService,
-    IConfiguration configuration
+    IConfiguration configuration,
+    ILogger<InternshipService> logger
     ) : IInternshipService
 {
     public async Task<Result<InternshipResDto>> CreateInternshipAsync(InternshipReqDto request)
@@ -76,6 +78,33 @@ public class InternshipService(
         var result = mapper.Map<InternshipResDto>(internship);
         
         return Result<InternshipResDto>.Success(result);
+    }
+
+    public async Task<Result<InternshipResDto>> GetInternshipByIdWithTokenAsync(Guid id, string? token)
+    {
+        // Validate token is provided
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return Result<InternshipResDto>.Failure(Error.Unauthorized);
+        }
+
+        // Verify token exists and is valid for this internship
+        var approvalToken = await context.InternshipApprovalTokens
+            .FirstOrDefaultAsync(t => t.InternshipId == id && t.Token == token);
+
+        if (approvalToken is null)
+        {
+            return Result<InternshipResDto>.Failure(Error.Unauthorized);
+        }
+
+        // Check if token is expired
+        if (approvalToken.ExpiresAt < DateTime.UtcNow)
+        {
+            return Result<InternshipResDto>.Failure(Error.TokenExpired);
+        }
+
+        // Token is valid, return the internship data
+        return await GetInternshipByIdAsync(id);
     }
 
     public async Task<Result<PagedResult<InternshipResDto>>> GetInternshipsAsync(InternshipFilter filter, int skip, int limit)
@@ -228,41 +257,63 @@ public class InternshipService(
 
     private async Task SendInternshipNotificationEmailAsync(Internship internship)
     {
-        var frontendUrl = configuration.GetRequiredSection("Consumers")["FrontendURL"];
-        if (string.IsNullOrEmpty(frontendUrl))
+        try
         {
-            // Log error or throw exception if frontend URL is not configured
-            return;
+            var frontendUrl = configuration.GetRequiredSection("Consumers")["FrontendURL"];
+            if (string.IsNullOrEmpty(frontendUrl))
+            {
+                logger.LogError(
+                    "Failed to send internship notification email for internship {InternshipId}: Frontend URL is not configured",
+                    internship.Id);
+                return;
+            }
+
+            // Generate approval token
+            var tokenResult = await GenerateApprovalTokenAsync(internship.Id);
+            if (tokenResult.IsFailure)
+            {
+                logger.LogError(
+                    "Failed to generate approval token for internship {InternshipId}: {Error}",
+                    internship.Id,
+                    tokenResult.Error.Description);
+                return;
+            }
+
+            var token = tokenResult.Value;
+            var internshipLink = $"{frontendUrl}/internships/view/{internship.Id}?token={token}";
+
+            var mailTemplateModel = new CompanyRepresentativeInternshipMail
+            {
+                RepresentativeFirstName = internship.CompanyRepresentative.FirstName,
+                RepresentativeLastName = internship.CompanyRepresentative.LastName,
+                InternshipName = internship.Name,
+                StudentFirstName = internship.Student.FirstName,
+                StudentLastName = internship.Student.LastName,
+                StudentEmail = internship.Student.Email,
+                InternshipLink = internshipLink
+            };
+
+            await mailService.SendMailTemplateAsync(
+                internship.CompanyRepresentative.Email,
+                "Nová stáž - InternshipManager",
+                "Templates/CompanyRepresentativeInternshipMail.cshtml",
+                mailTemplateModel
+            );
+
+            logger.LogInformation(
+                "Successfully sent internship notification email for internship {InternshipId} to {Email}",
+                internship.Id,
+                internship.CompanyRepresentative.Email);
         }
-
-        // Generate approval token
-        var tokenResult = await GenerateApprovalTokenAsync(internship.Id);
-        if (tokenResult.IsFailure)
+        catch (Exception ex)
         {
-            // Log error but don't fail the entire operation
-            return;
+            logger.LogError(
+                ex,
+                "Failed to send internship notification email for internship {InternshipId} to {Email}",
+                internship.Id,
+                internship.CompanyRepresentative.Email);
+            // Don't throw - email failure should not prevent internship creation
         }
-
-        var token = tokenResult.Value;
-        var internshipLink = $"{frontendUrl}/internships/view/{internship.Id}?token={token}";
-
-        var mailTemplateModel = new CompanyRepresentativeInternshipMail
-        {
-            RepresentativeFirstName = internship.CompanyRepresentative.FirstName,
-            RepresentativeLastName = internship.CompanyRepresentative.LastName,
-            InternshipName = internship.Name,
-            StudentFirstName = internship.Student.FirstName,
-            StudentLastName = internship.Student.LastName,
-            StudentEmail = internship.Student.Email,
-            InternshipLink = internshipLink
-        };
-
-        await mailService.SendMailTemplateAsync(
-            internship.CompanyRepresentative.Email,
-            "Nová stáž - InternshipManager",
-            "Templates/CompanyRepresentativeInternshipMail.cshtml",
-            mailTemplateModel
-        );
     }
 
     public async Task<Result<string>> GenerateApprovalTokenAsync(Guid internshipId)
@@ -275,10 +326,7 @@ public class InternshipService(
 
         // Generate a cryptographically secure random token
         var tokenBytes = new byte[32];
-        using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(tokenBytes);
-        }
+        System.Security.Cryptography.RandomNumberGenerator.Fill(tokenBytes);
         var token = Convert.ToBase64String(tokenBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
 
         var approvalToken = new InternshipApprovalToken
@@ -297,8 +345,14 @@ public class InternshipService(
         return Result<string>.Success(token);
     }
 
-    public async Task<Result<InternshipResDto>> ChangeStateWithTokenAsync(Guid internshipId, string token, EInternshipState newState)
+    public async Task<Result<InternshipResDto>> ChangeStateWithTokenAsync(Guid internshipId, string? token, EInternshipState newState)
     {
+        // Validate token is provided
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return Result<InternshipResDto>.Failure(Error.Unauthorized);
+        }
+
         // Find the token
         var approvalToken = await context.InternshipApprovalTokens
             .FirstOrDefaultAsync(t => t.InternshipId == internshipId && t.Token == token);
@@ -320,18 +374,33 @@ public class InternshipService(
             return Result<InternshipResDto>.Failure(Error.TokenAlreadyUsed);
         }
 
-        // Mark token as used
-        approvalToken.IsUsed = true;
-        approvalToken.UsedAt = DateTime.UtcNow;
-
-        // Change the internship state
-        var result = await ChangeStateAsync(internshipId, newState);
+        // Use transaction to ensure atomicity
+        await using var transaction = await context.Database.BeginTransactionAsync();
         
-        if (result.IsSuccess)
+        try
         {
-            await context.SaveChangesAsync();
-        }
+            // Change the internship state first
+            var result = await ChangeStateAsync(internshipId, newState);
+            
+            if (result.IsFailure)
+            {
+                await transaction.RollbackAsync();
+                return result;
+            }
 
-        return result;
+            // Only mark token as used if state change succeeded
+            approvalToken.IsUsed = true;
+            approvalToken.UsedAt = DateTime.UtcNow;
+            
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            
+            return result;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

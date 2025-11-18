@@ -18,7 +18,7 @@ interface InternshipViewProps {
 }
 
 export function InternshipView({ internshipId, token, showActions = true }: InternshipViewProps) {
-    const { data: internship, isLoading, isError, refetch } = useViewInternship(internshipId);
+    const { data: internship, isLoading, isError, refetch } = useViewInternship(internshipId, token);
     const intl = useIntl();
     const { mutate: approveInternship, isPending: isApproving } = useApproveInternship();
     const { mutate: declineInternship, isPending: isDeclining } = useDeclineInternship();

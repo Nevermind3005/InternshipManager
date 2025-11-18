@@ -44,6 +44,9 @@
     "Errors.Common.NotFound": "The requested resource was not found",
     "Errors.Auth.InvalidCredentials": "Email or password incorrect.",
     "Errors.Auth.InvalidAuthToken": "Provided auth token is invalid.",
+    "Errors.Auth.Unauthorized": "You are not authorized to perform this action.",
+    "Errors.Auth.TokenExpired": "The approval token has expired.",
+    "Errors.Auth.TokenAlreadyUsed": "The approval token has already been used.",
     "Errors.Common.BadRequest":" The requested operation was invalid.",
     "Actions.Loading": "Loading",
     "Actions.Save": "Save",
@@ -136,5 +139,6 @@
     "Internship.Decline": "Decline",
     "Internship.ApproveSuccess": "Internship approved successfully",
     "Internship.DeclineSuccess": "Internship declined successfully",
-    "Internship.ActionNotAvailable": "This internship has already been processed"
+    "Internship.ActionNotAvailable": "This internship has already been processed",
+    "Internship.TokenRequired": "A valid approval token is required to perform this action"
 }

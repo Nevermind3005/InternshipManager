@@ -17,9 +17,9 @@ public class PublicInternshipController(
     ) : ControllerBase
 {
     [HttpGet("view/{id:guid}")]
-    public async Task<ActionResult<InternshipResDto>> ViewInternshipById(Guid id)
+    public async Task<ActionResult<InternshipResDto>> ViewInternshipById(Guid id, [FromQuery] string? token)
     {
-        var result = await internshipService.GetInternshipByIdAsync(id);
+        var result = await internshipService.GetInternshipByIdWithTokenAsync(id, token);
 
         if (result.IsFailure)
         {
@@ -30,13 +30,8 @@ public class PublicInternshipController(
     }
 
     [HttpPost("view/{id:guid}/approve")]
-    public async Task<ActionResult<InternshipResDto>> ApproveInternship(Guid id, [FromQuery] string token)
+    public async Task<ActionResult<InternshipResDto>> ApproveInternship(Guid id, [FromQuery] string? token)
     {
-        if (string.IsNullOrEmpty(token))
-        {
-            return BadRequest("Token is required");
-        }
-
         var result = await internshipService.ChangeStateWithTokenAsync(id, token, EInternshipState.Confirmed);
 
         if (result.IsFailure)
@@ -48,13 +43,8 @@ public class PublicInternshipController(
     }
 
     [HttpPost("view/{id:guid}/decline")]
-    public async Task<ActionResult<InternshipResDto>> DeclineInternship(Guid id, [FromQuery] string token)
+    public async Task<ActionResult<InternshipResDto>> DeclineInternship(Guid id, [FromQuery] string? token)
     {
-        if (string.IsNullOrEmpty(token))
-        {
-            return BadRequest("Token is required");
-        }
-
         var result = await internshipService.ChangeStateWithTokenAsync(id, token, EInternshipState.Rejected);
 
         if (result.IsFailure)
