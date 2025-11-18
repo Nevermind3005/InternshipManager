@@ -3,9 +3,9 @@ import { httpClient } from "../http";
 import { API } from "../api";
 import type { IInternshipRes } from "@/models/internship/IInternshipRes";
 
-const declineInternship = async (id: string): Promise<IInternshipRes> => {
+const declineInternship = async ({ id, token }: { id: string, token: string }): Promise<IInternshipRes> => {
     return await httpClient
-        .post(API.Endpoints.Internship.Decline(id))
+        .post(API.Endpoints.Internship.Decline(id, token))
         .json<IInternshipRes>();
 };
 

@@ -13,4 +13,6 @@ public interface IInternshipService
     Task<Result<PagedResult<InternshipResDto>>> GetInternshipsAsync(InternshipFilter filter, int skip, int limit);
     Task<Result<InternshipResDto>> UpdateInternshipAsync(Guid id, InternshipReqDto request);
     Task<Result<InternshipResDto>> ChangeStateAsync(Guid id, EInternshipState newState);
+    Task<Result<string>> GenerateApprovalTokenAsync(Guid internshipId);
+    Task<Result<InternshipResDto>> ChangeStateWithTokenAsync(Guid internshipId, string token, EInternshipState newState);
 }

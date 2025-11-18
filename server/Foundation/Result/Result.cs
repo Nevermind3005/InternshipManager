@@ -48,5 +48,8 @@ public sealed record Error(string Key, string? Description = null)
     public static readonly Error InvalidCredentials = new("Errors.Auth.InvalidCredentials", "Email or password incorrect.");
     public static readonly Error InvalidAuthToken = new("Errors.Auth.InvalidAuthToken", "Provided auth token is invalid.");
     public static readonly Error BadRequest = new("Errors.Common.BadRequest", "The requested operation was invalid.");
+    public static readonly Error Unauthorized = new("Errors.Auth.Unauthorized", "You are not authorized to perform this action.");
+    public static readonly Error TokenExpired = new("Errors.Auth.TokenExpired", "The approval token has expired.");
+    public static readonly Error TokenAlreadyUsed = new("Errors.Auth.TokenAlreadyUsed", "The approval token has already been used.");
     public static implicit operator Result(Error error) => Result.Failure(error);
 }

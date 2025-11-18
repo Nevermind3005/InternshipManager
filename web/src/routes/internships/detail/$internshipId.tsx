@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { InternshipView } from '@/components/InternshipView';
 
 export const Route = createFileRoute('/internships/detail/$internshipId')({
     component: RouteComponent,
@@ -9,5 +10,5 @@ export const Route = createFileRoute('/internships/detail/$internshipId')({
 
 function RouteComponent() {
     const { internshipId } = Route.useParams();
-    return <div>Internship ID: {internshipId}</div>;
+    return <InternshipView internshipId={internshipId} showActions={false} />;
 }

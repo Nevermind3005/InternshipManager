@@ -46,18 +46,13 @@ public class InternshipService(
         
         await context.SaveChangesAsync();
 
-        // Load the internship with related entities for email
-        var internshipWithRelations = await context.Internships
-            .Include(i => i.Student)
-            .Include(i => i.CompanyRepresentative)
-            .Include(i => i.Company)
-            .FirstOrDefaultAsync(i => i.Id == dbInternship.Entity.Id);
+        // Load related entities for email notification
+        await context.Entry(dbInternship.Entity).Reference(i => i.Student).LoadAsync();
+        await context.Entry(dbInternship.Entity).Reference(i => i.CompanyRepresentative).LoadAsync();
+        await context.Entry(dbInternship.Entity).Reference(i => i.Company).LoadAsync();
 
-        if (internshipWithRelations is not null)
-        {
-            // Send email to company representative
-            await SendInternshipNotificationEmailAsync(internshipWithRelations);
-        }
+        // Send email to company representative
+        await SendInternshipNotificationEmailAsync(dbInternship.Entity);
 
         var response = mapper.Map<InternshipResDto>(dbInternship.Entity);
         
@@ -240,7 +235,16 @@ public class InternshipService(
             return;
         }
 
-        var internshipLink = $"{frontendUrl}/internships/view/{internship.Id}";
+        // Generate approval token
+        var tokenResult = await GenerateApprovalTokenAsync(internship.Id);
+        if (tokenResult.IsFailure)
+        {
+            // Log error but don't fail the entire operation
+            return;
+        }
+
+        var token = tokenResult.Value;
+        var internshipLink = $"{frontendUrl}/internships/view/{internship.Id}?token={token}";
 
         var mailTemplateModel = new CompanyRepresentativeInternshipMail
         {
@@ -259,5 +263,75 @@ public class InternshipService(
             "Templates/CompanyRepresentativeInternshipMail.cshtml",
             mailTemplateModel
         );
+    }
+
+    public async Task<Result<string>> GenerateApprovalTokenAsync(Guid internshipId)
+    {
+        var internship = await context.Internships.FindAsync(internshipId);
+        if (internship is null)
+        {
+            return Result<string>.Failure(Error.NotFound);
+        }
+
+        // Generate a cryptographically secure random token
+        var tokenBytes = new byte[32];
+        using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(tokenBytes);
+        }
+        var token = Convert.ToBase64String(tokenBytes).Replace("+", "-").Replace("/", "_").Replace("=", "");
+
+        var approvalToken = new InternshipApprovalToken
+        {
+            Id = Guid.NewGuid(),
+            InternshipId = internshipId,
+            Token = token,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(30), // Token valid for 30 days
+            IsUsed = false
+        };
+
+        await context.InternshipApprovalTokens.AddAsync(approvalToken);
+        await context.SaveChangesAsync();
+
+        return Result<string>.Success(token);
+    }
+
+    public async Task<Result<InternshipResDto>> ChangeStateWithTokenAsync(Guid internshipId, string token, EInternshipState newState)
+    {
+        // Find the token
+        var approvalToken = await context.InternshipApprovalTokens
+            .FirstOrDefaultAsync(t => t.InternshipId == internshipId && t.Token == token);
+
+        if (approvalToken is null)
+        {
+            return Result<InternshipResDto>.Failure(Error.Unauthorized);
+        }
+
+        // Check if token is expired
+        if (approvalToken.ExpiresAt < DateTime.UtcNow)
+        {
+            return Result<InternshipResDto>.Failure(Error.TokenExpired);
+        }
+
+        // Check if token has already been used
+        if (approvalToken.IsUsed)
+        {
+            return Result<InternshipResDto>.Failure(Error.TokenAlreadyUsed);
+        }
+
+        // Mark token as used
+        approvalToken.IsUsed = true;
+        approvalToken.UsedAt = DateTime.UtcNow;
+
+        // Change the internship state
+        var result = await ChangeStateAsync(internshipId, newState);
+        
+        if (result.IsSuccess)
+        {
+            await context.SaveChangesAsync();
+        }
+
+        return result;
     }
 }

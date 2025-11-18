@@ -3,9 +3,9 @@ import { httpClient } from "../http";
 import { API } from "../api";
 import type { IInternshipRes } from "@/models/internship/IInternshipRes";
 
-const approveInternship = async (id: string): Promise<IInternshipRes> => {
+const approveInternship = async ({ id, token }: { id: string, token: string }): Promise<IInternshipRes> => {
     return await httpClient
-        .post(API.Endpoints.Internship.Approve(id))
+        .post(API.Endpoints.Internship.Approve(id, token))
         .json<IInternshipRes>();
 };
 
