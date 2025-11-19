@@ -19,7 +19,7 @@ export const UserBadge = () => {
     return (
         <div className="flex items-center gap-3 rounded-full border border-border/60 bg-background px-3 py-1 shadow-sm">
             <UserCircle className="size-5 text-muted-foreground" aria-hidden="true" />
-            <div className="flex flex-col leading-tight">
+            <div className="flex flex-col items-center leading-tight">
                 <span className="text-sm font-medium text-foreground">
                     {isLoading ? (
                         <span className="flex items-center gap-1 text-muted-foreground">
