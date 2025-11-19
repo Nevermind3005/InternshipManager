@@ -97,6 +97,7 @@ builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInternshipService, InternshipService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddSingleton<IS3Service, S3Service>();

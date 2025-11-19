@@ -34,8 +34,7 @@ const createAuthKyInstance = () => {
                         error.response.status === 401 &&
                         retryCount === 1
                     ) {
-                        const { refreshToken, accessToken, setAccessToken, setRefreshToken, clearStore } = useAuthStore.getState();
-                        const { setRole } = useAuthStore.getState();
+                        const { refreshToken, accessToken, setAccessToken, setRefreshToken, clearStore, setRole, setUserId } = useAuthStore.getState();
 
 
                         if (!refreshToken) {
@@ -56,6 +55,7 @@ const createAuthKyInstance = () => {
                             setAccessToken(response.accessToken);
                             setRefreshToken(response.refreshToken);
                             setRole(jwtPayload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
+                            setUserId(jwtPayload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]);
 
                         } catch (refreshError) {
                             clearStore();
