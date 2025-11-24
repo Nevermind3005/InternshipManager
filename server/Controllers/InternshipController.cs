@@ -59,11 +59,25 @@ public class InternshipController(
     [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
     public async Task<ActionResult<InternshipResDto>> GetInternshipsById(Guid id)
     {
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userRole is null || userId is null)
+        {
+            return Problem();
+        }
+        
         var result = await internshipService.GetInternshipByIdAsync(id);
 
         if (result.IsFailure)
         {
             return result.ToProblemDetails();
+        }
+
+        // Is student and ids don't match
+        if (userRole == nameof(ERole.Student) && result.Value.StudentId != new Guid(userId))
+        {
+            return Forbid();
         }
 
         return Ok(result.Value);
@@ -78,6 +92,19 @@ public class InternshipController(
             [FromQuery] int limit = 25
         )
     {
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userRole is null || userId is null)
+        {
+            return Problem();
+        }
+
+        if (userRole == nameof(ERole.Student))
+        {
+            filter.StudentId = new Guid(userId);
+        }
+        
         var result = await internshipService.GetInternshipsAsync(filter, skip, limit);
 
         if (result.IsFailure)

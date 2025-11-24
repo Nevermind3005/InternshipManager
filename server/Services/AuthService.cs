@@ -220,6 +220,35 @@ public class AuthService(
         return Result<TokenResDto>.Success(tokens);
     }
 
+    public async Task<Result> ChangePasswordAsync(Guid userId, ChangePasswordReqDto request)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return Result.Failure(Error.NotFound);
+        }
+
+        var isCurrentValid = BCrypt.Net.BCrypt.EnhancedVerify(request.CurrentPassword, user.PasswordHash);
+
+        if (!isCurrentValid)
+        {
+            return Result.Failure(Error.InvalidCredentials);
+        }
+
+        if (request.NewPassword == request.CurrentPassword)
+        {
+            return Result.Failure(Error.BadRequest);
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(request.NewPassword);
+        user.IsPasswordDirty = false;
+
+        await context.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
     public async Task<Result> LogoutAsync(string accessToken)
     {
         var principal = AuthStatics.GetPrincipalFromExpiredToken(authConfiguration.Value.Issuer, authConfiguration.Value.Audience, authConfiguration.Value.SigningKey, accessToken);

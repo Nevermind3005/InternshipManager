@@ -146,6 +146,11 @@ public class InternshipService(
             query = query.Where(i => i.State == filter.State);
         }
         
+        if (filter.StudentId is not null)
+        {
+            query = query.Where(i => i.StudentId == filter.StudentId);
+        }
+        
         var totalCount = await query.CountAsync();
         
         var items = await query

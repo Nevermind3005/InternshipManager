@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using server.Data;
 
 namespace server.Models.Filters;
@@ -11,4 +12,7 @@ public class InternshipFilter
     public string? Company { get; set; }
     public ESemester? Semester { get; set; }
     public EInternshipState? State { get; set; }
+    
+    [JsonIgnore]
+    public Guid? StudentId { get; set; }
 }
