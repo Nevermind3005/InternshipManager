@@ -7,7 +7,7 @@ import { requireRole } from '@/lib/authGuard';
 
 export const Route = createFileRoute('/account/')({
     component: RouteComponent,
-    beforeLoad: requireRole(['Student', 'InternshipHandler', 'Company']),
+    beforeLoad: requireRole(['Student', 'InternshipHandler', 'CompanyRepresentative']),
     loader: () => ({
         crumb: 'Account'
     })

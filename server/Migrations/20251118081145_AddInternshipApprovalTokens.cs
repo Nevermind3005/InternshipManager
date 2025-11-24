@@ -19,6 +19,7 @@ namespace server.Migrations
                     internship_id = table.Column<Guid>(type: "uuid", nullable: false),
                     token = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     is_used = table.Column<bool>(type: "boolean", nullable: false),
                     used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)

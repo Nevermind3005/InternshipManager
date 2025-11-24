@@ -18,7 +18,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as InternshipsIndexRouteImport } from './routes/internships/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as InternshipsNewIndexRouteImport } from './routes/internships/new/index'
-import { Route as InternshipsViewInternshipIdRouteImport } from './routes/internships/view/$internshipId'
 import { Route as InternshipsEditInternshipIdRouteImport } from './routes/internships/edit/$internshipId'
 import { Route as InternshipsDetailInternshipIdRouteImport } from './routes/internships/detail/$internshipId'
 
@@ -91,7 +90,6 @@ export interface FileRoutesByFullPath {
   '/internships/': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
-  '/internships/view/$internshipId': typeof InternshipsViewInternshipIdRoute
   '/internships/new': typeof InternshipsNewIndexRoute
 }
 export interface FileRoutesByTo {
@@ -104,7 +102,6 @@ export interface FileRoutesByTo {
   '/internships': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
-  '/internships/view/$internshipId': typeof InternshipsViewInternshipIdRoute
   '/internships/new': typeof InternshipsNewIndexRoute
 }
 export interface FileRoutesById {
@@ -119,7 +116,6 @@ export interface FileRoutesById {
   '/internships/': typeof InternshipsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
-  '/internships/view/$internshipId': typeof InternshipsViewInternshipIdRoute
   '/internships/new/': typeof InternshipsNewIndexRoute
 }
 export interface FileRouteTypes {
@@ -135,7 +131,6 @@ export interface FileRouteTypes {
     | '/internships/'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
-    | '/internships/view/$internshipId'
     | '/internships/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -148,7 +143,6 @@ export interface FileRouteTypes {
     | '/internships'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
-    | '/internships/view/$internshipId'
     | '/internships/new'
   id:
     | '__root__'
@@ -162,7 +156,6 @@ export interface FileRouteTypes {
     | '/internships/'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
-    | '/internships/view/$internshipId'
     | '/internships/new/'
   fileRoutesById: FileRoutesById
 }
@@ -241,13 +234,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InternshipsNewIndexRouteImport
       parentRoute: typeof InternshipsRouteRoute
     }
-    '/internships/view/$internshipId': {
-      id: '/internships/view/$internshipId'
-      path: '/view/$internshipId'
-      fullPath: '/internships/view/$internshipId'
-      preLoaderRoute: typeof InternshipsViewInternshipIdRouteImport
-      parentRoute: typeof InternshipsRouteRoute
-    }
     '/internships/edit/$internshipId': {
       id: '/internships/edit/$internshipId'
       path: '/edit/$internshipId'
@@ -269,7 +255,6 @@ interface InternshipsRouteRouteChildren {
   InternshipsIndexRoute: typeof InternshipsIndexRoute
   InternshipsDetailInternshipIdRoute: typeof InternshipsDetailInternshipIdRoute
   InternshipsEditInternshipIdRoute: typeof InternshipsEditInternshipIdRoute
-  InternshipsViewInternshipIdRoute: typeof InternshipsViewInternshipIdRoute
   InternshipsNewIndexRoute: typeof InternshipsNewIndexRoute
 }
 
@@ -277,7 +262,6 @@ const InternshipsRouteRouteChildren: InternshipsRouteRouteChildren = {
   InternshipsIndexRoute: InternshipsIndexRoute,
   InternshipsDetailInternshipIdRoute: InternshipsDetailInternshipIdRoute,
   InternshipsEditInternshipIdRoute: InternshipsEditInternshipIdRoute,
-  InternshipsViewInternshipIdRoute: InternshipsViewInternshipIdRoute,
   InternshipsNewIndexRoute: InternshipsNewIndexRoute,
 }
 

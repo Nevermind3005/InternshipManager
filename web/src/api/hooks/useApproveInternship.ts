@@ -1,23 +1,29 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { httpClient } from "../http";
+import { useMutation, useQueryClient, type UseMutationOptions } from "@tanstack/react-query";
+import { authHttpClient } from "../http";
 import { API } from "../api";
 import type { IInternshipRes } from "@/models/internship/IInternshipRes";
 
-const approveInternship = async ({ id, token }: { id: string, token: string }): Promise<IInternshipRes> => {
-    return await httpClient
-        .post(API.Endpoints.Internship.Approve(id, token))
+const approveInternship = async (id: string): Promise<IInternshipRes> => {
+    return await authHttpClient
+        .post(API.Endpoints.Internship.Approve(id))
         .json<IInternshipRes>();
 };
 
-export const useApproveInternship = () => {
+export const useApproveInternship = (
+    options?: UseMutationOptions<IInternshipRes, Error, string>
+) => {
     const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: approveInternship,
-        onSuccess: (data) => {
-            // Invalidate the view query
-            void queryClient.invalidateQueries({ queryKey: ["internship-view", data.id] });
-            // Invalidate all internship list queries (they have queryKey: ["internships", params])
-            void queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "internships" });
+    const { onSuccess, onError, ...restOptions } = options ?? {};
+    return useMutation<IInternshipRes, Error, string>({
+        ...restOptions,
+        mutationFn: (id: string) => approveInternship(id),
+        onSuccess: async (data, variables, context) => {
+            await queryClient.invalidateQueries({ queryKey: ["internship", data.id] });
+            await queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === "internships" });
+            await onSuccess?.(data, variables, context);
+        },
+        onError: async (error, variables, context) => {
+            await onError?.(error, variables, context);
         }
     });
 };

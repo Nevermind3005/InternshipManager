@@ -17,9 +17,8 @@ export const API = {
             GetAll: () => 'Internship',
             GetById: (id: string) => `Internship/${id}`,
             Update: (id: string) => `Internship/${id}`,
-            ViewById: (id: string, token: string) => `PublicInternship/view/${id}?token=${encodeURIComponent(token)}`,
-            Approve: (id: string, token: string) => `PublicInternship/view/${id}/approve?token=${encodeURIComponent(token)}`,
-            Decline: (id: string, token: string) => `PublicInternship/view/${id}/decline?token=${encodeURIComponent(token)}`
+            Approve: (id: string) => `Internship/${id}/approve`,
+            Decline: (id: string) => `Internship/${id}/decline`
         },
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',

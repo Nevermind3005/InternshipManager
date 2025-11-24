@@ -1,4 +1,4 @@
-import { useViewInternship } from '@/api/hooks/useViewInternship';
+import { useGetInternship } from '@/api/hooks/useGetInternship';
 import { useApproveInternship } from '@/api/hooks/useApproveInternship';
 import { useDeclineInternship } from '@/api/hooks/useDeclineInternship';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,48 +13,37 @@ import { CheckCircle2, XCircle } from 'lucide-react';
 
 interface InternshipViewProps {
     internshipId: string;
-    token?: string;
     showActions?: boolean;
 }
 
-export function InternshipView({ internshipId, token, showActions = true }: InternshipViewProps) {
-    const { data: internship, isLoading, isError, refetch } = useViewInternship(internshipId, token);
+export function InternshipView({ internshipId, showActions = true }: InternshipViewProps) {
+    const { data: internship, isLoading, isError, refetch } = useGetInternship(internshipId);
     const intl = useIntl();
-    const { mutate: approveInternship, isPending: isApproving } = useApproveInternship();
-    const { mutate: declineInternship, isPending: isDeclining } = useDeclineInternship();
+    const { mutate: approveInternship, isPending: isApproving } = useApproveInternship({
+        onSuccess: async () => {
+            toast.success(intl.formatMessage({ id: "Internship.ApproveSuccess" }));
+            await refetch();
+        },
+        onError: async (error) => {
+            await errorResponseHandler(error, intl);
+        }
+    });
+    const { mutate: declineInternship, isPending: isDeclining } = useDeclineInternship({
+        onSuccess: async () => {
+            toast.success(intl.formatMessage({ id: "Internship.DeclineSuccess" }));
+            await refetch();
+        },
+        onError: async (error) => {
+            await errorResponseHandler(error, intl);
+        }
+    });
 
     const handleApprove = () => {
-        if (!token) {
-            toast.error(intl.formatMessage({ id: "Internship.TokenRequired" }));
-            return;
-        }
-
-        approveInternship({ id: internshipId, token }, {
-            onSuccess: () => {
-                toast.success(intl.formatMessage({ id: "Internship.ApproveSuccess" }));
-                void refetch();
-            },
-            onError: async (error) => {
-                await errorResponseHandler(error as Error, intl);
-            }
-        });
+        approveInternship(internshipId);
     };
 
     const handleDecline = () => {
-        if (!token) {
-            toast.error(intl.formatMessage({ id: "Internship.TokenRequired" }));
-            return;
-        }
-
-        declineInternship({ id: internshipId, token }, {
-            onSuccess: () => {
-                toast.success(intl.formatMessage({ id: "Internship.DeclineSuccess" }));
-                void refetch();
-            },
-            onError: async (error) => {
-                await errorResponseHandler(error as Error, intl);
-            }
-        });
+        declineInternship(internshipId);
     };
 
     if (isLoading) {

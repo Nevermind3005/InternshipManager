@@ -2,11 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace server.Entities;
 
-public class InternshipApprovalToken
+public class InternshipApprovalToken : EntityBase
 {
-    [Key]
-    public Guid Id { get; set; }
-    
     [Required]
     public Guid InternshipId { get; set; }
     
@@ -15,9 +12,6 @@ public class InternshipApprovalToken
     [Required]
     [MaxLength(256)]
     public string Token { get; set; } = string.Empty;
-    
-    [Required]
-    public DateTime CreatedAt { get; set; }
     
     [Required]
     public DateTime ExpiresAt { get; set; }
