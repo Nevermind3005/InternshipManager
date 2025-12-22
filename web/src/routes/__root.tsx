@@ -17,12 +17,13 @@ const RootLayout = () => {
             href: pathname,
             label: loaderData?.crumb,
         }));
-        
-    return (<>
+
+    return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b">
+
+            <SidebarInset className="flex flex-col h-screen overflow-hidden">
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b sticky top-0 z-50 bg-background">
                     <div className="flex items-center gap-2 px-3">
                         <SidebarTrigger />
                         <Separator orientation="vertical" className="mr-2 h-4" />
@@ -39,16 +40,20 @@ const RootLayout = () => {
                                             ) : (
                                                 <>
                                                     <BreadcrumbItem className="hidden md:block">
-                                                        <BreadcrumbLink asChild><Link to={item.href}>{item.label}</Link></BreadcrumbLink>
+                                                        <BreadcrumbLink asChild>
+                                                            <Link to={item.href}>{item.label}</Link>
+                                                        </BreadcrumbLink>
                                                     </BreadcrumbItem>
                                                     <BreadcrumbSeparator className="hidden md:block" />
                                                 </>
                                             )}
                                         </React.Fragment>
-                                    );})}
+                                    );
+                                })}
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
+
                     <div className="ml-auto px-3">
                         <div className="flex items-center gap-3">
                             <UserBadge />
@@ -57,10 +62,14 @@ const RootLayout = () => {
                         </div>
                     </div>
                 </header>
-                <Outlet />
+
+                <div className="flex-1 min-h-0 flex flex-col">
+                    <Outlet />
+                </div>
             </SidebarInset>
         </SidebarProvider>
-    </>);
+    );
 };
+
 
 export const Route = createRootRoute({ component: RootLayout });

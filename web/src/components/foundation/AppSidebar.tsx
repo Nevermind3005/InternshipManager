@@ -35,7 +35,7 @@ const navMain : ISidebarNav[] = [
     },
     {
         title: "Sidebar.Admin",
-        url: "/admin",
+        url: "/applications",
         icon: Lock,
         roles: ["InternshipHandler"]
     }

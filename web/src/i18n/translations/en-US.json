@@ -163,5 +163,7 @@
     "Internship.LoadError": "Error loading internship",
     "Internship.UpdateSuccess": "Internship updated successfully",
     "Actions.Saving": "Saving...",
-    "Actions.Back": "Back"
+    "Actions.Back": "Back",
+    "Application.CreateApiKey": "Create new API key",
+    "Table.NoResults": "No results"
 }

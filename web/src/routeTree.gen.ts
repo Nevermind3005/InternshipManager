@@ -13,6 +13,7 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ManagementRouteImport } from './routes/management'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
+import { Route as ApplicationsRouteImport } from './routes/applications'
 import { Route as InternshipsRouteRouteImport } from './routes/internships/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InternshipsIndexRouteImport } from './routes/internships/index'
@@ -39,6 +40,11 @@ const LoginRoute = LoginRouteImport.update({
 const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
   id: '/changeDefaultPassword',
   path: '/changeDefaultPassword',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplicationsRoute = ApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InternshipsRouteRoute = InternshipsRouteRouteImport.update({
@@ -82,6 +88,7 @@ const InternshipsDetailInternshipIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/internships': typeof InternshipsRouteRouteWithChildren
+  '/applications': typeof ApplicationsRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/applications': typeof ApplicationsRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/internships': typeof InternshipsRouteRouteWithChildren
+  '/applications': typeof ApplicationsRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/internships'
+    | '/applications'
     | '/changeDefaultPassword'
     | '/login'
     | '/management'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/applications'
     | '/changeDefaultPassword'
     | '/login'
     | '/management'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/internships'
+    | '/applications'
     | '/changeDefaultPassword'
     | '/login'
     | '/management'
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InternshipsRouteRoute: typeof InternshipsRouteRouteWithChildren
+  ApplicationsRoute: typeof ApplicationsRoute
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
   LoginRoute: typeof LoginRoute
   ManagementRoute: typeof ManagementRoute
@@ -197,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/changeDefaultPassword'
       fullPath: '/changeDefaultPassword'
       preLoaderRoute: typeof ChangeDefaultPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/applications': {
+      id: '/applications'
+      path: '/applications'
+      fullPath: '/applications'
+      preLoaderRoute: typeof ApplicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/internships': {
@@ -271,6 +291,7 @@ const InternshipsRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InternshipsRouteRoute: InternshipsRouteRouteWithChildren,
+  ApplicationsRoute: ApplicationsRoute,
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
   LoginRoute: LoginRoute,
   ManagementRoute: ManagementRoute,

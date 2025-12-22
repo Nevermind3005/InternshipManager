@@ -7,7 +7,7 @@ interface IFabProps {
 const FloatingActionButton = ({ onClick } : IFabProps) => {
     return (
     // Main wrapper for positioning (fixed bottom right)
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-2 right-2 z-50">
       
             {/* Primary Floating Action Button */}
             <button
