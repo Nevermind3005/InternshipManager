@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using server.Data;
 using server.Foundation.Result;
+using server.Models;
 using server.Models.OAuth;
 using server.Services;
 
@@ -29,6 +30,27 @@ public class OAuthController(
     public async Task<ActionResult<ApplicationCreateResDto>> CreateApiApplication(ApplicationCreateReqDto request)
     {
         var result = await applicationService.CreateNewApplicationAsync(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(result.Value);
+    }
+
+    /// <summary>
+    /// Get all external applications.
+    /// </summary>
+    /// <response code="200">Returns paged result with all external applications.</response>
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    [HttpGet("applications")]
+    public async Task<ActionResult<PagedResult<ApplicationResDto>>> GetAllApplications(
+        [FromQuery] int skip = 0,
+        [FromQuery] int limit = 25
+        )
+    {
+        var result = await applicationService.GetAllApplicationsAsync(skip, limit);
 
         if (result.IsFailure)
         {

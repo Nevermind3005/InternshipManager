@@ -1,10 +1,9 @@
 import CreateApplicationForm from '@/components/forms/CreateApplicationForm';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import FloatingActionButton from '@/components/foundation/FloatingActionButton';
+import { ApplicationsTable } from '@/components/tables/ApplicationsTable';
 import { requireRole } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 export const Route = createFileRoute('/applications')({
     component: RouteComponent,
@@ -17,15 +16,13 @@ export const Route = createFileRoute('/applications')({
 function RouteComponent() {
     const [ isCompanyDialogOpen, setIsCompanyDialogOpen ] = useState(false);
     
-    return <div>
-        <div className='flex py-2 justify-between'>
-            <p>Applications</p>
-            <Button className="w-35 mx-2" type="button" onClick={() => setIsCompanyDialogOpen(true)}>
-                <FormattedMessage id="Application.CreateApiKey" />
-            </Button>
+    return (
+        <div className="flex flex-col h-full w-full justify-center p-2">
+            <div className="w-full flex flex-col h-full mx-auto">
+                <ApplicationsTable />
+                <FloatingActionButton onClick={() => setIsCompanyDialogOpen(true)}/>
+            </div>
+            <CreateApplicationForm open={isCompanyDialogOpen} onOpenChange={setIsCompanyDialogOpen}/>
         </div>
-        <Separator className="" />
-
-        <CreateApplicationForm open={isCompanyDialogOpen} onOpenChange={setIsCompanyDialogOpen}/>
-    </div>;
+    );
 }

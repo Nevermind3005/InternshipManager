@@ -165,5 +165,8 @@
     "Actions.Saving": "Saving...",
     "Actions.Back": "Back",
     "Application.CreateApiKey": "Create new API key",
+    "Application.Name": "Application Name",
+    "Application.ClientId": "Client Id",
+    "Application.ClientSecret": "Client Secret",
     "Table.NoResults": "No results"
 }

@@ -7,5 +7,6 @@ public class ApplicationProfile : Profile
     public ApplicationProfile()
     {
         CreateMap<ApiApplication, ApplicationCreateResDto>();
+        CreateMap<ApiApplication, ApplicationResDto>();
     }
 }

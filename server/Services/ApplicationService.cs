@@ -7,6 +7,7 @@ using server.Entities;
 using server.Foundation.Configuration;
 using server.Foundation.Result;
 using server.Foundation.Utils;
+using server.Models;
 using server.Models.OAuth;
 
 namespace server.Services;
@@ -40,6 +41,30 @@ public class ApplicationService(
         response.ClientSecret = clientSecret;
         
         return Result<ApplicationCreateResDto>.Success(response);
+    }
+
+    public async Task<Result<PagedResult<ApplicationResDto>>> GetAllApplicationsAsync(int skip, int limit)
+    {
+        var query = context.Applications.AsQueryable();
+        
+        var totalCount = await query.CountAsync();
+        
+        var items = await query
+            .Skip(skip)
+            .Take(limit)
+            .ToListAsync();
+        
+        var result = mapper.Map<List<ApplicationResDto>>(items);
+        
+        var pagedResult = new PagedResult<ApplicationResDto>
+        {
+            Items = result,
+            TotalCount = totalCount,
+            PageSize = result.Count
+        };
+
+        return Result<PagedResult<ApplicationResDto>>.Success(pagedResult);
+
     }
 
     public async Task<Result<ApplicationTokenResDto>> GetApplicationTokenAsync(ApplicationTokenReqDto request)
