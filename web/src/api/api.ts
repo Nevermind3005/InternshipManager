@@ -32,7 +32,8 @@ export const API = {
         },
         OAuth: {
             CreateApplication: () => 'OAuth/createApplication',
-            GetAllApplications: () => 'OAuth/applications'
+            GetAllApplications: () => 'OAuth/applications',
+            DeleteApplication: (id: string) => `OAuth/delete/{${id}`
         }
     }
 };

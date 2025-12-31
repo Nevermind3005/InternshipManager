@@ -92,12 +92,20 @@ public class ApplicationService(
         });
     }
 
-    // public async Task<Result<List<ApplicationResDto>>> GetAll()
-    // {
-    //     var applications = await context.Applications.ToListAsync();
-    //     
-    //     return Result.Success();
-    // }
+    public async Task<Result> DeleteApplicationAsync(Guid id)
+    {
+        var application = await context.Applications.FindAsync(id);
+
+        if (application is null)
+        {
+            return Result.Failure(Error.NotFound);
+        }
+        
+        context.Remove(application);
+        await context.SaveChangesAsync();
+        
+        return Result.Success();
+    }
 
     private string CreateToken(Guid clientId)
     {

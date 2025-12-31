@@ -40,6 +40,25 @@ public class OAuthController(
     }
 
     /// <summary>
+    /// Delete an existing application.
+    /// </summary>
+    /// <param name="id">Id of the application we wish to delete</param>
+    /// <response code="204">Response for successful deletion of desired application.</response>
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    [HttpPost("delete/{id:guid}")]
+    public async Task<IActionResult> DeleteApiApplication(Guid id)
+    {
+        var result = await applicationService.DeleteApplicationAsync(id);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+        
+        return NoContent();
+    }
+
+    /// <summary>
     /// Get all external applications.
     /// </summary>
     /// <response code="200">Returns paged result with all external applications.</response>
