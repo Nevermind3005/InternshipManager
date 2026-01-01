@@ -21,6 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<AuthConfiguration>(builder.Configuration.GetSection("Auth"));
+builder.Services.Configure<S3Configuration>(builder.Configuration.GetSection("S3"));
 
 // Register the database ctx
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -95,7 +96,11 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IInternshipService, InternshipService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.AddSingleton<IS3Service, S3Service>();
 
 var app = builder.Build();
 
@@ -110,7 +115,10 @@ app.UseAuthorization();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference((options, context) =>
+    {
+        options.AddServer(new ScalarServer($"https://{context.Request.Host}"));
+    });
 }
 
 app.UseHttpsRedirection();

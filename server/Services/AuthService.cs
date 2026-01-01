@@ -12,6 +12,7 @@ using server.Models.Auth;
 using server.Models.Mail;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
+using server.Models.User.Representative;
 using server.Models.User.Student;
 using Wangkanai.Detection.Services;
 
@@ -80,6 +81,40 @@ public class AuthService(
         var user = mapper.Map<User>(request);
         user.PasswordHash = passwordHash;
         user.Role = ERole.InternshipHandler;
+        user.IsPasswordDirty = true;
+        
+        var dbUser = await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
+        
+        var mailTemplateModel = new StudentRegisterMail
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            GeneratedPassword = password
+        };
+        
+        await mailService.SendMailTemplateAsync(request.Email, "Password","Templates/StudentRegisterMail.cshtml", mailTemplateModel);
+        
+        var response = mapper.Map<UserResDto>(dbUser.Entity);
+        
+        return Result<UserResDto>.Success(response);
+    }
+
+    public async Task<Result<UserResDto>> RegisterCompanyRepresentativeAsync(CompanyRepresentativeRegisterReqDto request)
+    {
+        // Check if user already exists, if so return failure
+        if (await context.Users.AnyAsync(u => u.Email == request.Email))
+        {
+            return Result<UserResDto>.Failure(Error.UserAlreadyExists);
+        }
+
+        // Generate random password and hash it with bCrypt
+        var password = AuthStatics.GenerateRandomPassword();
+        var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+
+        var user = mapper.Map<User>(request);
+        user.PasswordHash = passwordHash;
+        user.Role = ERole.CompanyRepresentative;
         user.IsPasswordDirty = true;
         
         var dbUser = await context.Users.AddAsync(user);
@@ -183,6 +218,67 @@ public class AuthService(
         var tokens = await CreateTokenResponse(user, "/");
         
         return Result<TokenResDto>.Success(tokens);
+    }
+
+    public async Task<Result> ChangePasswordAsync(Guid userId, ChangePasswordReqDto request)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return Result.Failure(Error.NotFound);
+        }
+
+        var isCurrentValid = BCrypt.Net.BCrypt.EnhancedVerify(request.CurrentPassword, user.PasswordHash);
+
+        if (!isCurrentValid)
+        {
+            return Result.Failure(Error.InvalidCredentials);
+        }
+
+        if (request.NewPassword == request.CurrentPassword)
+        {
+            return Result.Failure(Error.BadRequest);
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(request.NewPassword);
+        user.IsPasswordDirty = false;
+
+        await context.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result> LogoutAsync(string accessToken)
+    {
+        var principal = AuthStatics.GetPrincipalFromExpiredToken(authConfiguration.Value.Issuer, authConfiguration.Value.Audience, authConfiguration.Value.SigningKey, accessToken);
+        
+        if (principal is null)
+        {
+            return Result.Failure(Error.InvalidAuthToken);
+        }
+    
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var tokenId = principal.FindFirstValue(JwtRegisteredClaimNames.Jti);
+        
+        if (userId is null || tokenId is null)
+        {
+            return Result.Failure(Error.InvalidAuthToken);
+        }
+        
+        var refreshToken = await context.RefreshTokens
+            .Where(rt => rt.UserId == new Guid(userId) && rt.JwtId == new Guid(tokenId))
+            .FirstOrDefaultAsync();
+
+        if (refreshToken is null)
+        {
+            return Result.Failure(Error.InvalidAuthToken);
+        }
+        
+        context.RefreshTokens.Remove(refreshToken);
+        await context.SaveChangesAsync();
+        
+        return Result.Success();
     }
 
     /// <summary>

@@ -1,10 +1,11 @@
-import { GalleryVerticalEnd, Home, Lock, type LucideProps } from "lucide-react";
+import { ClipboardCheckIcon, FingerprintIcon, LogOut, Home, Lock, type LucideProps } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from "../ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 import { PermissionGuard } from "./PermissionGuard";
 import { FormattedMessage } from "react-intl";
 import { Roles_All, type Role } from "@/store/useAuthStore";
+import { useLogout } from "@/hooks/useLogout";
 
 interface ISidebarNav {
     title: string;
@@ -15,20 +16,34 @@ interface ISidebarNav {
 
 const navMain : ISidebarNav[] = [
     {
-        title: "Home",
+        title: "Sidebar.Home",
         url: "/",
         icon: Home,
         roles: Roles_All
     },
     {
-        title: "Admin Only",
-        url: "#",
+        title: "Sidebar.Internships",
+        url: "/internships",
+        icon: ClipboardCheckIcon,
+        roles: ["Student", "InternshipHandler", "Company"]
+    },
+    {
+        title: "Sidebar.Account",
+        url: "/account",
+        icon: FingerprintIcon,
+        roles: ["Student", "InternshipHandler", "Company"]
+    },
+    {
+        title: "Sidebar.Admin",
+        url: "/admin",
         icon: Lock,
         roles: ["InternshipHandler"]
     }
 ];
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+    const { userLogout } = useLogout();
+
     return (
         <Sidebar {...props}>
             <SidebarHeader>
@@ -36,12 +51,8 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link to="/">
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                    <GalleryVerticalEnd className="size-4" />
-                                </div>
-                                <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-medium">Internship Manager</span>
-                                    <span className="">v1.0.0</span>
+                                <div className="flex">
+                                    <span className="text-white font-[Space_Grotesk] font-black text-2xl xl:p-8 md:p-6 p-4"><FormattedMessage id="App.Title"/></span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
@@ -57,7 +68,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                                     <SidebarMenuButton asChild>
                                         <Link to={item.url}>
                                             <item.icon className="h-4 w-4" />
-                                            {item.title}
+                                            <FormattedMessage id={item.title} />
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -80,6 +91,20 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                                     <Link to="/register">
                                         <FormattedMessage id="SignUp.SignUp" />
                                     </Link>
+                                </Button>
+                            </div>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </div>
+            </PermissionGuard>
+            <PermissionGuard roles={["Student", "Company", "InternshipHandler"]}>
+                <div className="border-t">
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <div className="flex max-w-full p-4">
+                                <Button variant="destructive" onClick={userLogout} className="w-[95%] hover:bg-destructive/70 focus:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus:bg-destructive/80">
+                                    <LogOut className="h-7 w-7" />
+                                    <FormattedMessage id="Auth.Logout" />
                                 </Button>
                             </div>
                         </SidebarMenuItem>
