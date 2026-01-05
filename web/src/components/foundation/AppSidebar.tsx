@@ -34,7 +34,7 @@ const navMain : ISidebarNav[] = [
         roles: ["Student", "InternshipHandler", "Company"]
     },
     {
-        title: "Sidebar.Admin",
+        title: "Sidebar.Applications",
         url: "/applications",
         icon: Lock,
         roles: ["InternshipHandler"]

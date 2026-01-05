@@ -8,7 +8,7 @@ export const useDeleteApplication = () => {
         mutationKey: ["deleteApplication"],
         retry: 1,
         mutationFn: async (id: string) => {
-            return await authHttpClient.post(
+            return await authHttpClient.delete(
                 API.Endpoints.OAuth.DeleteApplication(id));
         },
         onSuccess: () => {

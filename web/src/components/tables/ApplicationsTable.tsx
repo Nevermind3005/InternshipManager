@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PageableTable from "../foundation/PageableTable";
 import { getCoreRowModel, useReactTable, type CellContext, type ColumnDef, type ColumnFiltersState } from "@tanstack/react-table";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import type { IApplicationGetRes } from "@/models/application/IApplicationGetRes";
 import { useGetAllApplications } from "@/api/hooks/useGetAllApplications";
 import { Button } from "../ui/button";
@@ -9,7 +9,10 @@ import { Trash2Icon } from "lucide-react";
 import EntityDelteForm from "../foundation/EntityDeleteForm";
 import { useDeleteApplication } from "@/api/hooks/useDeleteApplication";
 
-const getTableColumns = (setDeleteDialogOpen: React.Dispatch<React.SetStateAction<boolean>>) => {
+const getTableColumns = (
+    setDeleteDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    setDeleteEntityId: React.Dispatch<React.SetStateAction<string>>
+) => {
     const columns: ColumnDef<IApplicationGetRes>[] = [
         {
             accessorKey: "name",
@@ -45,7 +48,10 @@ const getTableColumns = (setDeleteDialogOpen: React.Dispatch<React.SetStateActio
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {console.log(row.original.name); setDeleteDialogOpen(true);}}
+                        onClick={() => {
+                            setDeleteEntityId(row.original.id);
+                            setDeleteDialogOpen(true);
+                        }}
                         className="h-8 w-8 p-0"
                     >
                         <Trash2Icon className="h-4 w-4" />
@@ -63,6 +69,7 @@ const getTableColumns = (setDeleteDialogOpen: React.Dispatch<React.SetStateActio
 export function ApplicationsTable() {
     const pageSize = 20;
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [entityDeleteId, setEntityDeleteId] = useState("INVALID");
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: pageSize });
     const deletor = useDeleteApplication();
@@ -73,8 +80,9 @@ export function ApplicationsTable() {
             columnFilters.map(f => [f.id, String(f.value ?? "")])
         ),
     });
+    const intl = useIntl();
 
-    const columns = getTableColumns(setIsDeleteDialogOpen);
+    const columns = getTableColumns(setIsDeleteDialogOpen, setEntityDeleteId);
 
     const totalPages = companies ? Math.ceil(companies.totalCount / pagination.pageSize) : 0;
     console.log(totalPages);
@@ -97,11 +105,12 @@ export function ApplicationsTable() {
         <div className="flex flex-col h-full overflow-hidden w-full">
             <PageableTable table={table} columns={columns} totalPages={totalPages}/>
             <EntityDelteForm 
-                open={isDeleteDialogOpen} 
-                onOpenChange={setIsDeleteDialogOpen} 
-                useDeletor={deletor} 
-                confirmPhrase="Confirm"
-                title="Delete Application"
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                useDeletor={deletor}
+                confirmPhrase={intl.formatMessage({id: "Actions.Confirm"})}
+                title={intl.formatMessage({id: "Application.Delete.Title"})}
+                entityId={entityDeleteId}
             />
         </div>
     );

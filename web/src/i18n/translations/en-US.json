@@ -49,6 +49,8 @@
     "Actions.Save": "Save",
     "Actions.Retry": "Try again",
     "Actions.Cancel": "Cancel",
+    "Actions.Confirm": "Confirm",
+    "Actions.Delete": "Delete",
     "Roles.Student.Label": "Student",
     "Roles.Student.Blurb": "Log activities and track approvals.",
     "Roles.Teacher.Label": "Teacher",
@@ -67,7 +69,7 @@
     "InternshipHandler.Description": "Enter fields bellow and create new internship handler",
     "Sidebar.Home": "Home",
     "Sidebar.Management": "Management",
-    "Sidebar.Admin": "Admin",
+    "Sidebar.Applications": "Applications",
     "Sidebar.Internships": "Internships",
     "Sidebar.Account": "Account",
     "CompanySignUp.SignUp": "Company Registration",
@@ -168,5 +170,8 @@
     "Application.Name": "Application Name",
     "Application.ClientId": "Client Id",
     "Application.ClientSecret": "Client Secret",
-    "Table.NoResults": "No results"
+    "Table.NoResults": "No results",
+    "Application.Delete.Title": "Delete Application",
+    "DeleteFormDescP1": "Please type",
+    "DeleteFormDescP2": "to confirm the action"
 }

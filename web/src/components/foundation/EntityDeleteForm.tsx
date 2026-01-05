@@ -7,7 +7,7 @@ import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../
 import { useState } from "react";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { KyResponse } from "ky";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 interface IEntityDeleteFormProps {
     open: boolean;
@@ -15,21 +15,23 @@ interface IEntityDeleteFormProps {
     confirmPhrase: string;
     useDeletor: UseMutationResult<KyResponse<unknown>, Error, string, unknown>;
     title: string;
+    entityId: string
 }
 
 const EntityDelteForm = ({ 
-    open, 
-    onOpenChange, 
-    useDeletor, 
-    confirmPhrase, 
-    title 
+    open,
+    onOpenChange,
+    useDeletor,
+    confirmPhrase,
+    title,
+    entityId
 } : IEntityDeleteFormProps) => {
     const [value, setValue] = useState("");
     const intl = useIntl();
     const { mutate: deletor, isPending } = useDeletor;
 
     const onSubmit = () => {
-        deletor("data", {
+        deletor(entityId, {
             onError: async (error) => {
                 errorResponseHandler(error, intl);
             },
@@ -44,7 +46,7 @@ const EntityDelteForm = ({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>Please type <span className="font-bold">"{confirmPhrase}"</span> to confirm the action</DialogDescription>
+                    <DialogDescription><FormattedMessage id="DeleteFormDescP1"/> <span className="font-bold">"{confirmPhrase}"</span> <FormattedMessage id="DeleteFormDescP2"/></DialogDescription>
                 </DialogHeader>
                 <FieldGroup>
                     <Field>
@@ -56,7 +58,15 @@ const EntityDelteForm = ({
                         />
                     </Field>
                     <Field>
-                        <LoadingButton isPending={isPending} disabled={value !== confirmPhrase} variant="destructive">Submit</LoadingButton>
+                        <LoadingButton
+                            isPending={isPending}
+                            disabled={value !== confirmPhrase}
+                            variant="destructive"
+                            type="button"
+                            onClick={() => onSubmit()}
+                        >
+                            <FormattedMessage id="Actions.Delete"/>
+                        </LoadingButton>
                     </Field>
                 </FieldGroup>
             </DialogContent>
