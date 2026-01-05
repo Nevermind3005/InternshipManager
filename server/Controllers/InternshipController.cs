@@ -84,22 +84,21 @@ public class InternshipController(
     }
     
     [HttpGet]
-    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}, {nameof(ERole.ExternalApplication)}")]
     public async Task<ActionResult<PagedResult<InternshipResDto>>> GetInternships(
             [FromQuery] InternshipFilter filter,
             [FromQuery] int skip = 0,
             [FromQuery] int limit = 25
         )
     {
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (userRole is null || userId is null)
+        if (userId is null)
         {
             return Problem();
         }
 
-        if (userRole == nameof(ERole.Student))
+        if (User.IsInRole(nameof(ERole.Student)))
         {
             filter.StudentId = new Guid(userId);
         }

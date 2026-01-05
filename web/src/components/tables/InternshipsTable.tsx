@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-    flexRender,
     getCoreRowModel,
     useReactTable,
     type CellContext,
@@ -17,20 +16,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import type { IInternshipRes } from "@/models/internship/IInternshipRes";
 import { formatDateOnlyString } from "@/lib/foundationUtils";
 import { FormattedMessage } from "react-intl";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "@tanstack/react-router";
 import { useGetAllInternships } from "@/api/hooks/useGetAllInternships";
+import PageableTable from "../foundation/PageableTable";
 
 const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
     const { role } = useAuthStore.getState();
@@ -169,14 +161,15 @@ const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
 };
 
 export function DataTableDemo() {
+    const pageSize = 20;
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-    const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 });
+    const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: pageSize });
 
     const navigate = useNavigate();
 
     const { data: companies } = useGetAllInternships({
         page: pagination.pageIndex + 1,
-        pageSize: 10,
+        pageSize: pageSize,
         filter: Object.fromEntries(
             columnFilters.map(f => [f.id, String(f.value ?? "")])
         ),
@@ -185,11 +178,11 @@ export function DataTableDemo() {
     const columns = getTableColumns(navigate);
 
     const totalPages = companies ? Math.ceil(companies.totalCount / pagination.pageSize) : 0;
-
+    console.log(totalPages);
     const table = useReactTable({
         data: companies?.items ?? [],
         columns,
-        pageCount: companies ? Math.ceil(companies.totalCount / companies.pageSize) : 0,
+        pageCount: totalPages,
         manualPagination: true,
         manualFiltering: true,
         onColumnFiltersChange: setColumnFilters,
@@ -202,8 +195,8 @@ export function DataTableDemo() {
     });
 
     return (
-        <div className="w-full">
-            <div className="flex items-center py-4">
+        <div className="flex flex-col h-full overflow-hidden w-full">
+            <div className="flex items-center py-4 shrink-0">
                 <Input
                     placeholder="Filter names..."
                     value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -239,59 +232,11 @@ export function DataTableDemo() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="overflow-hidden rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-900"
-                                    onClick={() => navigate({ to: `/internships/detail/${row.original.id}` })}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
-                  No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+            <PageableTable table={table} columns={columns} onRowClick={(row) => navigate({ to: `/internships/detail/${row.original.id}` })} totalPages={totalPages}/>
+            {/* <div className="flex-1 overflow-y-auto rounded-md border min-h-0">
+                <TableBase table={table} columns={columns} onRowClick={(row) => navigate({ to: `/internships/detail/${row.original.id}` })}/>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-start space-x-2 py-4 shrink-0">
                 <Button
                     variant="outline"
                     size="sm"
@@ -336,7 +281,7 @@ export function DataTableDemo() {
                 >
                     {">>"}
                 </Button>
-            </div>
+            </div> */}
         </div>
     );
 }

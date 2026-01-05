@@ -10,8 +10,8 @@ export const Route = createFileRoute('/internships/')({
 
 function RouteComponent() {
     return (        
-        <div className="flex h-full w-full justify-center p-2 md:p-4">
-            <div className="w-full max-w-m">
+        <div className="flex flex-col h-full w-full justify-center p-2">
+            <div className="w-full flex flex-col h-full mx-auto">
                 {/** TODO: Replace with actual table */}
                 <DataTableDemo />
                 {/** Only studnt should see button to create a new internship */}

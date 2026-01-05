@@ -57,8 +57,9 @@ services:
       - Auth__Audience=https://api.localhost/api/v1
       - Auth__Lifetime__AccessToken=1
       - Auth__Lifetime__RefreshToken=10080
-      - Mail__From=noreply@imanager.sk
-      - Mail__Name=InternshipManager
+      - Auth__Lifetime__ApplicationToken=60
+      - Mail__From=noreply@internhub.sk
+      - Mail__Name=InternHub
       - Mail__Host=mail-server
       - Mail__Port=25
       - S3__Endpoint=http://minio:9000
@@ -109,7 +110,7 @@ services:
     container_name: mail-server
     restart: unless-stopped
     ports:
-      - "5050:80"
+      - "42069:80"
     networks:
       - network
 volumes:
