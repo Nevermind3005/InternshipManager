@@ -14,7 +14,7 @@ COPY . .
 RUN dotnet build "server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Install EF tools and create migration bundle
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 9.0.0
 ENV PATH="$PATH:/root/.dotnet/tools"
 RUN dotnet ef migrations bundle --project server.csproj --output /app/efbundle
 
