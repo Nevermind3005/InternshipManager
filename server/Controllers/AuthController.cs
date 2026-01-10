@@ -190,15 +190,53 @@ public class AuthController(
     }
     
     /// <summary>
-    /// Generates a new password for user, which is then sent to the user's mail address.
+    /// Initiates password reset flow. Sends an email with reset link if the email exists.
+    /// Always returns 200 OK to prevent email enumeration attacks.
     /// </summary>
-    /// <param name="request">JSON containing email address of the account requesed to reset password</param>
+    /// <param name="request">JSON containing email address of the account</param>
+    /// <response code="200">Request processed (email sent if account exists).</response>
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult> ForgotPassword(ForgotPasswordReqDto request)
+    {
+        await authService.ForgotPasswordAsync(request);
+        
+        // Always return 200 to prevent email enumeration
+        return Ok(new { message = "If an account with that email exists, a password reset link has been sent." });
+    }
+    
+    /// <summary>
+    /// Completes password reset using the token from email.
+    /// </summary>
+    /// <param name="request">JSON containing reset token and new password</param>
+    /// <response code="200">Password was successfully reset.</response>
+    /// <response code="400">If the token is invalid, expired, or already used.</response>
+    [HttpPost("reset-password")]
+    public async Task<ActionResult> ResetPassword(ResetPasswordReqDto request)
+    {
+        var result = await authService.ResetPasswordAsync(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+        
+        return Ok(new { message = "Password has been successfully reset. You can now log in with your new password." });
+    }
+    
+    /// <summary>
+    /// [DEPRECATED] Generates a new password for user, which is then sent to the user's mail address.
+    /// Use POST /forgot-password and POST /reset-password instead.
+    /// </summary>
+    /// <param name="request">JSON containing email address of the account requested to reset password</param>
     /// <response code="200">Password reset was successful.</response>
     /// <response code="404">If the user with specified email was not found.</response>
+    [Obsolete("Use ForgotPassword and ResetPassword endpoints instead")]
     [HttpPost("resetPassword")]
-    public async Task<ActionResult> ResetPassword(UserResetPasswordReqDto request)
+    public async Task<ActionResult> ResetPasswordLegacy(UserResetPasswordReqDto request)
     {
+        #pragma warning disable CS0618
         var result = await authService.ResetUserPasswordAsync(request);
+        #pragma warning restore CS0618
 
         if (result.IsFailure)
         {

@@ -23,9 +23,12 @@ public class AuthService(
     IMapper mapper,
     IOptions<AuthConfiguration> authConfiguration,
     IDetectionService detectionService,
-    IMailService mailService
+    IMailService mailService,
+    IConfiguration configuration,
+    ILogger<AuthService> logger
     ) : IAuthService
 {
+    private readonly AuthConfiguration _authConfig = authConfiguration.Value;
     public async Task<Result<UserResDto>> RegisterStudentAsync(StudentRegisterReqDto request)
     {
         // Check if user already exists, if so return failure
@@ -376,7 +379,166 @@ public class AuthService(
 
         return tokens;
     }
-    
+
+    public async Task<Result> ForgotPasswordAsync(ForgotPasswordReqDto request)
+    {
+        // Always return success to prevent email enumeration
+        // Do all operations but don't reveal if email exists
+        
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        
+        if (user is null)
+        {
+            // Log attempt but don't reveal to caller
+            logger.LogInformation("Password reset requested for non-existent email");
+            return Result.Success();
+        }
+        
+        // Check cooldown - prevent spam
+        var cooldownMinutes = _authConfig.PasswordReset.CooldownMinutes;
+        var recentToken = await context.PasswordResetTokens
+            .Where(t => t.UserId == user.Id && !t.IsRevoked && t.UsedAt == null)
+            .OrderByDescending(t => t.CreatedAt)
+            .FirstOrDefaultAsync();
+        
+        if (recentToken is not null && recentToken.CreatedAt.AddMinutes(cooldownMinutes) > DateTime.UtcNow)
+        {
+            // Cooldown active - don't send new email, but still return success
+            logger.LogInformation("Password reset cooldown active for user {UserId}", user.Id);
+            return Result.Success();
+        }
+        
+        // Revoke all existing unused tokens for this user
+        var existingTokens = await context.PasswordResetTokens
+            .Where(t => t.UserId == user.Id && !t.IsRevoked && t.UsedAt == null)
+            .ToListAsync();
+        
+        foreach (var token in existingTokens)
+        {
+            token.IsRevoked = true;
+        }
+        
+        // Generate new token
+        var plainToken = AuthStatics.GenerateUrlSafeToken(32);
+        var tokenHash = AuthStatics.ComputeSha256Hash(plainToken);
+        var expirationMinutes = _authConfig.PasswordReset.TokenExpirationMinutes;
+        
+        var resetToken = new PasswordResetToken
+        {
+            TokenHash = tokenHash,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes),
+            UserId = user.Id
+        };
+        
+        await context.PasswordResetTokens.AddAsync(resetToken);
+        await context.SaveChangesAsync();
+        
+        // Build reset URL
+        var frontendUrl = configuration.GetValue<string>("Consumers:FrontendURL") ?? "http://localhost:5173";
+        var resetUrl = $"{frontendUrl}/reset-password?token={plainToken}";
+        
+        // Send email
+        var mailModel = new PasswordResetLinkMail
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            ResetUrl = resetUrl,
+            Token = plainToken,
+            ExpirationMinutes = expirationMinutes
+        };
+        
+        try
+        {
+            await mailService.SendMailTemplateAsync(
+                user.Email, 
+                "Reset hesla - InternshipManager",
+                "Templates/PasswordResetLinkMail.cshtml", 
+                mailModel);
+            
+            logger.LogInformation("Password reset email sent to user {UserId}", user.Id);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send password reset email to user {UserId}", user.Id);
+            // Don't fail the request - token is already created
+        }
+        
+        return Result.Success();
+    }
+
+    public async Task<Result> ResetPasswordAsync(ResetPasswordReqDto request)
+    {
+        // Hash the provided token to find it in database
+        var tokenHash = AuthStatics.ComputeSha256Hash(request.Token);
+        
+        var resetToken = await context.PasswordResetTokens
+            .Include(t => t.User)
+            .FirstOrDefaultAsync(t => t.TokenHash == tokenHash);
+        
+        // Validate token exists
+        if (resetToken is null)
+        {
+            logger.LogWarning("Password reset attempted with invalid token");
+            return Result.Failure(Error.InvalidResetToken);
+        }
+        
+        // Validate token not expired
+        if (resetToken.ExpiresAt < DateTime.UtcNow)
+        {
+            logger.LogWarning("Password reset attempted with expired token for user {UserId}", resetToken.UserId);
+            return Result.Failure(Error.InvalidResetToken);
+        }
+        
+        // Validate token not revoked
+        if (resetToken.IsRevoked)
+        {
+            logger.LogWarning("Password reset attempted with revoked token for user {UserId}", resetToken.UserId);
+            return Result.Failure(Error.InvalidResetToken);
+        }
+        
+        // Validate token not already used
+        if (resetToken.UsedAt is not null)
+        {
+            logger.LogWarning("Password reset attempted with already used token for user {UserId}", resetToken.UserId);
+            return Result.Failure(Error.ResetTokenAlreadyUsed);
+        }
+        
+        // Update user's password
+        var user = resetToken.User;
+        user.PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(request.NewPassword);
+        user.IsPasswordDirty = false;
+        
+        // Mark token as used
+        resetToken.UsedAt = DateTime.UtcNow;
+        
+        // Invalidate all other tokens for this user
+        var otherTokens = await context.PasswordResetTokens
+            .Where(t => t.UserId == user.Id && t.Id != resetToken.Id && !t.IsRevoked && t.UsedAt == null)
+            .ToListAsync();
+        
+        foreach (var token in otherTokens)
+        {
+            token.IsRevoked = true;
+        }
+        
+        // Optionally: Revoke all refresh tokens to force re-login everywhere
+        var refreshTokens = await context.RefreshTokens
+            .Where(t => t.UserId == user.Id && t.RevokedAt == null)
+            .ToListAsync();
+        
+        foreach (var refreshToken in refreshTokens)
+        {
+            refreshToken.RevokedAt = DateTime.UtcNow;
+        }
+        
+        await context.SaveChangesAsync();
+        
+        logger.LogInformation("Password successfully reset for user {UserId}", user.Id);
+        
+        return Result.Success();
+    }
+
+    [Obsolete("Use ForgotPasswordAsync and ResetPasswordAsync instead")]
     public async Task<Result> ResetUserPasswordAsync(UserResetPasswordReqDto request)
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
