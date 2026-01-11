@@ -195,8 +195,8 @@ public class AuthController(
     /// </summary>
     /// <param name="request">JSON containing email address of the account</param>
     /// <response code="200">Request processed (email sent if account exists).</response>
-    [HttpPost("forgot-password")]
-    public async Task<ActionResult> ForgotPassword(ForgotPasswordReqDto request)
+    [HttpPost("requestPasswordReset")]
+    public async Task<ActionResult> RequestPasswordReset(ForgotPasswordReqDto request)
     {
         await authService.ForgotPasswordAsync(request);
         
@@ -210,8 +210,8 @@ public class AuthController(
     /// <param name="request">JSON containing reset token and new password</param>
     /// <response code="200">Password was successfully reset.</response>
     /// <response code="400">If the token is invalid, expired, or already used.</response>
-    [HttpPost("reset-password")]
-    public async Task<ActionResult> ResetPassword(ResetPasswordReqDto request)
+    [HttpPost("confirmPasswordReset")]
+    public async Task<ActionResult> ConfirmPasswordReset(ResetPasswordReqDto request)
     {
         var result = await authService.ResetPasswordAsync(request);
 
@@ -225,7 +225,7 @@ public class AuthController(
     
     /// <summary>
     /// [DEPRECATED] Generates a new password for user, which is then sent to the user's mail address.
-    /// Use POST /forgot-password and POST /reset-password instead.
+    /// Use POST /requestPasswordReset and POST /confirmPasswordReset instead.
     /// </summary>
     /// <param name="request">JSON containing email address of the account requested to reset password</param>
     /// <response code="200">Password reset was successful.</response>

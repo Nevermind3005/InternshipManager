@@ -11,8 +11,8 @@ export const API = {
             RegisterCompany: () => 'Auth/register/company',
             RegisterRepresentative: () => 'Auth/register/representative',
             Logout: () => 'Auth/logout',
-            ForgotPassword: () => 'Auth/forgot-password',
-            ResetPassword: () => 'Auth/reset-password'
+            RequestPasswordReset: () => 'Auth/requestPasswordReset',
+            ConfirmPasswordReset: () => 'Auth/confirmPasswordReset'
         },
         Internship: {
             Create: () => 'Internship',

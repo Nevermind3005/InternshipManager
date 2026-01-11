@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { useResetPassword } from "@/api/hooks/useResetPassword";
+import { useConfirmPasswordReset } from "@/api/hooks/useConfirmPasswordReset";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Button } from "../ui/button";
@@ -30,7 +30,7 @@ interface ResetPasswordFormProps {
 }
 
 const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
-    const { mutate: resetPassword, isPending } = useResetPassword();
+    const { mutate: confirmPasswordReset, isPending } = useConfirmPasswordReset();
     const navigate = useNavigate();
     const intl = useIntl();
     const [showPasswords, setShowPasswords] = useState(false);
@@ -52,7 +52,7 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
     }, [newPasswordValue, confirmPasswordValue]);
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
-        resetPassword(
+        confirmPasswordReset(
             { token, newPassword: data.newPassword },
             {
                 onSuccess: () => {

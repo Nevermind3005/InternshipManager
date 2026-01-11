@@ -9,9 +9,9 @@ Accept: application/json
 ### PASSWORD RESET FLOW
 ### ============================================
 
-### Step 1: Request password reset (forgot-password)
+### Step 1: Request password reset
 ### Always returns 200 OK (even if email doesn't exist - security)
-POST {{server_HostAddress}}/api/v1/auth/forgot-password
+POST {{server_HostAddress}}/api/v1/auth/requestPasswordReset
 Content-Type: application/json
 
 {
@@ -20,9 +20,9 @@ Content-Type: application/json
 
 ###
 
-### Step 2: Reset password with token from email
+### Step 2: Confirm password reset with token from email
 ### Replace TOKEN_FROM_EMAIL with actual token
-POST {{server_HostAddress}}/api/v1/auth/reset-password
+POST {{server_HostAddress}}/api/v1/auth/confirmPasswordReset
 Content-Type: application/json
 
 {

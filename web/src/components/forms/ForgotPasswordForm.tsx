@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { useForgotPassword } from "@/api/hooks/useForgotPassword";
+import { useRequestPasswordReset } from "@/api/hooks/useRequestPasswordReset";
 import { Link } from "@tanstack/react-router";
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Button } from "../ui/button";
@@ -20,7 +20,7 @@ const formSchema = z.object({
 });
 
 const ForgotPasswordForm = () => {
-    const { mutate: forgotPassword, isPending } = useForgotPassword();
+    const { mutate: requestPasswordReset, isPending } = useRequestPasswordReset();
     const intl = useIntl();
     const [isSubmitted, setIsSubmitted] = useState(false);
     
@@ -32,13 +32,13 @@ const ForgotPasswordForm = () => {
     });
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
-        forgotPassword(data, {
+        requestPasswordReset(data, {
             onSuccess: () => {
                 setIsSubmitted(true);
             },
             onError: (error) => {
                 // Log error for debugging (check browser console)
-                console.error("ForgotPassword error:", error);
+                console.error("RequestPasswordReset error:", error);
                 
                 // Only show error for network/server issues
                 // Don't reveal if email exists or not
