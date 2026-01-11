@@ -32,5 +32,10 @@ export const API = {
             GetAll: () => 'Company',
             GetRepresentativeByEmail: (id: string, email: string) => `Company/${id}/representative/${email}`
         },
+        OAuth: {
+            CreateApplication: () => 'OAuth/createApplication',
+            GetAllApplications: () => 'OAuth/applications',
+            DeleteApplication: (id: string) => `OAuth/deleteApplication/${id}`
+        }
     }
 };

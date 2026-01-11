@@ -10,6 +10,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Internship> Internships { get; set; }
+    public DbSet<ApiApplication> Applications { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -5,6 +5,7 @@ public class AuthConfiguration
     public required string SigningKey { get; set; }
     public required string Issuer { get; set; }
     public required string Audience { get; set; }
+    // Defined in minutes
     public required AuthLifetime Lifetime { get; set; }
     public PasswordResetConfiguration PasswordReset { get; set; } = new();
 }
@@ -26,4 +27,5 @@ public class PasswordResetConfiguration
     /// Minimum time in minutes before a new token can be requested. Default: 2 minutes.
     /// </summary>
     public int CooldownMinutes { get; set; } = 2;
+    public uint ApplicationToken { get; set; }
 }
