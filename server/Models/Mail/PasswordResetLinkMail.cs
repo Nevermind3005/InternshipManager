@@ -14,11 +14,6 @@ public class PasswordResetLinkMail
     public string ResetUrl { get; set; } = string.Empty;
     
     /// <summary>
-    /// The reset token (for testing via Scalar/API).
-    /// </summary>
-    public string Token { get; set; } = string.Empty;
-    
-    /// <summary>
     /// Number of minutes until the token expires.
     /// </summary>
     public int ExpirationMinutes { get; set; }

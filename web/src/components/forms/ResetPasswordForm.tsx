@@ -227,23 +227,25 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
-                                    <div className="mt-2 flex items-center gap-2 text-sm">
-                                        {passwordsMatch ? (
-                                            <>
-                                                <CheckIcon className="size-4 text-emerald-500" aria-hidden="true" />
-                                                <span className="text-emerald-600 dark:text-emerald-400">
-                                                    <FormattedMessage id="Profile.ChangePassword.Match" />
-                                                </span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <AlertCircle className="size-4 text-amber-500" aria-hidden="true" />
-                                                <span className="text-amber-600 dark:text-amber-400">
-                                                    <FormattedMessage id="Profile.ChangePassword.NotMatch" />
-                                                </span>
-                                            </>
-                                        )}
-                                    </div>
+                                    {confirmPasswordValue.length > 0 && (
+                                        <div className="mt-2 flex items-center gap-2 text-sm">
+                                            {passwordsMatch ? (
+                                                <>
+                                                    <CheckIcon className="size-4 text-emerald-500" aria-hidden="true" />
+                                                    <span className="text-emerald-600 dark:text-emerald-400">
+                                                        <FormattedMessage id="Profile.ChangePassword.Match" />
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <AlertCircle className="size-4 text-amber-500" aria-hidden="true" />
+                                                    <span className="text-amber-600 dark:text-amber-400">
+                                                        <FormattedMessage id="Profile.ChangePassword.NotMatch" />
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </Field>
                             )}
                         />

@@ -395,13 +395,14 @@ public class AuthService(
         }
         
         // Check cooldown - prevent spam
+        // Check ANY recent token (including revoked) to prevent rapid requests
         var cooldownMinutes = _authConfig.PasswordReset.CooldownMinutes;
-        var recentToken = await context.PasswordResetTokens
-            .Where(t => t.UserId == user.Id && !t.IsRevoked && t.UsedAt == null)
+        var mostRecentToken = await context.PasswordResetTokens
+            .Where(t => t.UserId == user.Id)
             .OrderByDescending(t => t.CreatedAt)
             .FirstOrDefaultAsync();
         
-        if (recentToken is not null && recentToken.CreatedAt.AddMinutes(cooldownMinutes) > DateTime.UtcNow)
+        if (mostRecentToken is not null && mostRecentToken.CreatedAt.AddMinutes(cooldownMinutes) > DateTime.UtcNow)
         {
             // Cooldown active - don't send new email, but still return success
             logger.LogInformation("Password reset cooldown active for user {UserId}", user.Id);
@@ -443,7 +444,6 @@ public class AuthService(
             FirstName = user.FirstName,
             LastName = user.LastName,
             ResetUrl = resetUrl,
-            Token = plainToken,
             ExpirationMinutes = expirationMinutes
         };
         
@@ -558,10 +558,10 @@ public class AuthService(
         
         await context.SaveChangesAsync();
 
-        var mailTemplateModel = new StudentRegisterMail
+        var mailTemplateModel = new UserResetPasswordMail
         {
-            FirstName = "",
-            LastName = "",
+            FirstName = user.FirstName,
+            LastName = user.LastName,
             GeneratedPassword = password
         };
         

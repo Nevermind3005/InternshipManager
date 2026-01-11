@@ -36,10 +36,7 @@ const ForgotPasswordForm = () => {
             onSuccess: () => {
                 setIsSubmitted(true);
             },
-            onError: (error) => {
-                // Log error for debugging (check browser console)
-                console.error("RequestPasswordReset error:", error);
-                
+            onError: () => {
                 // Only show error for network/server issues
                 // Don't reveal if email exists or not
                 toast.error(intl.formatMessage({ id: "Error.Generic" }));
