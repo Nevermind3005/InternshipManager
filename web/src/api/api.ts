@@ -10,7 +10,9 @@ export const API = {
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
             RegisterCompany: () => 'Auth/register/company',
             RegisterRepresentative: () => 'Auth/register/representative',
-            Logout: () => 'Auth/logout'
+            Logout: () => 'Auth/logout',
+            RequestPasswordReset: () => 'Auth/requestPasswordReset',
+            ConfirmPasswordReset: () => 'Auth/confirmPasswordReset'
         },
         Internship: {
             Create: () => 'Internship',

@@ -4,3 +4,41 @@ GET {{server_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+### ============================================
+### PASSWORD RESET FLOW
+### ============================================
+
+### Step 1: Request password reset
+### Always returns 200 OK (even if email doesn't exist - security)
+POST {{server_HostAddress}}/api/v1/auth/requestPasswordReset
+Content-Type: application/json
+
+{
+  "email": "handler@mail.com"
+}
+
+###
+
+### Step 2: Confirm password reset with token from email
+### Replace TOKEN_FROM_EMAIL with actual token
+POST {{server_HostAddress}}/api/v1/auth/confirmPasswordReset
+Content-Type: application/json
+
+{
+  "token": "TOKEN_FROM_EMAIL",
+  "newPassword": "NewSecurePassword123"
+}
+
+###
+
+### Login to test new password
+POST {{server_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "handler@mail.com",
+  "password": "NewSecurePassword123"
+}
+
+###

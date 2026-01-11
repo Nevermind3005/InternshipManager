@@ -49,5 +49,7 @@ public sealed record Error(string Key, string? Description = null)
     public static readonly Error InvalidApplicationCredentials = new("Errors.Auth.InvalidApplicationCredentials", "Client id or secret incorrect.");
     public static readonly Error InvalidAuthToken = new("Errors.Auth.InvalidAuthToken", "Provided auth token is invalid.");
     public static readonly Error BadRequest = new("Errors.Common.BadRequest", "The requested operation was invalid.");
+    public static readonly Error InvalidResetToken = new("Errors.Auth.InvalidResetToken", "The password reset token is invalid or has expired.");
+    public static readonly Error ResetTokenAlreadyUsed = new("Errors.Auth.ResetTokenAlreadyUsed", "This password reset token has already been used.");
     public static implicit operator Result(Error error) => Result.Failure(error);
 }
