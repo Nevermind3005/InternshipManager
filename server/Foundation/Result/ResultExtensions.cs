@@ -29,6 +29,7 @@ public static class ResultExtensions
         [Error.NotFound.Key] = StatusCodes.Status404NotFound,
         [Error.UserAlreadyExists.Key] = StatusCodes.Status400BadRequest,
         [Error.InvalidCredentials.Key] = StatusCodes.Status401Unauthorized,
+        [Error.InvalidApplicationCredentials.Key] = StatusCodes.Status401Unauthorized,
         [Error.InvalidAuthToken.Key] = StatusCodes.Status401Unauthorized,
         [Error.BadRequest.Key] = StatusCodes.Status400BadRequest,
     };

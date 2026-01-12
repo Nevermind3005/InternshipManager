@@ -36,4 +36,7 @@ public class Internship : EntityBase
     
     public Guid CompanyId { get; set; }
     public Company Company { get; set; } = null!;
+    
+    public Guid? StudyProgramId { get; set; }
+    public StudyProgram? StudyProgram { get; set; }
 }

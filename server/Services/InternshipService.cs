@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Entities;
 using server.Foundation.Result;
-using server.Foundation.Utils;
 using server.Models;
 using server.Models.Filters;
 using server.Models.Internship;
@@ -42,12 +41,6 @@ public class InternshipService(
         
         await context.SaveChangesAsync();
 
-        // Load related entities for response mapping
-        await context.Entry(dbInternship.Entity).Reference(i => i.Student).LoadAsync();
-        await context.Entry(dbInternship.Entity).Reference(i => i.CompanyRepresentative).LoadAsync();
-        await context.Entry(dbInternship.Entity).Reference(i => i.Company).LoadAsync();
-
-
         var response = mapper.Map<InternshipResDto>(dbInternship.Entity);
         
         return Result<InternshipResDto>.Success(response);
@@ -58,6 +51,7 @@ public class InternshipService(
         var internship = await context.Internships
             .Include(i => i.Company)
             .Include(i => i.CompanyRepresentative)
+            .Include(i => i.StudyProgram)
             .Include(i => i.Student)
             .Where(i => i.Id == id)
             .FirstOrDefaultAsync();
@@ -121,12 +115,18 @@ public class InternshipService(
             query = query.Where(i => i.CompanyRepresentativeId == filter.CompanyRepresentativeId);
         }
         
+        if (filter.StudyProgramId is not null)
+        {
+            query = query.Where(i => i.StudyProgramId == filter.StudyProgramId);
+        }
+        
         var totalCount = await query.CountAsync();
         
         var items = await query
             .Include(i => i.Student)
             .Include(i => i.Company)
             .Include(i => i.CompanyRepresentative)
+            .Include(i => i.StudyProgram)
             .Skip(skip)
             .Take(limit)
             .ToListAsync();
@@ -154,6 +154,7 @@ public class InternshipService(
             .Include(i => i.Company)
             .Include(i => i.Student)
             .Include(i => i.CompanyRepresentative)
+            .Include(i => i.StudyProgram)
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (internship is null)
@@ -182,6 +183,7 @@ public class InternshipService(
         internship.Semester = request.Semester;
         internship.CompanyRepresentativeId = request.CompanyRepresentativeId;
         internship.CompanyId = request.CompanyId;
+        internship.StudyProgramId = request.StudyProgramId;
 
         await context.SaveChangesAsync();
 

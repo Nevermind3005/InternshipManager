@@ -6,5 +6,6 @@ export interface IInternshipReq {
   year: number,
   semester: string,
   companyRepresentativeId: string,
-  companyId: string
+  companyId: string,
+  studyProgramId?: string | null
 }

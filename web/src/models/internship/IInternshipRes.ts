@@ -1,4 +1,5 @@
 import type { ICompanyRes } from "../company/ICompanyRes";
+import type { IStudyProgramRes } from "../studyProgram/IStudyProgramRes";
 import type { IUserRes } from "../user/IUserRes";
 
 export interface IInternshipRes {
@@ -15,5 +16,7 @@ export interface IInternshipRes {
   companyRepresentativeId: string,
   companyRepresentative: IUserRes,
   company: ICompanyRes,
-  companyId: string
+  companyId: string,
+  studyProgramId: string | null,
+  studyProgram: IStudyProgramRes | null
 }

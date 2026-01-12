@@ -86,10 +86,9 @@ public class InternshipController(
 
         return Ok(result.Value);
     }
-
     
     [HttpGet]
-    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}, {nameof(ERole.ExternalApplication)}")]
     public async Task<ActionResult<PagedResult<InternshipResDto>>> GetInternships(
             [FromQuery] InternshipFilter filter,
             [FromQuery] int skip = 0,
@@ -104,7 +103,7 @@ public class InternshipController(
             return Problem();
         }
 
-        if (userRole == nameof(ERole.Student))
+        if (User.IsInRole(nameof(ERole.Student)))
         {
             filter.StudentId = userGuid;
         }

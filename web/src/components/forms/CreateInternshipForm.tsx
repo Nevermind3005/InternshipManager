@@ -10,6 +10,7 @@ import { useCreateInternship } from "@/api/hooks/useCreateInternship";
 import DatePickerField from "../foundation/fields/DatePickerField";
 import YearSelectField from "../foundation/fields/YearSelectField";
 import { SemesterSelectField } from "../foundation/fields/SemesterSelectField";
+import StudyProgramSelectField from "../foundation/fields/StudyProgramSelectField";
 import { getSeason, toDateOnlyString } from "@/lib/foundationUtils";
 import type { IInternshipReq } from "@/models/internship/IInternshipReq";
 import CompanySelectField from "../foundation/fields/CompanySelectField";
@@ -41,6 +42,11 @@ const formSchema = z.object({
         .string(),
     semester: z
         .string(),
+    studyProgramId: z
+        .string()
+        .uuid()
+        .or(z.literal(""))
+        .optional(),
     email: z
         .string()
         .email(),
@@ -126,7 +132,8 @@ const CreateInternshipForm = () => {
             year: parseInt(data.year),
             semester: data.semester,
             companyRepresentativeId: foundRepresentative!.id,
-            companyId: data.companyId
+            companyId: data.companyId,
+            studyProgramId: data.studyProgramId || null
         };
         createInternship(reqJson, {
             onError: async (error) => {
@@ -369,6 +376,27 @@ const CreateInternshipForm = () => {
                                                 )}
                                             />
                                         </Field>
+                                    </Field>
+                                    <Field>
+                                        <Controller
+                                            name="studyProgramId"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="CreateInternship_StudyProgram">
+                                                        <FormattedMessage id="CreateInternship.StudyProgram" />
+                                                    </FieldLabel>
+                                                    <StudyProgramSelectField
+                                                        {...field}
+                                                        id="CreateInternship_StudyProgram"
+                                                        aria-invalid={fieldState.invalid}
+                                                    />
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
+                                            )}
+                                        />
                                     </Field>
                                     <Field>
                                         <LoadingButton isPending={isPending} form="CreateInternship"><FormattedMessage id="Actions.Create"/></LoadingButton>

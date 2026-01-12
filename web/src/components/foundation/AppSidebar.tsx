@@ -1,4 +1,4 @@
-import { ClipboardCheckIcon, FingerprintIcon, LogOut, Home, Lock, type LucideProps } from "lucide-react";
+import { ClipboardCheckIcon, FingerprintIcon, LogOut, Home, Lock, Settings, type LucideProps } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from "../ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
@@ -34,9 +34,15 @@ const navMain : ISidebarNav[] = [
         roles: ["Student", "InternshipHandler", "CompanyRepresentative"]
     },
     {
-        title: "Sidebar.Admin",
-        url: "/admin",
+        title: "Sidebar.Applications",
+        url: "/applications",
         icon: Lock,
+        roles: ["InternshipHandler"]
+    },
+    {
+        title: "Sidebar.Settings",
+        url: "/settings",
+        icon: Settings,
         roles: ["InternshipHandler"]
     }
 ];

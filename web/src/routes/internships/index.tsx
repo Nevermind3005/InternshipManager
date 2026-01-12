@@ -1,6 +1,6 @@
 import FloatingActionButton from '@/components/foundation/FloatingActionButton';
 import { PermissionGuard } from '@/components/foundation/PermissionGuard';
-import { DataTableDemo } from '@/components/tables/InternshipsTable';
+import { InternshipsTable } from '@/components/tables/InternshipsTable';
 import router from '@/lib/router';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -10,10 +10,10 @@ export const Route = createFileRoute('/internships/')({
 
 function RouteComponent() {
     return (        
-        <div className="flex h-full w-full justify-center p-2 md:p-4">
-            <div className="w-full max-w-m">
+        <div className="flex flex-col h-full w-full justify-center p-2">
+            <div className="w-full flex flex-col h-full mx-auto">
                 {/** TODO: Replace with actual table */}
-                <DataTableDemo />
+                <InternshipsTable />
                 {/** Only studnt should see button to create a new internship */}
                 <PermissionGuard roles={['Student']}>
                     <FloatingActionButton onClick={() => { router.navigate({ to: '/internships/new' }); }}/>

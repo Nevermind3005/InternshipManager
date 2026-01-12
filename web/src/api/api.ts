@@ -10,7 +10,9 @@ export const API = {
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
             RegisterCompany: () => 'Auth/register/company',
             RegisterRepresentative: () => 'Auth/register/representative',
-            Logout: () => 'Auth/logout'
+            Logout: () => 'Auth/logout',
+            RequestPasswordReset: () => 'Auth/requestPasswordReset',
+            ConfirmPasswordReset: () => 'Auth/confirmPasswordReset'
         },
         Internship: {
             Create: () => 'Internship',
@@ -32,5 +34,15 @@ export const API = {
             GetAll: () => 'Company',
             GetRepresentativeByEmail: (id: string, email: string) => `Company/${id}/representative/${email}`
         },
+        OAuth: {
+            CreateApplication: () => 'OAuth/createApplication',
+            GetAllApplications: () => 'OAuth/applications',
+            DeleteApplication: (id: string) => `OAuth/deleteApplication/${id}`
+        },
+        StudyProgram: {
+            Create: () => 'StudyProgram',
+            GetAll: () => 'StudyProgram',
+            GetById: (id: string) => `StudyProgram/${id}`
+        }
     }
 };

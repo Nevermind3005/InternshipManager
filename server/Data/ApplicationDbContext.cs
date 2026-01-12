@@ -7,9 +7,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<User> Users { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Internship> Internships { get; set; }
-    public DbSet<InternshipApprovalToken> InternshipApprovalTokens { get; set; }
+    public DbSet<StudyProgram> StudyPrograms { get; set; }
+    public DbSet<ApiApplication> Applications { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -22,6 +22,43 @@ namespace server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("server.Entities.ApiApplication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("client_id");
+
+                    b.Property<string>("ClientSecretHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("client_secret_hash");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_applications");
+
+                    b.ToTable("applications", (string)null);
+                });
+
             modelBuilder.Entity("server.Entities.Company", b =>
                 {
                     b.Property<Guid>("Id")
@@ -33,15 +70,15 @@ namespace server.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
                         .HasColumnName("name");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.HasKey("Id")
                         .HasName("pk_companies");
@@ -101,6 +138,10 @@ namespace server.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("student_id");
 
+                    b.Property<Guid?>("StudyProgramId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("study_program_id");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -121,10 +162,13 @@ namespace server.Migrations
                     b.HasIndex("StudentId")
                         .HasDatabaseName("ix_internships_student_id");
 
+                    b.HasIndex("StudyProgramId")
+                        .HasDatabaseName("ix_internships_study_program_id");
+
                     b.ToTable("internships", (string)null);
                 });
 
-            modelBuilder.Entity("server.Entities.InternshipApprovalToken", b =>
+            modelBuilder.Entity("server.Entities.PasswordResetToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,31 +183,38 @@ namespace server.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expires_at");
 
-                    b.Property<Guid>("InternshipId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("internship_id");
-
-                    b.Property<bool>("IsUsed")
+                    b.Property<bool>("IsRevoked")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_used");
+                        .HasColumnName("is_revoked");
 
-                    b.Property<string>("Token")
+                    b.Property<string>("TokenHash")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
-                        .HasColumnName("token");
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("token_hash");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
 
                     b.Property<DateTime?>("UsedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("used_at");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
-                        .HasName("pk_internship_approval_tokens");
+                        .HasName("pk_password_reset_tokens");
 
-                    b.HasIndex("InternshipId")
-                        .HasDatabaseName("ix_internship_approval_tokens_internship_id");
+                    b.HasIndex("TokenHash")
+                        .HasDatabaseName("ix_password_reset_tokens_token_hash");
 
-                    b.ToTable("internship_approval_tokens", (string)null);
+                    b.HasIndex("UserId", "IsRevoked", "UsedAt")
+                        .HasDatabaseName("ix_password_reset_tokens_user_id_is_revoked_used_at");
+
+                    b.ToTable("password_reset_tokens", (string)null);
                 });
 
             modelBuilder.Entity("server.Entities.RefreshToken", b =>
@@ -220,6 +271,37 @@ namespace server.Migrations
                         .HasDatabaseName("ix_refresh_tokens_user_id");
 
                     b.ToTable("refresh_tokens", (string)null);
+                });
+
+            modelBuilder.Entity("server.Entities.StudyProgram", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_study_programs");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_study_programs_code");
+
+                    b.ToTable("study_programs", (string)null);
                 });
 
             modelBuilder.Entity("server.Entities.User", b =>
@@ -365,23 +447,31 @@ namespace server.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_internships_users_student_id");
 
+                    b.HasOne("server.Entities.StudyProgram", "StudyProgram")
+                        .WithMany("Internships")
+                        .HasForeignKey("StudyProgramId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_internships_study_programs_study_program_id");
+
                     b.Navigation("Company");
 
                     b.Navigation("CompanyRepresentative");
 
                     b.Navigation("Student");
+
+                    b.Navigation("StudyProgram");
                 });
 
-            modelBuilder.Entity("server.Entities.InternshipApprovalToken", b =>
+            modelBuilder.Entity("server.Entities.PasswordResetToken", b =>
                 {
-                    b.HasOne("server.Entities.Internship", "Internship")
+                    b.HasOne("server.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("InternshipId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_internship_approval_tokens_internships_internship_id");
+                        .HasConstraintName("fk_password_reset_tokens_users_user_id");
 
-                    b.Navigation("Internship");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("server.Entities.RefreshToken", b =>
@@ -451,6 +541,11 @@ namespace server.Migrations
                     b.Navigation("Internships");
 
                     b.Navigation("Representatives");
+                });
+
+            modelBuilder.Entity("server.Entities.StudyProgram", b =>
+                {
+                    b.Navigation("Internships");
                 });
 
             modelBuilder.Entity("server.Entities.User", b =>

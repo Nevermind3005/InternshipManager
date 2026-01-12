@@ -9,18 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ManagementRouteImport } from './routes/management'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
+import { Route as ApplicationsRouteImport } from './routes/applications'
 import { Route as InternshipsRouteRouteImport } from './routes/internships/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as InternshipsIndexRouteImport } from './routes/internships/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as InternshipsNewIndexRouteImport } from './routes/internships/new/index'
 import { Route as InternshipsEditInternshipIdRouteImport } from './routes/internships/edit/$internshipId'
 import { Route as InternshipsDetailInternshipIdRouteImport } from './routes/internships/detail/$internshipId'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -36,9 +45,19 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
   id: '/changeDefaultPassword',
   path: '/changeDefaultPassword',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplicationsRoute = ApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InternshipsRouteRoute = InternshipsRouteRouteImport.update({
@@ -49,6 +68,11 @@ const InternshipsRouteRoute = InternshipsRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InternshipsIndexRoute = InternshipsIndexRouteImport.update({
@@ -82,24 +106,32 @@ const InternshipsDetailInternshipIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/internships': typeof InternshipsRouteRouteWithChildren
+  '/applications': typeof ApplicationsRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/account': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/internships/new': typeof InternshipsNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/applications': typeof ApplicationsRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/account': typeof AccountIndexRoute
   '/internships': typeof InternshipsIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/internships/new': typeof InternshipsNewIndexRoute
@@ -108,12 +140,16 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/internships': typeof InternshipsRouteRouteWithChildren
+  '/applications': typeof ApplicationsRoute
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/account/': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/internships/new/': typeof InternshipsNewIndexRoute
@@ -123,24 +159,32 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/internships'
+    | '/applications'
     | '/changeDefaultPassword'
+    | '/forgot-password'
     | '/login'
     | '/management'
     | '/register'
+    | '/reset-password'
     | '/account'
     | '/internships/'
+    | '/settings'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
     | '/internships/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/applications'
     | '/changeDefaultPassword'
+    | '/forgot-password'
     | '/login'
     | '/management'
     | '/register'
+    | '/reset-password'
     | '/account'
     | '/internships'
+    | '/settings'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
     | '/internships/new'
@@ -148,12 +192,16 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/internships'
+    | '/applications'
     | '/changeDefaultPassword'
+    | '/forgot-password'
     | '/login'
     | '/management'
     | '/register'
+    | '/reset-password'
     | '/account/'
     | '/internships/'
+    | '/settings/'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
     | '/internships/new/'
@@ -162,15 +210,26 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InternshipsRouteRoute: typeof InternshipsRouteRouteWithChildren
+  ApplicationsRoute: typeof ApplicationsRoute
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   ManagementRoute: typeof ManagementRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   AccountIndexRoute: typeof AccountIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -192,11 +251,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/changeDefaultPassword': {
       id: '/changeDefaultPassword'
       path: '/changeDefaultPassword'
       fullPath: '/changeDefaultPassword'
       preLoaderRoute: typeof ChangeDefaultPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/applications': {
+      id: '/applications'
+      path: '/applications'
+      fullPath: '/applications'
+      preLoaderRoute: typeof ApplicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/internships': {
@@ -211,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/internships/': {
@@ -271,11 +351,15 @@ const InternshipsRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InternshipsRouteRoute: InternshipsRouteRouteWithChildren,
+  ApplicationsRoute: ApplicationsRoute,
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   ManagementRoute: ManagementRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   AccountIndexRoute: AccountIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
