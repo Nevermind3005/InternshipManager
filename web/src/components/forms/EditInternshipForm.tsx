@@ -40,7 +40,8 @@ const formSchema = z.object({
     studyProgramId: z
         .string()
         .uuid()
-        .optional(),
+        .optional()
+        .or(z.literal("")),
 }).refine((data) => data.endDate > data.startDate, {
     message: "Internship.EndAfterStart",
     path: ["endDate"]
