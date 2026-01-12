@@ -12,17 +12,23 @@ import { toast } from "sonner";
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
 import { useChangePassword } from "@/api/hooks/useChangePassword";
 import type { IChangePasswordReq } from "@/models/auth/IChangePasswordReq";
+import PasswordStrengthMeter from "../ui/PasswordStrengthMeter";
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]).{8,}$/;
 
 const formSchema = z.object({
     currentPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters."),
+        .min(8),
     newPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters."),
+        .min(8)
+        .max(256)
+        .regex(passwordRegex),
     confirmPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters.")
+        .min(8)
+        .max(256)
 }).refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match.",
     path: ["confirmPassword"]
@@ -148,6 +154,7 @@ const ChangePasswordForm = () => {
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
+                                    <PasswordStrengthMeter password={newPasswordValue} />
                                 </Field>
                             )}
                         />

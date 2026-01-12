@@ -238,5 +238,27 @@
     "Internship.Decline": "Decline",
     "Internship.ApproveSuccess": "Internship approved successfully",
     "Internship.DeclineSuccess": "Internship declined successfully",
-    "Internship.ActionNotAvailable": "This internship has already been processed"
+    "Internship.ActionNotAvailable": "This internship has already been processed",
+
+    "Validation.Password.MinLength": "At least 8 characters",
+    "Validation.Password.Uppercase": "One uppercase letter (A-Z)",
+    "Validation.Password.Lowercase": "One lowercase letter (a-z)",
+    "Validation.Password.Number": "One number (0-9)",
+    "Validation.Password.Special": "One special character (!@#$%^&*...)",
+    "Validation.Password.Invalid": "Password does not meet security requirements",
+
+    "PasswordStrength.Label": "Password strength",
+    "PasswordStrength.VeryWeak": "Very weak",
+    "PasswordStrength.Weak": "Weak",
+    "PasswordStrength.Medium": "Medium",
+    "PasswordStrength.Strong": "Strong",
+    "PasswordStrength.VeryStrong": "Very strong",
+    "PasswordStrength.Requirements": "Password requirements",
+
+    "Validation.Phone.Invalid": "Phone number can only contain numbers and + sign",
+    "Validation.Phone.TooShort": "Phone number is too short",
+    "Validation.Phone.TooLong": "Phone number is too long",
+
+    "ChangeDefaultPassword.Title": "Change your default password",
+    "ChangeDefaultPassword.Description": "Enter your new password"
 }

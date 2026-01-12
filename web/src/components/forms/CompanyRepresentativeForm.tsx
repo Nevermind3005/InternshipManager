@@ -20,6 +20,8 @@ interface ICompanyRepresentativeFormProps {
     companyId: string;
 }
 
+const phoneRegex = /^\+?[0-9]{6,19}$/;
+
 // TODO later add error messages and translations
 const formSchema = z.object({
     email: z
@@ -36,7 +38,9 @@ const formSchema = z.object({
     phone: z
         .string()
         .nonempty()
-        .max(20),
+        .min(7)
+        .max(20)
+        .regex(phoneRegex),
 });
 
 const CompanyRepresentativeForm = ({ open, onOpenChange, email, companyId } : ICompanyRepresentativeFormProps) => {

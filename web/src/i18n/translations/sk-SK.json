@@ -236,5 +236,27 @@
     "Internship.Decline": "Odmietnuť",
     "Internship.ApproveSuccess": "Stáž bola úspešne schválená",
     "Internship.DeclineSuccess": "Stáž bola úspešne odmietnutá",
-    "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná"
+    "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná",
+
+    "Validation.Password.MinLength": "Aspoň 8 znakov",
+    "Validation.Password.Uppercase": "Jedno veľké písmeno (A-Z)",
+    "Validation.Password.Lowercase": "Jedno malé písmeno (a-z)",
+    "Validation.Password.Number": "Jedno číslo (0-9)",
+    "Validation.Password.Special": "Jeden špeciálny znak (!@#$%^&*...)",
+    "Validation.Password.Invalid": "Heslo nespĺňa bezpečnostné požiadavky",
+
+    "PasswordStrength.Label": "Sila hesla",
+    "PasswordStrength.VeryWeak": "Veľmi slabé",
+    "PasswordStrength.Weak": "Slabé",
+    "PasswordStrength.Medium": "Stredné",
+    "PasswordStrength.Strong": "Silné",
+    "PasswordStrength.VeryStrong": "Veľmi silné",
+    "PasswordStrength.Requirements": "Požiadavky na heslo",
+
+    "Validation.Phone.Invalid": "Telefónne číslo môže obsahovať len čísla a znak +",
+    "Validation.Phone.TooShort": "Telefónne číslo je príliš krátke",
+    "Validation.Phone.TooLong": "Telefónne číslo je príliš dlhé",
+
+    "ChangeDefaultPassword.Title": "Zmeňte svoje predvolené heslo",
+    "ChangeDefaultPassword.Description": "Zadajte nové heslo"
 }

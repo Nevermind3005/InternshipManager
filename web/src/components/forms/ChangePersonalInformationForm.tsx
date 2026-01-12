@@ -18,6 +18,8 @@ import type { IUpdateCompanyRepresentativePersonalInfoReq } from "@/models/user/
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
 import { useAuthStore } from "@/store/useAuthStore";
 
+const phoneRegex = /^\+?[0-9]{6,19}$/;
+
 const createFormSchema = (role: string) => {
     const baseSchema = {
         firstName: z
@@ -40,7 +42,9 @@ const createFormSchema = (role: string) => {
             phone: z
                 .string()
                 .nonempty("Phone number is required")
-                .max(20, "Phone number is too long"),
+                .min(7)
+                .max(20)
+                .regex(phoneRegex),
         });
     } else {
         // Student: all fields including address
@@ -49,7 +53,9 @@ const createFormSchema = (role: string) => {
             phone: z
                 .string()
                 .nonempty("Phone number is required")
-                .max(20, "Phone number is too long"),
+                .min(7)
+                .max(20)
+                .regex(phoneRegex),
             city: z
                 .string()
                 .nonempty("City is required")

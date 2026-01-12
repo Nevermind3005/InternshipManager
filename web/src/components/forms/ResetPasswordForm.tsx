@@ -12,14 +12,20 @@ import { Input } from "../ui/input";
 import { FormattedMessage, useIntl } from "react-intl";
 import { toast } from "sonner";
 import { HTTPError } from "ky";
+import PasswordStrengthMeter from "../ui/PasswordStrengthMeter";
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]).{8,}$/;
 
 const formSchema = z.object({
     newPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters"),
+        .min(8)
+        .max(256)
+        .regex(passwordRegex),
     confirmPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters")
+        .min(8)
+        .max(256)
 }).refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"]
@@ -184,6 +190,7 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
+                                    <PasswordStrengthMeter password={newPasswordValue} />
                                 </Field>
                             )}
                         />

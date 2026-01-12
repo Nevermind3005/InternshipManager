@@ -13,6 +13,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
 
 
+const phoneRegex = /^\+?[0-9]{6,19}$/;
+
 // TODO later add error messages and translations
 const formSchema = z.object({
     email: z
@@ -35,7 +37,9 @@ const formSchema = z.object({
     phone: z
         .string()
         .nonempty()
-        .max(20),
+        .min(7)
+        .max(20)
+        .regex(phoneRegex),
     city: z
         .string()
         .nonempty()
