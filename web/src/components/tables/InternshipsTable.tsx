@@ -4,7 +4,6 @@ import {
     useReactTable,
     type CellContext,
     type ColumnDef,
-    type ColumnFiltersState,
 } from "@tanstack/react-table";
 import { ChevronDown, PencilIcon } from "lucide-react";
 
@@ -15,7 +14,6 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import type { IInternshipRes } from "@/models/internship/IInternshipRes";
 import { formatDateOnlyString } from "@/lib/foundationUtils";
 import { FormattedMessage } from "react-intl";
@@ -23,6 +21,18 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "@tanstack/react-router";
 import { useGetAllInternships } from "@/api/hooks/useGetAllInternships";
 import PageableTable from "../foundation/PageableTable";
+import InternshipFilters from "../filters/InternshipFilters";
+
+interface FilterValues {
+    name?: string;
+    year?: string;
+    semester?: string;
+    studyProgramId?: string;
+    company?: string;
+    firstName?: string;
+    lastName?: string;
+    state?: string;
+}
 
 const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
     const { role } = useAuthStore.getState();
@@ -77,6 +87,16 @@ const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
                 );
             },
             cell: ({ row }) => <div className="">{row.getValue("companyName")}</div>,
+        },
+        {
+            accessorFn: row => row.studyProgram?.code,
+            accessorKey: "studyProgram",
+            header: () => {
+                return (
+                    <FormattedMessage id="Internship.TableHeader.StudyProgram"/>
+                );
+            },
+            cell: ({ row }) => <div className="">{row.getValue("studyProgram") || "-"}</div>,
         },
         {
             accessorKey: "startDate",
@@ -160,55 +180,76 @@ const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
     return columns;
 };
 
-export function DataTableDemo() {
+export function InternshipsTable() {
     const pageSize = 20;
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [filters, setFilters] = React.useState<FilterValues>({});
     const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: pageSize });
 
     const navigate = useNavigate();
 
-    const { data: companies } = useGetAllInternships({
+    // Convert filters to API format
+    const apiFilters = React.useMemo(() => {
+        const result: Record<string, string> = {};
+        if (filters.name) result.Name = filters.name;
+        if (filters.year) result.Year = filters.year;
+        if (filters.semester) result.Semester = filters.semester;
+        if (filters.studyProgramId) result.StudyProgramId = filters.studyProgramId;
+        if (filters.company) result.Company = filters.company;
+        if (filters.firstName) result.FirstName = filters.firstName;
+        if (filters.lastName) result.LastName = filters.lastName;
+        if (filters.state) result.State = filters.state;
+        return result;
+    }, [filters]);
+
+    const { data: internships } = useGetAllInternships({
         page: pagination.pageIndex + 1,
         pageSize: pageSize,
-        filter: Object.fromEntries(
-            columnFilters.map(f => [f.id, String(f.value ?? "")])
-        ),
+        filter: apiFilters,
     });
 
     const columns = getTableColumns(navigate);
 
-    const totalPages = companies ? Math.ceil(companies.totalCount / pagination.pageSize) : 0;
-    console.log(totalPages);
+    const totalPages = internships ? Math.ceil(internships.totalCount / pagination.pageSize) : 0;
+
     const table = useReactTable({
-        data: companies?.items ?? [],
+        data: internships?.items ?? [],
         columns,
         pageCount: totalPages,
         manualPagination: true,
         manualFiltering: true,
-        onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         state: {
-            columnFilters,
             pagination,
         },
     });
 
+    const handleFilterChange = (key: keyof FilterValues, value: string) => {
+        setFilters(prev => ({ ...prev, [key]: value }));
+        // Reset to first page when filter changes
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    };
+
+    const handleClearFilters = () => {
+        setFilters({});
+        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+    };
+
     return (
         <div className="flex flex-col h-full overflow-hidden w-full">
-            <div className="flex items-center py-4 shrink-0">
-                <Input
-                    placeholder="Filter names..."
-                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("name")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
+            {/* Filters */}
+            <InternshipFilters
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onClearFilters={handleClearFilters}
+            />
+
+            {/* Column visibility dropdown */}
+            <div className="flex items-center justify-end py-2 shrink-0">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
+                        <Button variant="outline" size="sm">
+                            <FormattedMessage id="Filter.Columns" /> <ChevronDown className="ml-1 h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -232,56 +273,14 @@ export function DataTableDemo() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <PageableTable table={table} columns={columns} onRowClick={(row) => navigate({ to: `/internships/detail/${row.original.id}` })} totalPages={totalPages}/>
-            {/* <div className="flex-1 overflow-y-auto rounded-md border min-h-0">
-                <TableBase table={table} columns={columns} onRowClick={(row) => navigate({ to: `/internships/detail/${row.original.id}` })}/>
-            </div>
-            <div className="flex items-center justify-start space-x-2 py-4 shrink-0">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.setPageIndex(0)}
-                    disabled={pagination.pageIndex === 0}
-                >
-                    {"<<"}
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={pagination.pageIndex === 0}
-                >
-    Previous
-                </Button>
 
-                {Array.from({ length: totalPages }).map((_, i) => (
-                    <Button
-                        key={i}
-                        variant={i === pagination.pageIndex ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => table.setPageIndex(i)}
-                    >
-                        {i + 1}
-                    </Button>
-                ))}
-
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={pagination.pageIndex >= totalPages - 1}
-                >
-    Next
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.setPageIndex(totalPages - 1)}
-                    disabled={pagination.pageIndex >= totalPages - 1}
-                >
-                    {">>"}
-                </Button>
-            </div> */}
+            {/* Table */}
+            <PageableTable 
+                table={table} 
+                columns={columns} 
+                onRowClick={(row) => navigate({ to: `/internships/detail/${row.original.id}` })} 
+                totalPages={totalPages}
+            />
         </div>
     );
 }

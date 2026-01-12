@@ -32,5 +32,6 @@ public class InternshipReqDto
     public Guid CompanyRepresentativeId { get; set; }
     
     public Guid CompanyId { get; set; }
-
+    
+    public Guid? StudyProgramId { get; set; }
 }

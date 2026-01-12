@@ -14,6 +14,7 @@ public class AuthLifetime
 {
     public uint AccessToken { get; set; }
     public uint RefreshToken { get; set; }
+    public uint ApplicationToken { get; set; }
 }
 
 public class PasswordResetConfiguration
@@ -27,5 +28,4 @@ public class PasswordResetConfiguration
     /// Minimum time in minutes before a new token can be requested. Default: 2 minutes.
     /// </summary>
     public int CooldownMinutes { get; set; } = 2;
-    public uint ApplicationToken { get; set; }
 }
