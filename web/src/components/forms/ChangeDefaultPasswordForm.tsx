@@ -12,8 +12,7 @@ import { Button } from "../ui/button";
 import { EyeIcon, EyeOffIcon, LoaderIcon } from "lucide-react";
 import { FormattedMessage, useIntl } from "react-intl";
 import PasswordStrengthMeter from "../ui/PasswordStrengthMeter";
-
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]).{8,}$/;
+import { passwordRegex } from "@/lib/validation";
 
 const formSchema = z.object({
     password: z
@@ -92,17 +91,16 @@ const ChangeDefaultPasswordForm = () => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowPassword((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showPassword 
+                                                ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
+                                                : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showPassword}
                                         >
                                             {showPassword ? (
                                                 <EyeOffIcon className="size-4" aria-hidden="true" />
                                             ) : (
                                                 <EyeIcon className="size-4" aria-hidden="true" />
                                             )}
-                                            <span className="sr-only">
-                                                {showPassword 
-                                                    ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
-                                                    : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (

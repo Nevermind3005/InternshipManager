@@ -1,15 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using server.Foundation.Utils;
 
 namespace server.Models.User.Student;
 
 public class StudentRegisterReqDto
 {
-    private const string PhoneRegex = @"^\+?[0-9]{6,19}$";
-    private const string PhoneErrorMessage = "Telefónne číslo môže obsahovať len čísla a znak +.";
-
     [Required]
     [MaxLength(256)]
-    [RegularExpression(@"^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$")]
+    [RegularExpression(ValidationConstants.StudentEmailRegex)]
     public string Email { get; set; } = string.Empty;
     
     [MaxLength(256)]
@@ -29,6 +27,6 @@ public class StudentRegisterReqDto
     
     [Required]
     [MaxLength(20)]
-    [RegularExpression(PhoneRegex, ErrorMessage = PhoneErrorMessage)]
+    [RegularExpression(ValidationConstants.PhoneRegex, ErrorMessage = "Validation.Phone.Invalid")]
     public string Phone { get; set; } = string.Empty;
 }

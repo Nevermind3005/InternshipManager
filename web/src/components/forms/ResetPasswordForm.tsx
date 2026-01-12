@@ -13,8 +13,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { toast } from "sonner";
 import { HTTPError } from "ky";
 import PasswordStrengthMeter from "../ui/PasswordStrengthMeter";
-
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]).{8,}$/;
+import { passwordRegex } from "@/lib/validation";
 
 const formSchema = z.object({
     newPassword: z
@@ -174,17 +173,16 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowPasswords((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showPasswords 
+                                                ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
+                                                : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showPasswords}
                                         >
                                             {showPasswords ? (
                                                 <EyeOffIcon className="size-4" aria-hidden="true" />
                                             ) : (
                                                 <EyeIcon className="size-4" aria-hidden="true" />
                                             )}
-                                            <span className="sr-only">
-                                                {showPasswords 
-                                                    ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
-                                                    : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (
@@ -218,17 +216,16 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowPasswords((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showPasswords 
+                                                ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
+                                                : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showPasswords}
                                         >
                                             {showPasswords ? (
                                                 <EyeOffIcon className="size-4" aria-hidden="true" />
                                             ) : (
                                                 <EyeIcon className="size-4" aria-hidden="true" />
                                             )}
-                                            <span className="sr-only">
-                                                {showPasswords 
-                                                    ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
-                                                    : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (

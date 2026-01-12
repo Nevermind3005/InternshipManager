@@ -1,12 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using server.Foundation.Utils;
 
 namespace server.Models.User;
 
 public class UpdateCompanyRepresentativePersonalInfoReqDto
 {
-    private const string PhoneRegex = @"^\+?[0-9]{6,19}$";
-    private const string PhoneErrorMessage = "Telefónne číslo môže obsahovať len čísla a znak +.";
-
     [Required]
     [MaxLength(128)]
     public string FirstName { get; set; } = string.Empty;
@@ -17,7 +15,7 @@ public class UpdateCompanyRepresentativePersonalInfoReqDto
     
     [Required]
     [MaxLength(20)]
-    [RegularExpression(PhoneRegex, ErrorMessage = PhoneErrorMessage)]
+    [RegularExpression(ValidationConstants.PhoneRegex, ErrorMessage = "Validation.Phone.Invalid")]
     public string Phone { get; set; } = string.Empty;
 }
 

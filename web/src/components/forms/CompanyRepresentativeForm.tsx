@@ -12,6 +12,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { useEffect } from "react";
 import { useRegisterRepresentative } from "@/api/hooks/useRegisterRepresentative";
 import type { IRepresentativeRegisterReq } from "@/models/user/representative/IRepresentativeRegister";
+import { phoneRegex } from "@/lib/validation";
 
 interface ICompanyRepresentativeFormProps {
     open: boolean;
@@ -20,27 +21,25 @@ interface ICompanyRepresentativeFormProps {
     companyId: string;
 }
 
-const phoneRegex = /^\+?[0-9]{6,19}$/;
-
-// TODO later add error messages and translations
 const formSchema = z.object({
     email: z
         .string()
-        .email(),
+        .nonempty("Validation.Email.Required")
+        .email("Validation.Email.Invalid"),
     firstName: z
         .string()
-        .nonempty()
-        .max(128),
+        .nonempty("Validation.FirstName.Required")
+        .max(128, "Validation.FirstName.TooLong"),
     lastName: z
         .string()
-        .nonempty()
-        .max(128),
+        .nonempty("Validation.LastName.Required")
+        .max(128, "Validation.LastName.TooLong"),
     phone: z
         .string()
-        .nonempty("Telefónne číslo je povinné")
-        .min(7, "Telefónne číslo je príliš krátke")
-        .max(20, "Telefónne číslo je príliš dlhé")
-        .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
+        .nonempty("Validation.Phone.Required")
+        .min(7, "Validation.Phone.TooShort")
+        .max(20, "Validation.Phone.TooLong")
+        .regex(phoneRegex, "Validation.Phone.Invalid"),
 });
 
 const CompanyRepresentativeForm = ({ open, onOpenChange, email, companyId } : ICompanyRepresentativeFormProps) => {

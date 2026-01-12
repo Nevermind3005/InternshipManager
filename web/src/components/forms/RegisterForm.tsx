@@ -11,9 +11,7 @@ import { LoaderIcon } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { FormattedMessage, useIntl } from 'react-intl';
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
-
-
-const phoneRegex = /^\+?[0-9]{6,19}$/;
+import { phoneRegex, studentEmailRegex } from "@/lib/validation";
 
 // TODO later add error messages and translations
 const formSchema = z.object({
@@ -21,7 +19,7 @@ const formSchema = z.object({
         .string()
         .email()
         .nonempty()
-        .regex(new RegExp(String.raw`^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$`), "Not a student mail"),
+        .regex(studentEmailRegex, "Not a student mail"),
     alternativeEmail: z.union( [
         z.literal( '' ),
         z.string().email(),
@@ -36,10 +34,10 @@ const formSchema = z.object({
         .max(128),
     phone: z
         .string()
-        .nonempty("Telefónne číslo je povinné")
-        .min(7, "Telefónne číslo je príliš krátke")
-        .max(20, "Telefónne číslo je príliš dlhé")
-        .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
+        .nonempty("Validation.Phone.Required")
+        .min(7, "Validation.Phone.TooShort")
+        .max(20, "Validation.Phone.TooLong")
+        .regex(phoneRegex, "Validation.Phone.Invalid"),
     city: z
         .string()
         .nonempty()

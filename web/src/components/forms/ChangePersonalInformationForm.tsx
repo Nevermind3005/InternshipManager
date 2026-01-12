@@ -17,19 +17,18 @@ import type { IUpdateInternshipHandlerPersonalInfoReq } from "@/models/user/IUpd
 import type { IUpdateCompanyRepresentativePersonalInfoReq } from "@/models/user/IUpdateCompanyRepresentativePersonalInfoReq";
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
 import { useAuthStore } from "@/store/useAuthStore";
-
-const phoneRegex = /^\+?[0-9]{6,19}$/;
+import { phoneRegex } from "@/lib/validation";
 
 const createFormSchema = (role: string) => {
     const baseSchema = {
         firstName: z
             .string()
-            .nonempty("First name is required")
-            .max(128, "First name is too long"),
+            .nonempty("Validation.FirstName.Required")
+            .max(128, "Validation.FirstName.TooLong"),
         lastName: z
             .string()
-            .nonempty("Last name is required")
-            .max(128, "Last name is too long"),
+            .nonempty("Validation.LastName.Required")
+            .max(128, "Validation.LastName.TooLong"),
     };
 
     if (role === 'InternshipHandler') {
@@ -41,10 +40,10 @@ const createFormSchema = (role: string) => {
             ...baseSchema,
             phone: z
                 .string()
-                .nonempty("Telefónne číslo je povinné")
-                .min(7, "Telefónne číslo je príliš krátke")
-                .max(20, "Telefónne číslo je príliš dlhé")
-                .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
+                .nonempty("Validation.Phone.Required")
+                .min(7, "Validation.Phone.TooShort")
+                .max(20, "Validation.Phone.TooLong")
+                .regex(phoneRegex, "Validation.Phone.Invalid"),
         });
     } else {
         // Student: all fields including address
@@ -52,26 +51,26 @@ const createFormSchema = (role: string) => {
             ...baseSchema,
             phone: z
                 .string()
-                .nonempty("Telefónne číslo je povinné")
-                .min(7, "Telefónne číslo je príliš krátke")
-                .max(20, "Telefónne číslo je príliš dlhé")
-                .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
+                .nonempty("Validation.Phone.Required")
+                .min(7, "Validation.Phone.TooShort")
+                .max(20, "Validation.Phone.TooLong")
+                .regex(phoneRegex, "Validation.Phone.Invalid"),
             city: z
                 .string()
-                .nonempty("City is required")
-                .max(128, "City name is too long"),
+                .nonempty("Validation.City.Required")
+                .max(128, "Validation.City.TooLong"),
             street: z
                 .string()
-                .nonempty("Street is required")
-                .max(128, "Street name is too long"),
+                .nonempty("Validation.Street.Required")
+                .max(128, "Validation.Street.TooLong"),
             buildingNumber: z
                 .string()
-                .nonempty("Building number is required")
-                .max(16, "Building number is too long"),
+                .nonempty("Validation.BuildingNumber.Required")
+                .max(16, "Validation.BuildingNumber.TooLong"),
             zipCode: z
                 .string()
-                .nonempty("ZIP code is required")
-                .max(16, "ZIP code is too long")
+                .nonempty("Validation.ZipCode.Required")
+                .max(16, "Validation.ZipCode.TooLong")
         });
     }
 };

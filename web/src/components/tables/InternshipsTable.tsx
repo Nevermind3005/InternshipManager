@@ -186,6 +186,8 @@ export function InternshipsTable() {
     const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: pageSize });
 
     const navigate = useNavigate();
+    const { role } = useAuthStore();
+    const isTeacher = role === "InternshipHandler";
 
     // Convert filters to API format
     const apiFilters = React.useMemo(() => {
@@ -237,12 +239,14 @@ export function InternshipsTable() {
 
     return (
         <div className="flex flex-col h-full overflow-hidden w-full">
-            {/* Filters */}
-            <InternshipFilters
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                onClearFilters={handleClearFilters}
-            />
+            {/* Filters - only for teachers */}
+            {isTeacher && (
+                <InternshipFilters
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                    onClearFilters={handleClearFilters}
+                />
+            )}
 
             {/* Column visibility dropdown */}
             <div className="flex items-center justify-end py-2 shrink-0">

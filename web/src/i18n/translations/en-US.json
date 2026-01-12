@@ -261,6 +261,22 @@
     "Validation.Phone.Required": "Phone number is required",
     "Validation.Phone.Hint": "Format: +421901234567 or 0901234567",
 
+    "Validation.FirstName.Required": "First name is required",
+    "Validation.FirstName.TooLong": "First name is too long",
+    "Validation.LastName.Required": "Last name is required",
+    "Validation.LastName.TooLong": "Last name is too long",
+    "Validation.City.Required": "City is required",
+    "Validation.City.TooLong": "City name is too long",
+    "Validation.Street.Required": "Street is required",
+    "Validation.Street.TooLong": "Street name is too long",
+    "Validation.BuildingNumber.Required": "Building number is required",
+    "Validation.BuildingNumber.TooLong": "Building number is too long",
+    "Validation.ZipCode.Required": "ZIP code is required",
+    "Validation.ZipCode.TooLong": "ZIP code is too long",
+
+    "Validation.Email.Required": "Email is required",
+    "Validation.Email.Invalid": "Invalid email address",
+
     "ChangeDefaultPassword.Title": "Change your default password",
     "ChangeDefaultPassword.Description": "Enter your new password"
 }
