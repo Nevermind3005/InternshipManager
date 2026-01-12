@@ -180,7 +180,7 @@ const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
     return columns;
 };
 
-export function DataTableDemo() {
+export function InternshipsTable() {
     const pageSize = 20;
     const [filters, setFilters] = React.useState<FilterValues>({});
     const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: pageSize });
