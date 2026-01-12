@@ -20,7 +20,6 @@ interface ICreateStudyProgramFormProps {
 const formSchema = z.object({
     code: z
         .string()
-        .nonempty()
         .min(2)
         .max(16)
 });

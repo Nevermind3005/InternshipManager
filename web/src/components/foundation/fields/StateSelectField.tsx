@@ -9,7 +9,7 @@ import {
 import { FormattedMessage } from "react-intl";
 
 const INTERNSHIP_STATES = [
-    { value: "", labelId: "Filter.State.All" },
+    { value: "all", labelId: "Filter.State.All" },
     { value: "Created", labelId: "Internship.State.Created" },
     { value: "Confirmed", labelId: "Internship.State.Confirmed" },
     { value: "Rejected", labelId: "Internship.State.Rejected" },
@@ -31,7 +31,7 @@ const StateSelectField = React.forwardRef<HTMLButtonElement, StateSelectFieldPro
     ({ value, onChange, onBlur, id, "aria-invalid": ariaInvalid, disabled }, ref) => {
         return (
             <Select
-                value={value || ""}
+                value={value || "all"}
                 onValueChange={(val) => onChange?.(val)}
                 disabled={disabled}
             >
@@ -46,7 +46,7 @@ const StateSelectField = React.forwardRef<HTMLButtonElement, StateSelectFieldPro
                 </SelectTrigger>
                 <SelectContent>
                     {INTERNSHIP_STATES.map((state) => (
-                        <SelectItem key={state.value || "all"} value={state.value || "all"}>
+                        <SelectItem key={state.value} value={state.value}>
                             <FormattedMessage id={state.labelId} />
                         </SelectItem>
                     ))}

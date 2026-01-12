@@ -159,7 +159,7 @@ const InternshipFilters = ({ filters, onFilterChange, onClearFilters }: Internsh
                         </Label>
                         <StateSelectField
                             id="filter-state"
-                            value={filters.state || ""}
+                            value={filters.state || "all"}
                             onChange={(val) => onFilterChange("state", val === "all" ? "" : val)}
                         />
                     </div>
