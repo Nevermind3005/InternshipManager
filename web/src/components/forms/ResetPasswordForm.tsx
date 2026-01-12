@@ -12,14 +12,19 @@ import { Input } from "../ui/input";
 import { FormattedMessage, useIntl } from "react-intl";
 import { toast } from "sonner";
 import { HTTPError } from "ky";
+import PasswordStrengthMeter from "../ui/PasswordStrengthMeter";
+import { passwordRegex } from "@/lib/validation";
 
 const formSchema = z.object({
     newPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters"),
+        .min(8)
+        .max(256)
+        .regex(passwordRegex),
     confirmPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters")
+        .min(8)
+        .max(256)
 }).refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"]
@@ -168,22 +173,22 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowPasswords((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showPasswords 
+                                                ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
+                                                : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showPasswords}
                                         >
                                             {showPasswords ? (
                                                 <EyeOffIcon className="size-4" aria-hidden="true" />
                                             ) : (
                                                 <EyeIcon className="size-4" aria-hidden="true" />
                                             )}
-                                            <span className="sr-only">
-                                                {showPasswords 
-                                                    ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
-                                                    : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
+                                    <PasswordStrengthMeter password={newPasswordValue} />
                                 </Field>
                             )}
                         />
@@ -211,17 +216,16 @@ const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowPasswords((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showPasswords 
+                                                ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
+                                                : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showPasswords}
                                         >
                                             {showPasswords ? (
                                                 <EyeOffIcon className="size-4" aria-hidden="true" />
                                             ) : (
                                                 <EyeIcon className="size-4" aria-hidden="true" />
                                             )}
-                                            <span className="sr-only">
-                                                {showPasswords 
-                                                    ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
-                                                    : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (

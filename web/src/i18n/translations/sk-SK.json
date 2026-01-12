@@ -236,5 +236,45 @@
     "Internship.Decline": "Odmietnuť",
     "Internship.ApproveSuccess": "Stáž bola úspešne schválená",
     "Internship.DeclineSuccess": "Stáž bola úspešne odmietnutá",
-    "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná"
+    "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná",
+
+    "Validation.Password.MinLength": "Aspoň 8 znakov",
+    "Validation.Password.Uppercase": "Jedno veľké písmeno (A-Z)",
+    "Validation.Password.Lowercase": "Jedno malé písmeno (a-z)",
+    "Validation.Password.Number": "Jedno číslo (0-9)",
+    "Validation.Password.Special": "Jeden špeciálny znak (!@#$%^&*...)",
+    "Validation.Password.Invalid": "Heslo nespĺňa bezpečnostné požiadavky",
+
+    "PasswordStrength.Label": "Sila hesla",
+    "PasswordStrength.VeryWeak": "Veľmi slabé",
+    "PasswordStrength.Weak": "Slabé",
+    "PasswordStrength.Medium": "Stredné",
+    "PasswordStrength.Strong": "Silné",
+    "PasswordStrength.VeryStrong": "Veľmi silné",
+    "PasswordStrength.Requirements": "Požiadavky na heslo",
+
+    "Validation.Phone.Invalid": "Telefónne číslo môže obsahovať len čísla a znak +",
+    "Validation.Phone.TooShort": "Telefónne číslo je príliš krátke",
+    "Validation.Phone.TooLong": "Telefónne číslo je príliš dlhé",
+    "Validation.Phone.Required": "Telefónne číslo je povinné",
+    "Validation.Phone.Hint": "Formát: +421901234567 alebo 0901234567",
+
+    "Validation.FirstName.Required": "Meno je povinné",
+    "Validation.FirstName.TooLong": "Meno je príliš dlhé",
+    "Validation.LastName.Required": "Priezvisko je povinné",
+    "Validation.LastName.TooLong": "Priezvisko je príliš dlhé",
+    "Validation.City.Required": "Mesto je povinné",
+    "Validation.City.TooLong": "Názov mesta je príliš dlhý",
+    "Validation.Street.Required": "Ulica je povinná",
+    "Validation.Street.TooLong": "Názov ulice je príliš dlhý",
+    "Validation.BuildingNumber.Required": "Číslo domu je povinné",
+    "Validation.BuildingNumber.TooLong": "Číslo domu je príliš dlhé",
+    "Validation.ZipCode.Required": "PSČ je povinné",
+    "Validation.ZipCode.TooLong": "PSČ je príliš dlhé",
+
+    "Validation.Email.Required": "Email je povinný",
+    "Validation.Email.Invalid": "Neplatná emailová adresa",
+
+    "ChangeDefaultPassword.Title": "Zmeňte svoje predvolené heslo",
+    "ChangeDefaultPassword.Description": "Zadajte nové heslo"
 }

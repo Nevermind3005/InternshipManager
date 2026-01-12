@@ -15,8 +15,8 @@ import { toast } from "sonner";
 const formSchema = z.object({
     email: z
         .string()
-        .min(1, "Email is required")
-        .email("Invalid email address")
+        .min(1, "Validation.Email.Required")
+        .email("Validation.Email.Invalid")
 });
 
 const ForgotPasswordForm = () => {

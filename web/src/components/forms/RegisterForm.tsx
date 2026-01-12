@@ -11,7 +11,7 @@ import { LoaderIcon } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { FormattedMessage, useIntl } from 'react-intl';
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
-
+import { phoneRegex, studentEmailRegex } from "@/lib/validation";
 
 // TODO later add error messages and translations
 const formSchema = z.object({
@@ -19,7 +19,7 @@ const formSchema = z.object({
         .string()
         .email()
         .nonempty()
-        .regex(new RegExp(String.raw`^[a-zá-ž]+\.[a-zá-ž]+(\d+)?@student\.ukf\.sk$`), "Not a student mail"),
+        .regex(studentEmailRegex, "Not a student mail"),
     alternativeEmail: z.union( [
         z.literal( '' ),
         z.string().email(),
@@ -34,8 +34,10 @@ const formSchema = z.object({
         .max(128),
     phone: z
         .string()
-        .nonempty()
-        .max(20),
+        .nonempty("Validation.Phone.Required")
+        .min(7, "Validation.Phone.TooShort")
+        .max(20, "Validation.Phone.TooLong")
+        .regex(phoneRegex, "Validation.Phone.Invalid"),
     city: z
         .string()
         .nonempty()
@@ -205,9 +207,12 @@ const RegisterForm = () => {
                                         {...field}
                                         id="StudentRegisterForm_Phone"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="+421xxxxxxxxx"
-                                        autoComplete="on"
+                                        placeholder="+421901234567"
+                                        autoComplete="tel"
                                     />
+                                    <FieldDescription>
+                                        <FormattedMessage id="Validation.Phone.Hint" />
+                                    </FieldDescription>
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}

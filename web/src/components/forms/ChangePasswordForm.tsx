@@ -12,17 +12,22 @@ import { toast } from "sonner";
 import { errorResponseHandler } from "@/lib/errorResponseHandler";
 import { useChangePassword } from "@/api/hooks/useChangePassword";
 import type { IChangePasswordReq } from "@/models/auth/IChangePasswordReq";
+import PasswordStrengthMeter from "../ui/PasswordStrengthMeter";
+import { passwordRegex } from "@/lib/validation";
 
 const formSchema = z.object({
     currentPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters."),
+        .min(8),
     newPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters."),
+        .min(8)
+        .max(256)
+        .regex(passwordRegex),
     confirmPassword: z
         .string()
-        .min(8, "Password must be at least 8 characters.")
+        .min(8)
+        .max(256)
 }).refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match.",
     path: ["confirmPassword"]
@@ -101,11 +106,10 @@ const ChangePasswordForm = () => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowCurrentPassword((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showCurrentPassword ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showCurrentPassword}
                                         >
                                             {showCurrentPassword ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
-                                            <span className="sr-only">
-                                                {showCurrentPassword ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (
@@ -138,16 +142,16 @@ const ChangePasswordForm = () => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowNewPasswords((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showNewPasswords}
                                         >
                                             {showNewPasswords ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
-                                            <span className="sr-only">
-                                                {showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
+                                    <PasswordStrengthMeter password={newPasswordValue} />
                                 </Field>
                             )}
                         />
@@ -175,11 +179,10 @@ const ChangePasswordForm = () => {
                                             className="absolute inset-y-0 right-1 my-auto h-8 w-8"
                                             onClick={() => setShowNewPasswords((prev) => !prev)}
                                             tabIndex={-1}
+                                            aria-label={showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showNewPasswords}
                                         >
                                             {showNewPasswords ? <EyeOffIcon className="size-4" aria-hidden="true" /> : <EyeIcon className="size-4" aria-hidden="true" />}
-                                            <span className="sr-only">
-                                                {showNewPasswords ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" }) : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
-                                            </span>
                                         </Button>
                                     </div>
                                     {fieldState.invalid && (

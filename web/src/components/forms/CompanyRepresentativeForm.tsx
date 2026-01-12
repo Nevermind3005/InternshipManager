@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { LoaderIcon } from "lucide-react";
@@ -12,6 +12,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { useEffect } from "react";
 import { useRegisterRepresentative } from "@/api/hooks/useRegisterRepresentative";
 import type { IRepresentativeRegisterReq } from "@/models/user/representative/IRepresentativeRegister";
+import { phoneRegex } from "@/lib/validation";
 
 interface ICompanyRepresentativeFormProps {
     open: boolean;
@@ -20,23 +21,25 @@ interface ICompanyRepresentativeFormProps {
     companyId: string;
 }
 
-// TODO later add error messages and translations
 const formSchema = z.object({
     email: z
         .string()
-        .email(),
+        .nonempty("Validation.Email.Required")
+        .email("Validation.Email.Invalid"),
     firstName: z
         .string()
-        .nonempty()
-        .max(128),
+        .nonempty("Validation.FirstName.Required")
+        .max(128, "Validation.FirstName.TooLong"),
     lastName: z
         .string()
-        .nonempty()
-        .max(128),
+        .nonempty("Validation.LastName.Required")
+        .max(128, "Validation.LastName.TooLong"),
     phone: z
         .string()
-        .nonempty()
-        .max(20),
+        .nonempty("Validation.Phone.Required")
+        .min(7, "Validation.Phone.TooShort")
+        .max(20, "Validation.Phone.TooLong")
+        .regex(phoneRegex, "Validation.Phone.Invalid"),
 });
 
 const CompanyRepresentativeForm = ({ open, onOpenChange, email, companyId } : ICompanyRepresentativeFormProps) => {
@@ -166,16 +169,19 @@ const CompanyRepresentativeForm = ({ open, onOpenChange, email, companyId } : IC
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="StudentRegisterForm_Phone">
+                                    <FieldLabel htmlFor="CompanyRepresentativeForm_Phone">
                                         <FormattedMessage id="SignUp.PhoneNumber" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
-                                        id="StudentRegisterForm_Phone"
+                                        id="CompanyRepresentativeForm_Phone"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="+421xxxxxxxxx"
-                                        autoComplete="on"
+                                        placeholder="+421901234567"
+                                        autoComplete="tel"
                                     />
+                                    <FieldDescription>
+                                        <FormattedMessage id="Validation.Phone.Hint" />
+                                    </FieldDescription>
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
