@@ -126,14 +126,34 @@ public class InternshipController(
     [HttpPost("{id:guid}/approve")]
     [Authorize(Roles = nameof(ERole.CompanyRepresentative))]
     public Task<ActionResult<InternshipResDto>> ApproveInternship(Guid id) =>
-        ChangeInternshipStateAsync(id, EInternshipState.Confirmed);
+        ChangeInternshipStateAsync(id, EInternshipState.Confirmed, ERole.CompanyRepresentative);
 
     [HttpPost("{id:guid}/decline")]
     [Authorize(Roles = nameof(ERole.CompanyRepresentative))]
     public Task<ActionResult<InternshipResDto>> DeclineInternship(Guid id) =>
-        ChangeInternshipStateAsync(id, EInternshipState.Rejected);
+        ChangeInternshipStateAsync(id, EInternshipState.Rejected, ERole.CompanyRepresentative);
 
-    private async Task<ActionResult<InternshipResDto>> ChangeInternshipStateAsync(Guid id, EInternshipState newState)
+    [HttpPost("{id:guid}/handler/approve")]
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    public Task<ActionResult<InternshipResDto>> HandlerApproveInternship(Guid id) =>
+        ChangeInternshipStateAsync(id, EInternshipState.Approved, ERole.InternshipHandler);
+
+    [HttpPost("{id:guid}/handler/reject")]
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    public Task<ActionResult<InternshipResDto>> HandlerRejectInternship(Guid id) =>
+        ChangeInternshipStateAsync(id, EInternshipState.Rejected, ERole.InternshipHandler);
+
+    [HttpPost("{id:guid}/handler/pass")]
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    public Task<ActionResult<InternshipResDto>> HandlerPassInternship(Guid id) =>
+        ChangeInternshipStateAsync(id, EInternshipState.Passed, ERole.InternshipHandler);
+
+    [HttpPost("{id:guid}/handler/fail")]
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    public Task<ActionResult<InternshipResDto>> HandlerFailInternship(Guid id) =>
+        ChangeInternshipStateAsync(id, EInternshipState.Failed, ERole.InternshipHandler);
+
+    private async Task<ActionResult<InternshipResDto>> ChangeInternshipStateAsync(Guid id, EInternshipState newState, ERole editorRole)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -149,12 +169,13 @@ public class InternshipController(
             return internshipResult.ToProblemDetails();
         }
 
-        if (internshipResult.Value.CompanyRepresentativeId != userGuid)
+        // Only check ownership for CompanyRepresentative, InternshipHandler can modify any internship
+        if (editorRole == ERole.CompanyRepresentative && internshipResult.Value.CompanyRepresentativeId != userGuid)
         {
             return Forbid();
         }
 
-        var changeResult = await internshipService.ChangeStateAsync(id, newState);
+        var changeResult = await internshipService.ChangeStateAsync(id, newState, editorRole);
 
         if (changeResult.IsFailure)
         {

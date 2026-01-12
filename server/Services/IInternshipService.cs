@@ -12,5 +12,5 @@ public interface IInternshipService
     Task<Result<InternshipResDto>> GetInternshipByIdAsync(Guid id);
     Task<Result<PagedResult<InternshipResDto>>> GetInternshipsAsync(InternshipFilter filter, int skip, int limit);
     Task<Result<InternshipResDto>> UpdateInternshipAsync(Guid id, InternshipReqDto request);
-    Task<Result<InternshipResDto>> ChangeStateAsync(Guid id, EInternshipState newState);
+    Task<Result<InternshipResDto>> ChangeStateAsync(Guid id, EInternshipState newState, ERole editorRole);
 }
