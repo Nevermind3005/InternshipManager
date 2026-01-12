@@ -18,6 +18,7 @@ import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaul
 import { Route as ApplicationsRouteImport } from './routes/applications'
 import { Route as InternshipsRouteRouteImport } from './routes/internships/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as InternshipsIndexRouteImport } from './routes/internships/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as InternshipsNewIndexRouteImport } from './routes/internships/new/index'
@@ -69,6 +70,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InternshipsIndexRoute = InternshipsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/account': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/internships/new': typeof InternshipsNewIndexRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/account': typeof AccountIndexRoute
   '/internships': typeof InternshipsIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/internships/new': typeof InternshipsNewIndexRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/account/': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
   '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
   '/internships/new/': typeof InternshipsNewIndexRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/account'
     | '/internships/'
+    | '/settings'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
     | '/internships/new'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/account'
     | '/internships'
+    | '/settings'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
     | '/internships/new'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/account/'
     | '/internships/'
+    | '/settings/'
     | '/internships/detail/$internshipId'
     | '/internships/edit/$internshipId'
     | '/internships/new/'
@@ -206,6 +218,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   AccountIndexRoute: typeof AccountIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -271,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/internships/': {
@@ -339,6 +359,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   AccountIndexRoute: AccountIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

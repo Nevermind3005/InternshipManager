@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using server.Data;
 using server.Models.Company;
+using server.Models.StudyProgram;
 using server.Models.User;
 
 namespace server.Models.Internship;
@@ -44,4 +45,7 @@ public class InternshipResDto
     
     public Guid CompanyId { get; set; }
     public CompanyResDto Company { get; set; } = null!;
+    
+    public Guid? StudyProgramId { get; set; }
+    public StudyProgramResDto? StudyProgram { get; set; }
 }

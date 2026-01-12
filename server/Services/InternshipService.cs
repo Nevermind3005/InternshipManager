@@ -48,7 +48,12 @@ public class InternshipService(
 
     public async Task<Result<InternshipResDto>> GetInternshipByIdAsync(Guid id)
     {
-        var internship = await context.Internships.Include(i => i.Company).Include(i => i.CompanyRepresentative).Where(i => i.Id == id).FirstOrDefaultAsync();
+        var internship = await context.Internships
+            .Include(i => i.Company)
+            .Include(i => i.CompanyRepresentative)
+            .Include(i => i.StudyProgram)
+            .Where(i => i.Id == id)
+            .FirstOrDefaultAsync();
 
         if (internship is null)
         {
@@ -104,12 +109,18 @@ public class InternshipService(
             query = query.Where(i => i.StudentId == filter.StudentId);
         }
         
+        if (filter.StudyProgramId is not null)
+        {
+            query = query.Where(i => i.StudyProgramId == filter.StudyProgramId);
+        }
+        
         var totalCount = await query.CountAsync();
         
         var items = await query
             .Include(i => i.Student)
             .Include(i => i.Company)
             .Include(i => i.CompanyRepresentative)
+            .Include(i => i.StudyProgram)
             .Skip(skip)
             .Take(limit)
             .ToListAsync();
@@ -137,6 +148,7 @@ public class InternshipService(
             .Include(i => i.Company)
             .Include(i => i.Student)
             .Include(i => i.CompanyRepresentative)
+            .Include(i => i.StudyProgram)
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (internship is null)
@@ -165,6 +177,7 @@ public class InternshipService(
         internship.Semester = request.Semester;
         internship.CompanyRepresentativeId = request.CompanyRepresentativeId;
         internship.CompanyId = request.CompanyId;
+        internship.StudyProgramId = request.StudyProgramId;
 
         await context.SaveChangesAsync();
 

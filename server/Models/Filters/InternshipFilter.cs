@@ -15,4 +15,6 @@ public class InternshipFilter
     
     [JsonIgnore]
     public Guid? StudentId { get; set; }
+    
+    public Guid? StudyProgramId { get; set; }
 }

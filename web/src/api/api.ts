@@ -36,6 +36,11 @@ export const API = {
             CreateApplication: () => 'OAuth/createApplication',
             GetAllApplications: () => 'OAuth/applications',
             DeleteApplication: (id: string) => `OAuth/deleteApplication/${id}`
+        },
+        StudyProgram: {
+            Create: () => 'StudyProgram',
+            GetAll: () => 'StudyProgram',
+            GetById: (id: string) => `StudyProgram/${id}`
         }
     }
 };

@@ -12,6 +12,7 @@ import { useGetInternship } from "@/api/hooks/useGetInternship";
 import DatePickerField from "../foundation/fields/DatePickerField";
 import YearSelectField from "../foundation/fields/YearSelectField";
 import { SemesterSelectField } from "../foundation/fields/SemesterSelectField";
+import StudyProgramSelectField from "../foundation/fields/StudyProgramSelectField";
 import { toDateOnlyString, parseDateOnlyString } from "@/lib/foundationUtils";
 import type { IInternshipReq } from "@/models/internship/IInternshipReq";
 import { Button } from "../ui/button";
@@ -36,6 +37,10 @@ const formSchema = z.object({
         .string(),
     semester: z
         .string(),
+    studyProgramId: z
+        .string()
+        .uuid()
+        .optional(),
 }).refine((data) => data.endDate > data.startDate, {
     message: "Internship.EndAfterStart",
     path: ["endDate"]
@@ -60,6 +65,7 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
             endDate: new Date(),
             year: new Date().getFullYear().toString(),
             semester: "winter",
+            studyProgramId: undefined,
         }
     });
 
@@ -83,6 +89,7 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
                 endDate: endDate,
                 year: internship.year.toString(),
                 semester: internship.semester.toLowerCase(),
+                studyProgramId: internship.studyProgramId || undefined,
             });
         }
     }, [internship, form]);
@@ -106,7 +113,8 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
             year: parseInt(data.year),
             semester: data.semester,
             companyRepresentativeId: internship.companyRepresentativeId,
-            companyId: internship.companyId
+            companyId: internship.companyId,
+            studyProgramId: data.studyProgramId || null
         };
         updateInternship({ id: internshipId, data: reqJson }, {
             onError: async (error) => {
@@ -295,6 +303,27 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
                                     )}
                                 />
                             </Field>
+                        </Field>
+                        <Field>
+                            <Controller
+                                name="studyProgramId"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="EditInternship_StudyProgram">
+                                            <FormattedMessage id="CreateInternship.StudyProgram" />
+                                        </FieldLabel>
+                                        <StudyProgramSelectField
+                                            {...field}
+                                            id="EditInternship_StudyProgram"
+                                            aria-invalid={fieldState.invalid}
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
+                                )}
+                            />
                         </Field>
                         <Field>
                             <div className="flex gap-4">
