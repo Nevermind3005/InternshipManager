@@ -45,6 +45,7 @@ const formSchema = z.object({
     studyProgramId: z
         .string()
         .uuid()
+        .or(z.literal(""))
         .optional(),
     email: z
         .string()
