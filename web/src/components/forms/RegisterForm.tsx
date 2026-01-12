@@ -36,10 +36,10 @@ const formSchema = z.object({
         .max(128),
     phone: z
         .string()
-        .nonempty()
-        .min(7)
-        .max(20)
-        .regex(phoneRegex),
+        .nonempty("Telefónne číslo je povinné")
+        .min(7, "Telefónne číslo je príliš krátke")
+        .max(20, "Telefónne číslo je príliš dlhé")
+        .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
     city: z
         .string()
         .nonempty()
@@ -209,9 +209,12 @@ const RegisterForm = () => {
                                         {...field}
                                         id="StudentRegisterForm_Phone"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="+421xxxxxxxxx"
-                                        autoComplete="on"
+                                        placeholder="+421901234567"
+                                        autoComplete="tel"
                                     />
+                                    <FieldDescription>
+                                        <FormattedMessage id="Validation.Phone.Hint" />
+                                    </FieldDescription>
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}

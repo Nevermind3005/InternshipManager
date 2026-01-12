@@ -258,6 +258,8 @@
     "Validation.Phone.Invalid": "Phone number can only contain numbers and + sign",
     "Validation.Phone.TooShort": "Phone number is too short",
     "Validation.Phone.TooLong": "Phone number is too long",
+    "Validation.Phone.Required": "Phone number is required",
+    "Validation.Phone.Hint": "Format: +421901234567 or 0901234567",
 
     "ChangeDefaultPassword.Title": "Change your default password",
     "ChangeDefaultPassword.Description": "Enter your new password"

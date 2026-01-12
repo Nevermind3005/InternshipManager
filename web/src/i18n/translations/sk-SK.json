@@ -256,6 +256,8 @@
     "Validation.Phone.Invalid": "Telefónne číslo môže obsahovať len čísla a znak +",
     "Validation.Phone.TooShort": "Telefónne číslo je príliš krátke",
     "Validation.Phone.TooLong": "Telefónne číslo je príliš dlhé",
+    "Validation.Phone.Required": "Telefónne číslo je povinné",
+    "Validation.Phone.Hint": "Formát: +421901234567 alebo 0901234567",
 
     "ChangeDefaultPassword.Title": "Zmeňte svoje predvolené heslo",
     "ChangeDefaultPassword.Description": "Zadajte nové heslo"

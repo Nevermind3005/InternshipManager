@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { LoaderIcon } from "lucide-react";
@@ -37,10 +37,10 @@ const formSchema = z.object({
         .max(128),
     phone: z
         .string()
-        .nonempty()
-        .min(7)
-        .max(20)
-        .regex(phoneRegex),
+        .nonempty("Telefónne číslo je povinné")
+        .min(7, "Telefónne číslo je príliš krátke")
+        .max(20, "Telefónne číslo je príliš dlhé")
+        .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
 });
 
 const CompanyRepresentativeForm = ({ open, onOpenChange, email, companyId } : ICompanyRepresentativeFormProps) => {
@@ -170,16 +170,19 @@ const CompanyRepresentativeForm = ({ open, onOpenChange, email, companyId } : IC
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="StudentRegisterForm_Phone">
+                                    <FieldLabel htmlFor="CompanyRepresentativeForm_Phone">
                                         <FormattedMessage id="SignUp.PhoneNumber" />
                                     </FieldLabel>
                                     <Input
                                         {...field}
-                                        id="StudentRegisterForm_Phone"
+                                        id="CompanyRepresentativeForm_Phone"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="+421xxxxxxxxx"
-                                        autoComplete="on"
+                                        placeholder="+421901234567"
+                                        autoComplete="tel"
                                     />
+                                    <FieldDescription>
+                                        <FormattedMessage id="Validation.Phone.Hint" />
+                                    </FieldDescription>
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}

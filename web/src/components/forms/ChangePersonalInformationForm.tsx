@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import * as z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -41,10 +41,10 @@ const createFormSchema = (role: string) => {
             ...baseSchema,
             phone: z
                 .string()
-                .nonempty("Phone number is required")
-                .min(7)
-                .max(20)
-                .regex(phoneRegex),
+                .nonempty("Telefónne číslo je povinné")
+                .min(7, "Telefónne číslo je príliš krátke")
+                .max(20, "Telefónne číslo je príliš dlhé")
+                .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
         });
     } else {
         // Student: all fields including address
@@ -52,10 +52,10 @@ const createFormSchema = (role: string) => {
             ...baseSchema,
             phone: z
                 .string()
-                .nonempty("Phone number is required")
-                .min(7)
-                .max(20)
-                .regex(phoneRegex),
+                .nonempty("Telefónne číslo je povinné")
+                .min(7, "Telefónne číslo je príliš krátke")
+                .max(20, "Telefónne číslo je príliš dlhé")
+                .regex(phoneRegex, "Telefónne číslo môže obsahovať len čísla a znak +"),
             city: z
                 .string()
                 .nonempty("City is required")
@@ -287,10 +287,13 @@ const ChangePersonalInformationForm = () => {
                                             {...field}
                                             id="EditProfileForm_Phone"
                                             aria-invalid={fieldState.invalid}
-                                            placeholder="+421xxxxxxxxx"
+                                            placeholder="+421901234567"
                                             autoComplete="tel"
                                             disabled={isPending}
                                         />
+                                        <FieldDescription>
+                                            <FormattedMessage id="Validation.Phone.Hint" />
+                                        </FieldDescription>
                                         {fieldState.invalid && (
                                             <FieldError errors={[fieldState.error]} />
                                         )}
