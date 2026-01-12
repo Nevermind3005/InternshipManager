@@ -33,7 +33,7 @@ const createFormSchema = (role: string) => {
     if (role === 'InternshipHandler') {
         // InternshipHandler: only firstName and lastName
         return z.object(baseSchema);
-    } else if (role === 'Company') {
+    } else if (role === 'CompanyRepresentative') {
         // Company Representative: firstName, lastName, and phone
         return z.object({
             ...baseSchema,
@@ -140,7 +140,7 @@ const ChangePersonalInformationForm = () => {
                 firstName: data.firstName,
                 lastName: data.lastName,
             } as IUpdateInternshipHandlerPersonalInfoReq;
-        } else if (role === 'Company') {
+        } else if (role === 'CompanyRepresentative') {
             payload = {
                 firstName: data.firstName,
                 lastName: data.lastName,

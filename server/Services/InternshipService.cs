@@ -52,6 +52,7 @@ public class InternshipService(
             .Include(i => i.Company)
             .Include(i => i.CompanyRepresentative)
             .Include(i => i.StudyProgram)
+            .Include(i => i.Student)
             .Where(i => i.Id == id)
             .FirstOrDefaultAsync();
 
@@ -107,6 +108,11 @@ public class InternshipService(
         if (filter.StudentId is not null)
         {
             query = query.Where(i => i.StudentId == filter.StudentId);
+        }
+        
+        if (filter.CompanyRepresentativeId is not null)
+        {
+            query = query.Where(i => i.CompanyRepresentativeId == filter.CompanyRepresentativeId);
         }
         
         if (filter.StudyProgramId is not null)
@@ -185,6 +191,42 @@ public class InternshipService(
         
         return Result<InternshipResDto>.Success(response);
     }
+
+    public async Task<Result<InternshipResDto>> ChangeStateAsync(Guid id, EInternshipState newState)
+    {
+        var internship = await context.Internships
+            .Include(i => i.Student)
+            .Include(i => i.CompanyRepresentative)
+            .Include(i => i.Company)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (internship is null)
+        {
+            return Result<InternshipResDto>.Failure(Error.NotFound);
+        }
+
+        var currentState = internship.State;
+
+        // Validate state transition (Created can only move to Confirmed or Rejected)
+        var isAllowed = (currentState, newState) switch
+        {
+            (EInternshipState.Created, EInternshipState.Confirmed) => true,
+            (EInternshipState.Created, EInternshipState.Rejected) => true,
+            _ => false
+        };
+
+        if (!isAllowed)
+        {
+            return Result<InternshipResDto>.Failure(Error.BadRequest);
+        }
+
+        internship.State = newState;
+        await context.SaveChangesAsync();
+
+        var response = mapper.Map<InternshipResDto>(internship);
+        return Result<InternshipResDto>.Success(response);
+    }
+
     private static bool HasValidDateRange(InternshipReqDto request) =>
         request.EndDate > request.StartDate;
 

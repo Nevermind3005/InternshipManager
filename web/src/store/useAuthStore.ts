@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
-export type Role = "None" | "Student" | "Company" | "InternshipHandler";
-export const Roles_All : Role[] = ["None", "Student", "Company", "InternshipHandler"];
+export type Role = "None" | "Student" | "CompanyRepresentative" | "InternshipHandler";
+export const Roles_All : Role[] = ["None", "Student", "CompanyRepresentative", "InternshipHandler"];
 
 interface IAuthTokenState {
     accessToken: string,

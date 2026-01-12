@@ -25,13 +25,13 @@ const navMain : ISidebarNav[] = [
         title: "Sidebar.Internships",
         url: "/internships",
         icon: ClipboardCheckIcon,
-        roles: ["Student", "InternshipHandler", "Company"]
+        roles: ["Student", "InternshipHandler", "CompanyRepresentative"]
     },
     {
         title: "Sidebar.Account",
         url: "/account",
         icon: FingerprintIcon,
-        roles: ["Student", "InternshipHandler", "Company"]
+        roles: ["Student", "InternshipHandler", "CompanyRepresentative"]
     },
     {
         title: "Sidebar.Applications",
@@ -103,7 +103,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
                     </SidebarMenu>
                 </div>
             </PermissionGuard>
-            <PermissionGuard roles={["Student", "Company", "InternshipHandler"]}>
+            <PermissionGuard roles={["Student", "CompanyRepresentative", "InternshipHandler"]}>
                 <div className="border-t">
                     <SidebarMenu>
                         <SidebarMenuItem>
