@@ -124,13 +124,16 @@ const CreateInternshipForm = () => {
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
         console.log(data);
+        // Capitalize first letter of semester to match server ESemester enum (Winter/Summer)
+        const capitalizedSemester = data.semester.charAt(0).toUpperCase() + data.semester.slice(1);
+
         const reqJson: IInternshipReq =  {
             name: data.name,
             description: data.description,
             startDate: toDateOnlyString(data.startDate),
             endDate: toDateOnlyString(data.endDate),
             year: parseInt(data.year),
-            semester: data.semester,
+            semester: capitalizedSemester,
             companyRepresentativeId: foundRepresentative!.id,
             companyId: data.companyId,
             studyProgramId: data.studyProgramId || null
@@ -349,6 +352,8 @@ const CreateInternshipForm = () => {
                                                             {...field}
                                                             id="CreateInternship_Year"
                                                             aria-invalid={fieldState.invalid}
+                                                            startYear={2024}
+                                                            endYear={new Date().getFullYear() + 5}
                                                         />
                                                         {fieldState.invalid && (
                                                             <FieldError errors={[fieldState.error]} />

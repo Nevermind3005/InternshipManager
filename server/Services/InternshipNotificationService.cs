@@ -38,6 +38,31 @@ public class InternshipNotificationService(
         );
     }
 
+    public async Task NotifyInternshipUpdatedAsync(Internship internship)
+    {
+        var studentEmail = internship.Student.Email;
+
+        var model = new InternshipUpdatedMail
+        {
+            StudentFirstName = internship.Student.FirstName,
+            StudentLastName = internship.Student.LastName,
+            InternshipName = internship.Name,
+            CompanyName = internship.Company.Name,
+            StartDate = internship.StartDate,
+            EndDate = internship.EndDate,
+            Year = internship.Year,
+            Semester = internship.Semester.ToString(),
+            StudyProgramCode = internship.StudyProgram?.Code
+        };
+
+        await mailService.SendMailTemplateAsync(
+            studentEmail,
+            "Vaša prax bola upravená",
+            $"{TemplateBasePath}InternshipUpdatedMail.cshtml",
+            model
+        );
+    }
+
     public async Task NotifyStateChangeAsync(Internship internship, EInternshipState oldState, EInternshipState newState)
     {
         // Only send notifications for actual state changes
