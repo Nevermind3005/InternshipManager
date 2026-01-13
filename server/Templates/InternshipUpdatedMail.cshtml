@@ -27,13 +27,22 @@
 
             <p>Koordinátor praxí upravil údaje vašej praxe. Nižšie nájdete aktuálne informácie:</p>
 
+            @{
+                var semesterText = Model.Semester switch
+                {
+                    "Winter" => "Zimný",
+                    "Summer" => "Letný",
+                    _ => Model.Semester // Fallback for unexpected values
+                };
+            }
+
             <div class="info-box">
                 <div><span class="info-label">Názov praxe:</span> @Model.InternshipName</div>
                 <div><span class="info-label">Spoločnosť:</span> @Model.CompanyName</div>
                 <div><span class="info-label">Začiatok:</span> @Model.StartDate.ToString("dd.MM.yyyy")</div>
                 <div><span class="info-label">Koniec:</span> @Model.EndDate.ToString("dd.MM.yyyy")</div>
                 <div><span class="info-label">Akademický rok:</span> @Model.Year</div>
-                <div><span class="info-label">Semester:</span> @(Model.Semester == "Winter" ? "Zimný" : "Letný")</div>
+                <div><span class="info-label">Semester:</span> @semesterText</div>
                 @if (!string.IsNullOrEmpty(Model.StudyProgramCode))
                 {
                     <div><span class="info-label">Študijný program:</span> @Model.StudyProgramCode</div>

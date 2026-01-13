@@ -352,6 +352,8 @@ const CreateInternshipForm = () => {
                                                             {...field}
                                                             id="CreateInternship_Year"
                                                             aria-invalid={fieldState.invalid}
+                                                            startYear={2024}
+                                                            endYear={new Date().getFullYear() + 5}
                                                         />
                                                         {fieldState.invalid && (
                                                             <FieldError errors={[fieldState.error]} />

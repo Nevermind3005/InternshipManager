@@ -338,6 +338,7 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
     }
 
     // Only render form when data is loaded - form gets correct defaultValues from start
+    // key={internshipId} forces React to remount the form if internshipId changes
     return (
         <Card>
             <CardHeader>
@@ -345,7 +346,7 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
                 <CardDescription><FormattedMessage id="Internship.EditDescription" /></CardDescription>
             </CardHeader>
             <CardContent>
-                <InternshipForm internship={internship} internshipId={internshipId} />
+                <InternshipForm key={internshipId} internship={internship} internshipId={internshipId} />
             </CardContent>
         </Card>
     );
