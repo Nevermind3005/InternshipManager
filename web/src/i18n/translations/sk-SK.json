@@ -286,5 +286,8 @@
     "Validation.Email.Invalid": "Neplatná emailová adresa",
 
     "ChangeDefaultPassword.Title": "Zmeňte svoje predvolené heslo",
-    "ChangeDefaultPassword.Description": "Zadajte nové heslo"
+    "ChangeDefaultPassword.Description": "Zadajte nové heslo",
+
+    "Export.CSV": "Exportovať CSV",
+    "Export.Exporting": "Exportujem..."
 }

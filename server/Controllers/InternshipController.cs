@@ -87,6 +87,21 @@ public class InternshipController(
         return Ok(result.Value);
     }
     
+    [HttpGet("export/csv")]
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    public async Task<IActionResult> ExportInternshipsToCsv([FromQuery] InternshipFilter filter)
+    {
+        var result = await internshipService.ExportInternshipsToCsvAsync(filter);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        var fileName = $"internships_export_{DateTime.Now:yyyy-MM-dd}.csv";
+        return File(result.Value, "text/csv; charset=utf-8", fileName);
+    }
+
     [HttpGet]
     [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}, {nameof(ERole.ExternalApplication)}")]
     public async Task<ActionResult<PagedResult<InternshipResDto>>> GetInternships(
