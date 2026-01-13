@@ -192,6 +192,7 @@
     "Internship.EditDescription": "Update internship details",
     "Internship.LoadError": "Failed to load internship",
     "Internship.UpdateSuccess": "Internship updated successfully",
+    "Internship.EndAfterStart": "End date must be after start date",
     "Actions.Saving": "Saving...",
     "Actions.Back": "Back",
     "Application.CreateApiKey": "Create new API key",

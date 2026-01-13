@@ -190,6 +190,7 @@
     "Internship.EditDescription": "Aktualizujte údaje o praxi",
     "Internship.LoadError": "Nepodarilo sa načítať prax",
     "Internship.UpdateSuccess": "Prax bola úspešne aktualizovaná",
+    "Internship.EndAfterStart": "Dátum konca musí byť po dátume začiatku",
     "Actions.Saving": "Ukladám...",
     "Actions.Back": "Späť",
     "Actions.Delete": "Vymazať",

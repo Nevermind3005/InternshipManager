@@ -217,6 +217,16 @@ public class InternshipService(
 
         await context.SaveChangesAsync();
 
+        // Send notification to student about the update (don't fail if email fails)
+        try
+        {
+            await notificationService.NotifyInternshipUpdatedAsync(internship);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send internship update email for internship {InternshipId}", internship.Id);
+        }
+
         var response = mapper.Map<InternshipResDto>(internship);
         
         return Result<InternshipResDto>.Success(response);

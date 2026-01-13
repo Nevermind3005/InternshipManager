@@ -7,4 +7,5 @@ public interface IInternshipNotificationService
 {
     Task NotifyStateChangeAsync(Internship internship, EInternshipState oldState, EInternshipState newState);
     Task NotifyInternshipCreatedAsync(Internship internship);
+    Task NotifyInternshipUpdatedAsync(Internship internship);
 }
