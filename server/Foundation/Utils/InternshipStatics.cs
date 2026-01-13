@@ -15,6 +15,8 @@ public class InternshipStatics
 
             // Handler approve confirmed internship (Confirmed -> Approved)
             (EInternshipState.Confirmed, EInternshipState.Approved, ERole.InternshipHandler) => true,
+            // Handler reject confirmed internship (Confirmed -> Rejected)
+            (EInternshipState.Confirmed, EInternshipState.Rejected, ERole.InternshipHandler) => true,
             // Handler pass approved internship (Approved -> Passed)
             (EInternshipState.Approved, EInternshipState.Passed, ERole.InternshipHandler) => true,
             // Handler fail approved internship (Approved -> Failed)

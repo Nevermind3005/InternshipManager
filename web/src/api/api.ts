@@ -20,7 +20,11 @@ export const API = {
             GetById: (id: string) => `Internship/${id}`,
             Update: (id: string) => `Internship/${id}`,
             Approve: (id: string) => `Internship/${id}/approve`,
-            Decline: (id: string) => `Internship/${id}/decline`
+            Decline: (id: string) => `Internship/${id}/decline`,
+            HandlerApprove: (id: string) => `Internship/${id}/handler/approve`,
+            HandlerReject: (id: string) => `Internship/${id}/handler/reject`,
+            HandlerPass: (id: string) => `Internship/${id}/handler/pass`,
+            HandlerFail: (id: string) => `Internship/${id}/handler/fail`
         },
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',

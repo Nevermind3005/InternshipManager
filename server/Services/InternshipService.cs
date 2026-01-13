@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Entities;
 using server.Foundation.Result;
+using server.Foundation.Utils;
 using server.Models;
 using server.Models.Filters;
 using server.Models.Internship;
@@ -11,7 +12,9 @@ namespace server.Services;
 
 public class InternshipService(
     ApplicationDbContext context,
-    IMapper mapper
+    IMapper mapper,
+    IInternshipNotificationService notificationService,
+    ILogger<InternshipService> logger
     ) : IInternshipService
 {
     public async Task<Result<InternshipResDto>> CreateInternshipAsync(InternshipReqDto request)
@@ -41,7 +44,34 @@ public class InternshipService(
         
         await context.SaveChangesAsync();
 
-        var response = mapper.Map<InternshipResDto>(dbInternship.Entity);
+        // Query back the internship with all relationships included
+        var internshipWithRelations = await context.Internships
+            .Include(i => i.Student)
+            .Include(i => i.CompanyRepresentative)
+            .Include(i => i.Company)
+            .Include(i => i.StudyProgram)
+            .FirstOrDefaultAsync(i => i.Id == dbInternship.Entity.Id);
+
+        // Check for null BEFORE mapping (should never happen, but defensive programming)
+        if (internshipWithRelations is null)
+        {
+            return Result<InternshipResDto>.Failure(Error.NotFound);
+        }
+
+        // Map the entity with loaded relationships
+        var response = mapper.Map<InternshipResDto>(internshipWithRelations);
+
+        // Send notification (don't fail internship creation if this fails)
+        try
+        {
+            await notificationService.NotifyInternshipCreatedAsync(internshipWithRelations);
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't fail the internship creation
+            // The internship was successfully created, only notification failed
+            logger.LogError(ex, "Failed to send internship creation email for internship {InternshipId}", internshipWithRelations.Id);
+        }
         
         return Result<InternshipResDto>.Success(response);
     }
@@ -192,12 +222,13 @@ public class InternshipService(
         return Result<InternshipResDto>.Success(response);
     }
 
-    public async Task<Result<InternshipResDto>> ChangeStateAsync(Guid id, EInternshipState newState)
+    public async Task<Result<InternshipResDto>> ChangeStateAsync(Guid id, EInternshipState newState, ERole editorRole)
     {
         var internship = await context.Internships
             .Include(i => i.Student)
             .Include(i => i.CompanyRepresentative)
             .Include(i => i.Company)
+            .Include(i => i.StudyProgram)
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (internship is null)
@@ -207,13 +238,8 @@ public class InternshipService(
 
         var currentState = internship.State;
 
-        // Validate state transition (Created can only move to Confirmed or Rejected)
-        var isAllowed = (currentState, newState) switch
-        {
-            (EInternshipState.Created, EInternshipState.Confirmed) => true,
-            (EInternshipState.Created, EInternshipState.Rejected) => true,
-            _ => false
-        };
+        // Validate state transition using InternshipStatics
+        var isAllowed = InternshipStatics.IsStateChangeAllowed(currentState, newState, editorRole);
 
         if (!isAllowed)
         {
@@ -222,6 +248,18 @@ public class InternshipService(
 
         internship.State = newState;
         await context.SaveChangesAsync();
+
+        // Send notification to student about state change (don't fail if email fails)
+        try
+        {
+            await notificationService.NotifyStateChangeAsync(internship, currentState, newState);
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't fail the state change
+            logger.LogError(ex, "Failed to send state change email for internship {InternshipId}. State transition: {OldState} -> {NewState}", 
+                id, currentState, newState);
+        }
 
         var response = mapper.Map<InternshipResDto>(internship);
         return Result<InternshipResDto>.Success(response);

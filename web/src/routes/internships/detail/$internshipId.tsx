@@ -12,7 +12,7 @@ export const Route = createFileRoute('/internships/detail/$internshipId')({
 function RouteComponent() {
     const { internshipId } = Route.useParams();
     const role = useAuthStore((state) => state.role);
-    const showActions = role === 'CompanyRepresentative';
+    const showActions = role === 'CompanyRepresentative' || role === 'InternshipHandler';
 
     return <InternshipView internshipId={internshipId} showActions={showActions} />;
 }

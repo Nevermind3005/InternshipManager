@@ -1,6 +1,10 @@
 import { useGetInternship } from '@/api/hooks/useGetInternship';
 import { useApproveInternship } from '@/api/hooks/useApproveInternship';
 import { useDeclineInternship } from '@/api/hooks/useDeclineInternship';
+import { useHandlerApproveInternship } from '@/api/hooks/useHandlerApproveInternship';
+import { useHandlerRejectInternship } from '@/api/hooks/useHandlerRejectInternship';
+import { useHandlerPassInternship } from '@/api/hooks/useHandlerPassInternship';
+import { useHandlerFailInternship } from '@/api/hooks/useHandlerFailInternship';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { LoaderIcon } from 'lucide-react';
@@ -9,7 +13,8 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { errorResponseHandler } from '@/lib/errorResponseHandler';
 import { toast } from 'sonner';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Check, X } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface InternshipViewProps {
     internshipId: string;
@@ -19,6 +24,9 @@ interface InternshipViewProps {
 export function InternshipView({ internshipId, showActions = true }: InternshipViewProps) {
     const { data: internship, isLoading, isError, refetch } = useGetInternship(internshipId);
     const intl = useIntl();
+    const { role } = useAuthStore();
+    
+    // Company Representative actions
     const { mutate: approveInternship, isPending: isApproving } = useApproveInternship({
         onSuccess: async () => {
             toast.success(intl.formatMessage({ id: "Internship.ApproveSuccess" }));
@@ -38,12 +46,66 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
         }
     });
 
+    // Handler actions
+    const { mutate: handlerApprove, isPending: isHandlerApproving } = useHandlerApproveInternship({
+        onSuccess: async () => {
+            toast.success(intl.formatMessage({ id: "Internship.Handler.ApproveSuccess" }));
+            await refetch();
+        },
+        onError: async (error) => {
+            await errorResponseHandler(error, intl);
+        }
+    });
+    const { mutate: handlerReject, isPending: isHandlerRejecting } = useHandlerRejectInternship({
+        onSuccess: async () => {
+            toast.success(intl.formatMessage({ id: "Internship.Handler.RejectSuccess" }));
+            await refetch();
+        },
+        onError: async (error) => {
+            await errorResponseHandler(error, intl);
+        }
+    });
+    const { mutate: handlerPass, isPending: isHandlerPassing } = useHandlerPassInternship({
+        onSuccess: async () => {
+            toast.success(intl.formatMessage({ id: "Internship.Handler.PassSuccess" }));
+            await refetch();
+        },
+        onError: async (error) => {
+            await errorResponseHandler(error, intl);
+        }
+    });
+    const { mutate: handlerFail, isPending: isHandlerFailing } = useHandlerFailInternship({
+        onSuccess: async () => {
+            toast.success(intl.formatMessage({ id: "Internship.Handler.FailSuccess" }));
+            await refetch();
+        },
+        onError: async (error) => {
+            await errorResponseHandler(error, intl);
+        }
+    });
+
     const handleApprove = () => {
         approveInternship(internshipId);
     };
 
     const handleDecline = () => {
         declineInternship(internshipId);
+    };
+
+    const handleHandlerApprove = () => {
+        handlerApprove(internshipId);
+    };
+
+    const handleHandlerReject = () => {
+        handlerReject(internshipId);
+    };
+
+    const handleHandlerPass = () => {
+        handlerPass(internshipId);
+    };
+
+    const handleHandlerFail = () => {
+        handlerFail(internshipId);
     };
 
     if (isLoading) {
@@ -91,8 +153,21 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
             ? internship.endDate.toISOString().split('T')[0]
             : new Date(internship.endDate).toISOString().split('T')[0];
 
-    const canApproveOrDecline = internship.state === "Created" && showActions;
-    const isPending = isApproving || isDeclining;
+    const canApproveOrDecline = internship.state === "Created" && showActions && role === "CompanyRepresentative";
+    const canHandlerApproveOrReject = internship.state === "Confirmed" && showActions && role === "InternshipHandler";
+    const canHandlerPassOrFail = internship.state === "Approved" && showActions && role === "InternshipHandler";
+    const isPending = isApproving || isDeclining || isHandlerApproving || isHandlerRejecting || isHandlerPassing || isHandlerFailing;
+    
+    // Determine if internship is in a terminal state (no further actions possible)
+    const isTerminalState = internship.state === "Rejected" || internship.state === "Passed" || internship.state === "Failed";
+    
+    // Determine the appropriate message for when no actions are available
+    const getNoActionsMessage = () => {
+        if (isTerminalState) {
+            return "Internship.InternshipFinalized";
+        }
+        return "Internship.NoActionsAvailable";
+    };
 
     return (
         <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
@@ -205,11 +280,59 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
                                 </div>
                             </Field>
                         )}
-                        {showActions && !canApproveOrDecline && internship.state !== "Created" && (
+                        {canHandlerApproveOrReject && (
+                            <Field>
+                                <div className="flex gap-4 pt-6 border-t">
+                                    <Button
+                                        onClick={handleHandlerApprove}
+                                        disabled={isPending}
+                                        className="flex-1"
+                                        variant="default"
+                                    >
+                                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                                        <FormattedMessage id="Internship.Handler.Approve" />
+                                    </Button>
+                                    <Button
+                                        onClick={handleHandlerReject}
+                                        disabled={isPending}
+                                        className="flex-1"
+                                        variant="destructive"
+                                    >
+                                        <XCircle className="mr-2 h-4 w-4" />
+                                        <FormattedMessage id="Internship.Handler.Reject" />
+                                    </Button>
+                                </div>
+                            </Field>
+                        )}
+                        {canHandlerPassOrFail && (
+                            <Field>
+                                <div className="flex gap-4 pt-6 border-t">
+                                    <Button
+                                        onClick={handleHandlerPass}
+                                        disabled={isPending}
+                                        className="flex-1"
+                                        variant="default"
+                                    >
+                                        <Check className="mr-2 h-4 w-4" />
+                                        <FormattedMessage id="Internship.Handler.Pass" />
+                                    </Button>
+                                    <Button
+                                        onClick={handleHandlerFail}
+                                        disabled={isPending}
+                                        className="flex-1"
+                                        variant="destructive"
+                                    >
+                                        <X className="mr-2 h-4 w-4" />
+                                        <FormattedMessage id="Internship.Handler.Fail" />
+                                    </Button>
+                                </div>
+                            </Field>
+                        )}
+                        {showActions && !canApproveOrDecline && !canHandlerApproveOrReject && !canHandlerPassOrFail && (
                             <Field>
                                 <div className="pt-6 border-t">
                                     <div className="text-sm text-muted-foreground">
-                                        <FormattedMessage id="Internship.ActionNotAvailable" />
+                                        <FormattedMessage id={getNoActionsMessage()} />
                                     </div>
                                 </div>
                             </Field>
