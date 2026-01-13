@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useIntl } from "react-intl";
+import { toast } from "sonner";
+import { HTTPError } from "ky";
 import { authHttpClient } from "../http";
 import { API } from "../api";
 
 export const useExportInternshipsCsv = () => {
     const [isExporting, setIsExporting] = useState(false);
+    const intl = useIntl();
 
     const exportCsv = async (filter: Record<string, string>) => {
         setIsExporting(true);
@@ -43,6 +47,21 @@ export const useExportInternshipsCsv = () => {
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(downloadUrl);
+
+            toast.success(intl.formatMessage({ id: "Export.Success" }));
+        } catch (error) {
+            let message = intl.formatMessage({ id: "Export.Error" });
+            
+            if (error instanceof HTTPError) {
+                try {
+                    const data = await error.response.json();
+                    message = intl.formatMessage({ id: data.title });
+                } catch {
+                    // Use default error message
+                }
+            }
+            
+            toast.error(message);
         } finally {
             setIsExporting(false);
         }
