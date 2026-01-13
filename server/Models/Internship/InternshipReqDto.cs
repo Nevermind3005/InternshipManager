@@ -26,6 +26,9 @@ public class InternshipReqDto
     [Required]
     public ESemester Semester { get; set; }
     
+    [Required]
+    public EInternshipType Type { get; set; } = EInternshipType.Unpaid;
+    
     [JsonIgnore]
     public Guid StudentId { get; set; }
 

@@ -134,6 +134,7 @@ const CreateInternshipForm = () => {
             endDate: toDateOnlyString(data.endDate),
             year: parseInt(data.year),
             semester: capitalizedSemester,
+            type: 'Unpaid', // Default to Unpaid for now
             companyRepresentativeId: foundRepresentative!.id,
             companyId: data.companyId,
             studyProgramId: data.studyProgramId || null

@@ -37,6 +37,13 @@ public class InternshipResDto
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public EInternshipState State { get; set; }
     
+    [Required]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public EInternshipType Type { get; set; }
+    
+    public bool IsSupportingDocsApprovedByCompany { get; set; }
+    public bool IsReportApprovedByCompany { get; set; }
+    
     public Guid StudentId { get; set; }
     public UserResDto Student { get; set; } = null!;
 

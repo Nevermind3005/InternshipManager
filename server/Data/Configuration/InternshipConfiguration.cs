@@ -10,6 +10,7 @@ public class InternshipConfiguration : IEntityTypeConfiguration<Internship>
     {
         builder.Property(i => i.Semester).HasConversion<string>();
         builder.Property(i => i.State).HasConversion<string>();
+        builder.Property(i => i.Type).HasConversion<string>();
         
         builder.HasOne(i => i.StudyProgram)
             .WithMany(sp => sp.Internships)

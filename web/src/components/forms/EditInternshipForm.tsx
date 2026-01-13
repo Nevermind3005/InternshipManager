@@ -101,6 +101,7 @@ const InternshipForm = ({ internship, internshipId }: InternshipFormProps) => {
             endDate: toDateOnlyString(data.endDate),
             year: parseInt(data.year),
             semester: capitalizedSemester,
+            type: internship.type || 'Unpaid',
             companyRepresentativeId: internship.companyRepresentativeId,
             companyId: internship.companyId,
             studyProgramId: data.studyProgramId || null

@@ -25,7 +25,14 @@ export const API = {
             HandlerReject: (id: string) => `Internship/${id}/handler/reject`,
             HandlerPass: (id: string) => `Internship/${id}/handler/pass`,
             HandlerFail: (id: string) => `Internship/${id}/handler/fail`,
-            ExportCsv: () => 'Internship/export/csv'
+            ExportCsv: () => 'Internship/export/csv',
+            // Document endpoints
+            GetDocuments: (id: string) => `Internship/${id}/documents`,
+            UploadDocument: (id: string, slot: string) => `Internship/${id}/documents/${slot}`,
+            DownloadDocument: (id: string, documentId: string) => `Internship/${id}/documents/download/${documentId}`,
+            DeleteDocument: (id: string, documentId: string) => `Internship/${id}/documents/${documentId}`,
+            ApproveDocuments: (id: string) => `Internship/${id}/documents/approve`,
+            RejectDocuments: (id: string) => `Internship/${id}/documents/reject`
         },
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',
@@ -48,6 +55,11 @@ export const API = {
             Create: () => 'StudyProgram',
             GetAll: () => 'StudyProgram',
             GetById: (id: string) => `StudyProgram/${id}`
+        },
+        Document: {
+            Report: () => 'Document/report',
+            Agreement: () => 'Document/agreement',
+            Instructions: () => 'Document/instructions'
         }
     }
 };

@@ -52,7 +52,8 @@ builder.Services.AddCors(options =>
         
         policy.WithOrigins(consumers)
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .WithExposedHeaders("Content-Disposition");
     });
 });
 
@@ -114,6 +115,7 @@ builder.Services.AddDetection();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInternshipService, InternshipService>();
 builder.Services.AddScoped<IInternshipNotificationService, InternshipNotificationService>();
+builder.Services.AddScoped<IInternshipDocumentService, InternshipDocumentService>();
 builder.Services.AddScoped<IStudyProgramService, StudyProgramService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
