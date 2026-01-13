@@ -268,4 +268,178 @@ public class InternshipService(
     private static bool HasValidDateRange(InternshipReqDto request) =>
         request.EndDate > request.StartDate;
 
+    public async Task<Result<byte[]>> ExportInternshipsToCsvAsync(InternshipFilter filter)
+    {
+        var query = context.Internships.AsQueryable();
+
+        // Apply the same filters as GetInternshipsAsync
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(i => EF.Functions.ILike(i.Name, $"%{filter.Name}%"));
+        }
+        
+        if (!string.IsNullOrEmpty(filter.FirstName))
+        {
+            query = query.Where(i => EF.Functions.ILike(i.Student.FirstName, $"%{filter.FirstName}%"));
+        }
+        
+        if (!string.IsNullOrEmpty(filter.LastName))
+        {
+            query = query.Where(i => EF.Functions.ILike(i.Student.LastName, $"%{filter.LastName}%"));
+        }
+        
+        if (!string.IsNullOrEmpty(filter.Company))
+        {
+            query = query.Where(i => EF.Functions.ILike(i.Company.Name, $"%{filter.Company}%"));
+        }        
+
+        if (filter.Year is not null)
+        {
+            query = query.Where(i => i.Year == filter.Year);
+        }
+        
+        if (filter.Semester is not null)
+        {
+            query = query.Where(i => i.Semester == filter.Semester);
+        }
+        
+        if (filter.State is not null)
+        {
+            query = query.Where(i => i.State == filter.State);
+        }
+        
+        if (filter.StudentId is not null)
+        {
+            query = query.Where(i => i.StudentId == filter.StudentId);
+        }
+        
+        if (filter.CompanyRepresentativeId is not null)
+        {
+            query = query.Where(i => i.CompanyRepresentativeId == filter.CompanyRepresentativeId);
+        }
+        
+        if (filter.StudyProgramId is not null)
+        {
+            query = query.Where(i => i.StudyProgramId == filter.StudyProgramId);
+        }
+
+        var items = await query
+            .Include(i => i.Student)
+            .Include(i => i.Company)
+                .ThenInclude(c => c.Address)
+            .Include(i => i.CompanyRepresentative)
+            .Include(i => i.StudyProgram)
+            .OrderByDescending(i => i.Year)
+            .ThenBy(i => i.Semester)
+            .ThenBy(i => i.Student.LastName)
+            .ToListAsync();
+
+        var csv = GenerateCsv(items);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(csv);
+        
+        // Add BOM for Excel compatibility
+        var bom = System.Text.Encoding.UTF8.GetPreamble();
+        var result = new byte[bom.Length + bytes.Length];
+        bom.CopyTo(result, 0);
+        bytes.CopyTo(result, bom.Length);
+        
+        return Result<byte[]>.Success(result);
+    }
+
+    private static string GenerateCsv(List<Entities.Internship> internships)
+    {
+        var sb = new System.Text.StringBuilder();
+        
+        // CSV Header
+        sb.AppendLine(string.Join(";", new[]
+        {
+            "ID",
+            "Názov",
+            "Popis",
+            "Dátum začiatku",
+            "Dátum konca",
+            "Rok",
+            "Semester",
+            "Stav",
+            "Študent - Meno",
+            "Študent - Priezvisko",
+            "Študent - Email",
+            "Študent - Telefón",
+            "Firma",
+            "Firma - Mesto",
+            "Firma - Ulica",
+            "Firma - Číslo",
+            "Firma - PSČ",
+            "Zástupca firmy - Meno",
+            "Zástupca firmy - Priezvisko",
+            "Zástupca firmy - Email",
+            "Zástupca firmy - Telefón",
+            "Študijný program"
+        }));
+
+        // CSV Data
+        foreach (var i in internships)
+        {
+            sb.AppendLine(string.Join(";", new[]
+            {
+                EscapeCsvField(i.Id.ToString()),
+                EscapeCsvField(i.Name),
+                EscapeCsvField(i.Description ?? ""),
+                EscapeCsvField(i.StartDate.ToString("yyyy-MM-dd")),
+                EscapeCsvField(i.EndDate.ToString("yyyy-MM-dd")),
+                EscapeCsvField(i.Year.ToString()),
+                EscapeCsvField(GetSemesterName(i.Semester)),
+                EscapeCsvField(GetStateName(i.State)),
+                EscapeCsvField(i.Student?.FirstName ?? ""),
+                EscapeCsvField(i.Student?.LastName ?? ""),
+                EscapeCsvField(i.Student?.Email ?? ""),
+                EscapeCsvField(i.Student?.Phone ?? ""),
+                EscapeCsvField(i.Company?.Name ?? ""),
+                EscapeCsvField(i.Company?.Address?.City ?? ""),
+                EscapeCsvField(i.Company?.Address?.Street ?? ""),
+                EscapeCsvField(i.Company?.Address?.BuildingNumber ?? ""),
+                EscapeCsvField(i.Company?.Address?.ZipCode ?? ""),
+                EscapeCsvField(i.CompanyRepresentative?.FirstName ?? ""),
+                EscapeCsvField(i.CompanyRepresentative?.LastName ?? ""),
+                EscapeCsvField(i.CompanyRepresentative?.Email ?? ""),
+                EscapeCsvField(i.CompanyRepresentative?.Phone ?? ""),
+                EscapeCsvField(i.StudyProgram?.Code ?? "")
+            }));
+        }
+
+        return sb.ToString();
+    }
+
+    private static string EscapeCsvField(string field)
+    {
+        if (string.IsNullOrEmpty(field))
+            return "";
+        
+        // If field contains semicolon, quote, or newline, wrap in quotes and escape quotes
+        if (field.Contains(';') || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
+        {
+            return $"\"{field.Replace("\"", "\"\"")}\"";
+        }
+        
+        return field;
+    }
+
+    private static string GetSemesterName(ESemester semester) => semester switch
+    {
+        ESemester.Winter => "Zimný",
+        ESemester.Summer => "Letný",
+        _ => semester.ToString()
+    };
+
+    private static string GetStateName(EInternshipState state) => state switch
+    {
+        EInternshipState.Created => "Vytvorená",
+        EInternshipState.Confirmed => "Potvrdená firmou",
+        EInternshipState.Rejected => "Zamietnutá",
+        EInternshipState.Approved => "Schválená",
+        EInternshipState.Passed => "Absolvovaná",
+        EInternshipState.Failed => "Neúspešná",
+        _ => state.ToString()
+    };
+
 }

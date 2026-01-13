@@ -5,7 +5,7 @@ import {
     type CellContext,
     type ColumnDef,
 } from "@tanstack/react-table";
-import { ChevronDown, PencilIcon } from "lucide-react";
+import { ChevronDown, Download, PencilIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import { FormattedMessage } from "react-intl";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "@tanstack/react-router";
 import { useGetAllInternships } from "@/api/hooks/useGetAllInternships";
+import { useExportInternshipsCsv } from "@/api/hooks/useExportInternshipsCsv";
 import PageableTable from "../foundation/PageableTable";
 import InternshipFilters from "../filters/InternshipFilters";
 
@@ -188,6 +189,7 @@ export function InternshipsTable() {
     const navigate = useNavigate();
     const { role } = useAuthStore();
     const isTeacher = role === "InternshipHandler";
+    const { exportCsv, isExporting } = useExportInternshipsCsv();
 
     // Convert filters to API format
     const apiFilters = React.useMemo(() => {
@@ -248,8 +250,24 @@ export function InternshipsTable() {
                 />
             )}
 
-            {/* Column visibility dropdown */}
-            <div className="flex items-center justify-end py-2 shrink-0">
+            {/* Column visibility dropdown and Export button */}
+            <div className="flex items-center justify-end gap-2 py-2 shrink-0">
+                {/* Export CSV button - only for teachers */}
+                {isTeacher && (
+                    <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => exportCsv(apiFilters)}
+                        disabled={isExporting}
+                    >
+                        <Download className="mr-1 h-4 w-4" />
+                        {isExporting ? (
+                            <FormattedMessage id="Export.Exporting" />
+                        ) : (
+                            <FormattedMessage id="Export.CSV" />
+                        )}
+                    </Button>
+                )}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">

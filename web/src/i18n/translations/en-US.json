@@ -288,5 +288,10 @@
     "Validation.Email.Invalid": "Invalid email address",
 
     "ChangeDefaultPassword.Title": "Change your default password",
-    "ChangeDefaultPassword.Description": "Enter your new password"
+    "ChangeDefaultPassword.Description": "Enter your new password",
+
+    "Export.CSV": "Export CSV",
+    "Export.Exporting": "Exporting...",
+    "Export.Success": "Export downloaded successfully",
+    "Export.Error": "Failed to export data"
 }

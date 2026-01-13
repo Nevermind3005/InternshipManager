@@ -24,7 +24,8 @@ export const API = {
             HandlerApprove: (id: string) => `Internship/${id}/handler/approve`,
             HandlerReject: (id: string) => `Internship/${id}/handler/reject`,
             HandlerPass: (id: string) => `Internship/${id}/handler/pass`,
-            HandlerFail: (id: string) => `Internship/${id}/handler/fail`
+            HandlerFail: (id: string) => `Internship/${id}/handler/fail`,
+            ExportCsv: () => 'Internship/export/csv'
         },
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',

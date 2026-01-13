@@ -13,4 +13,5 @@ public interface IInternshipService
     Task<Result<PagedResult<InternshipResDto>>> GetInternshipsAsync(InternshipFilter filter, int skip, int limit);
     Task<Result<InternshipResDto>> UpdateInternshipAsync(Guid id, InternshipReqDto request);
     Task<Result<InternshipResDto>> ChangeStateAsync(Guid id, EInternshipState newState, ERole editorRole);
+    Task<Result<byte[]>> ExportInternshipsToCsvAsync(InternshipFilter filter);
 }
