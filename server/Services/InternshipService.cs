@@ -13,7 +13,8 @@ namespace server.Services;
 public class InternshipService(
     ApplicationDbContext context,
     IMapper mapper,
-    IInternshipNotificationService notificationService
+    IInternshipNotificationService notificationService,
+    ILogger<InternshipService> logger
     ) : IInternshipService
 {
     public async Task<Result<InternshipResDto>> CreateInternshipAsync(InternshipReqDto request)
@@ -69,7 +70,7 @@ public class InternshipService(
         {
             // Log the error but don't fail the internship creation
             // The internship was successfully created, only notification failed
-            Console.WriteLine($"Failed to send internship creation email: {ex.Message}");
+            logger.LogError(ex, "Failed to send internship creation email for internship {InternshipId}", internshipWithRelations.Id);
         }
         
         return Result<InternshipResDto>.Success(response);
@@ -256,7 +257,8 @@ public class InternshipService(
         catch (Exception ex)
         {
             // Log the error but don't fail the state change
-            Console.WriteLine($"Failed to send state change email: {ex.Message}");
+            logger.LogError(ex, "Failed to send state change email for internship {InternshipId}. State transition: {OldState} -> {NewState}", 
+                id, currentState, newState);
         }
 
         var response = mapper.Map<InternshipResDto>(internship);

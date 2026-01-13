@@ -237,6 +237,8 @@
     "Internship.ApproveSuccess": "Stáž bola úspešne schválená",
     "Internship.DeclineSuccess": "Stáž bola úspešne odmietnutá",
     "Internship.ActionNotAvailable": "Táto stáž už bola spracovaná",
+    "Internship.NoActionsAvailable": "Žiadne akcie nie sú dostupné",
+    "Internship.InternshipFinalized": "Táto prax už bola ukončená",
     "Internship.Handler.Approve": "Schváliť prax",
     "Internship.Handler.Reject": "Zamietnuť prax",
     "Internship.Handler.Pass": "Označiť ako úspešnú",

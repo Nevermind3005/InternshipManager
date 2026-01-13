@@ -239,6 +239,8 @@
     "Internship.ApproveSuccess": "Internship approved successfully",
     "Internship.DeclineSuccess": "Internship declined successfully",
     "Internship.ActionNotAvailable": "This internship has already been processed",
+    "Internship.NoActionsAvailable": "No actions available",
+    "Internship.InternshipFinalized": "This internship has been finalized",
     "Internship.Handler.Approve": "Approve Internship",
     "Internship.Handler.Reject": "Reject Internship",
     "Internship.Handler.Pass": "Mark as Passed",

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using server.Data;
 using server.Entities;
 using server.Models.Mail;
@@ -5,7 +6,8 @@ using server.Models.Mail;
 namespace server.Services;
 
 public class InternshipNotificationService(
-    IMailService mailService
+    IMailService mailService,
+    ILogger<InternshipNotificationService> logger
     ) : IInternshipNotificationService
 {
     private const string TemplateBasePath = "Templates/";
@@ -61,6 +63,13 @@ public class InternshipNotificationService(
                 else if (oldState == EInternshipState.Confirmed)
                 {
                     await SendRejectedByHandlerNotificationAsync(internship, studentEmail);
+                }
+                else
+                {
+                    // Unexpected state transition to Rejected - log for investigation
+                    logger.LogWarning(
+                        "Unexpected state transition to Rejected for internship {InternshipId}: {OldState} -> {NewState}. No notification sent.",
+                        internship.Id, oldState, newState);
                 }
                 break;
 

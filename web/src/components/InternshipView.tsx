@@ -157,6 +157,17 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
     const canHandlerApproveOrReject = internship.state === "Confirmed" && showActions && role === "InternshipHandler";
     const canHandlerPassOrFail = internship.state === "Approved" && showActions && role === "InternshipHandler";
     const isPending = isApproving || isDeclining || isHandlerApproving || isHandlerRejecting || isHandlerPassing || isHandlerFailing;
+    
+    // Determine if internship is in a terminal state (no further actions possible)
+    const isTerminalState = internship.state === "Rejected" || internship.state === "Passed" || internship.state === "Failed";
+    
+    // Determine the appropriate message for when no actions are available
+    const getNoActionsMessage = () => {
+        if (isTerminalState) {
+            return "Internship.InternshipFinalized";
+        }
+        return "Internship.NoActionsAvailable";
+    };
 
     return (
         <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
@@ -321,7 +332,7 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
                             <Field>
                                 <div className="pt-6 border-t">
                                     <div className="text-sm text-muted-foreground">
-                                        <FormattedMessage id="Internship.ActionNotAvailable" />
+                                        <FormattedMessage id={getNoActionsMessage()} />
                                     </div>
                                 </div>
                             </Field>
