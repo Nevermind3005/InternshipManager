@@ -363,11 +363,9 @@ public class InternshipDocumentService(
         };
     }
 
-    private Task DeleteFromS3(string s3Key)
+    private async Task DeleteFromS3(string s3Key)
     {
-        // S3 service doesn't have delete method yet, but we can add it later
-        // For now, we'll just remove from database
-        return Task.CompletedTask;
+        await s3Service.DeleteFileAsync(s3Key);
     }
 
     private async Task SendDocumentUploadedEmailAsync(Internship internship)

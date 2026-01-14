@@ -7,4 +7,5 @@ public interface IS3Service
 {
     public Task<Result<FileUploadResDto>> UploadFileAsync(Stream fileStream, Guid owner, string key);
     public Task<FileResponse> DownloadFileAsync(string key);
+    public Task<Result> DeleteFileAsync(string key);
 }

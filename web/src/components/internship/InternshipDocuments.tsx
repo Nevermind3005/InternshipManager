@@ -108,7 +108,7 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
             const newPendingFiles = Array.from(files).map(file => ({
                 file,
                 slot,
-                id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+                id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
             }));
             setPendingFiles(prev => [...prev, ...newPendingFiles]);
         } else {

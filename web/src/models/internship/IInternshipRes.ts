@@ -1,8 +1,7 @@
 import type { ICompanyRes } from "../company/ICompanyRes";
 import type { IStudyProgramRes } from "../studyProgram/IStudyProgramRes";
 import type { IUserRes } from "../user/IUserRes";
-
-export type InternshipType = 'Unpaid' | 'Paid';
+import type { InternshipType } from "./IInternshipDocument";
 
 export interface IInternshipRes {
   id: string,

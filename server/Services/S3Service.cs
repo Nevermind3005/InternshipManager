@@ -52,4 +52,22 @@ public class S3Service(IOptions<S3Configuration> s3Config) : IS3Service
         };
         return fileResponse;
     }
+
+    public async Task<Result> DeleteFileAsync(string key)
+    {
+        try
+        {
+            var request = new DeleteObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = key
+            };
+            await _s3Client.DeleteObjectAsync(request);
+            return Result.Success();
+        }
+        catch
+        {
+            return Result.Failure(Error.BadRequest);
+        }
+    }
 }
