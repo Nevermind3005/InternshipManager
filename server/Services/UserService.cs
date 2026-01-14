@@ -93,4 +93,21 @@ public class UserService(
 
         return Result.Success();
     }
+
+    public async Task<Result<List<InternshipHandlerResDto>>> GetAllInternshipHandlersAsync()
+    {
+        var handlers = await context.Users
+            .AsNoTracking()
+            .Where(u => u.Role == ERole.InternshipHandler)
+            .Select(u => new InternshipHandlerResDto
+            {
+                Id = u.Id,
+                Email = u.Email,
+                FirstName = u.FirstName,
+                LastName = u.LastName
+            })
+            .ToListAsync();
+
+        return Result<List<InternshipHandlerResDto>>.Success(handlers);
+    }
 }

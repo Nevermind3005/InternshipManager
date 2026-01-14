@@ -23,6 +23,13 @@ public class User : EntityBase
     [Required]
     public ERole Role { get; set; }
 
+    /// <summary>
+    /// Indicates if the user is a primary company representative (registered from landing page).
+    /// Primary representatives can see all internships for their company.
+    /// Regular representatives (created by students) can only see internships assigned to them.
+    /// </summary>
+    public bool IsPrimaryRepresentative { get; set; } = false;
+
     [Required]
     [MaxLength(128)]
     public string FirstName { get; set; } = string.Empty;

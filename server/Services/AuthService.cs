@@ -10,6 +10,7 @@ using server.Foundation.Result;
 using server.Foundation.Utils;
 using server.Models.Auth;
 using server.Models.Mail;
+using server.Models.Company;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
 using server.Models.User.Representative;
@@ -143,6 +144,98 @@ public class AuthService(
         var response = mapper.Map<UserResDto>(dbUser.Entity);
         
         return Result<UserResDto>.Success(response);
+    }
+
+    public async Task<Result<UserResDto>> RegisterCompanyWithPrimaryRepresentativeAsync(CompanyWithRepresentativeRegisterReqDto request)
+    {
+        try
+        {
+            // Check if user already exists
+            if (await context.Users.AnyAsync(u => u.Email == request.Email))
+            {
+                return Result<UserResDto>.Failure(Error.UserAlreadyExists);
+            }
+
+            Entities.Company company;
+
+            // If CompanyId is provided, use existing company
+            if (request.CompanyId.HasValue)
+            {
+                var existingCompany = await context.Companies.FindAsync(request.CompanyId.Value);
+                if (existingCompany is null)
+                {
+                    return Result<UserResDto>.Failure(Error.NotFound);
+                }
+                company = existingCompany;
+            }
+            else
+            {
+                // Validate that company data is provided for new company
+                if (string.IsNullOrEmpty(request.CompanyName) || request.CompanyAddress is null)
+                {
+                    logger.LogError("Company registration failed: CompanyName or CompanyAddress is null");
+                    return Result<UserResDto>.Failure(Error.BadRequest);
+                }
+
+                // Create new company
+                company = new Entities.Company
+                {
+                    Name = request.CompanyName,
+                    Address = mapper.Map<Address>(request.CompanyAddress)
+                };
+                
+                await context.Companies.AddAsync(company);
+                await context.SaveChangesAsync();
+            }
+
+            // Generate random password and hash it with bCrypt
+            var password = AuthStatics.GenerateRandomPassword();
+            var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
+
+            // Create primary representative
+            var user = new User
+            {
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Phone = request.Phone,
+                PasswordHash = passwordHash,
+                Role = ERole.CompanyRepresentative,
+                IsPasswordDirty = true,
+                IsPrimaryRepresentative = true,
+                CompanyId = company.Id
+            };
+            
+            var dbUser = await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
+            
+            // Send welcome email with password
+            var mailTemplateModel = new CompanyRepresentativeRegisterMail
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                GeneratedPassword = password,
+                CompanyName = company.Name
+            };
+            
+            try
+            {
+                await mailService.SendMailTemplateAsync(request.Email, "Registrácia v systéme InternHub", "Templates/CompanyRepresentativeRegisterMail.cshtml", mailTemplateModel);
+            }
+            catch (Exception mailEx)
+            {
+                logger.LogError(mailEx, "Failed to send registration email, but user was created successfully");
+            }
+
+            var response = mapper.Map<UserResDto>(dbUser.Entity);
+            
+            return Result<UserResDto>.Success(response);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error during company registration: {Message}", ex.Message);
+            throw;
+        }
     }
 
     public async Task<Result<UserResDto>> GetUserByIdAsync(Guid userId)
@@ -312,7 +405,9 @@ public class AuthService(
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Role, user.Role.ToString()),
             new(JwtRegisteredClaimNames.Jti, tokenId),
-            new("IsPasswordDirty", user.IsPasswordDirty.ToString())
+            new("IsPasswordDirty", user.IsPasswordDirty.ToString()),
+            new("IsPrimaryRepresentative", user.IsPrimaryRepresentative.ToString()),
+            new("CompanyId", user.CompanyId?.ToString() ?? "")
         };
 
         var expiresIn = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.AccessToken);

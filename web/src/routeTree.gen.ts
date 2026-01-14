@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RegisterCompanyRouteImport } from './routes/register-company'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -29,6 +30,11 @@ import { Route as DashboardInternshipsDetailInternshipIdRouteImport } from './ro
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterCompanyRoute = RegisterCompanyRouteImport.update({
+  id: '/register-company',
+  path: '/register-company',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard/internships': typeof DashboardInternshipsRouteRouteWithChildren
   '/dashboard/applications': typeof DashboardApplicationsRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard/applications': typeof DashboardApplicationsRoute
   '/dashboard/management': typeof DashboardManagementRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard/internships': typeof DashboardInternshipsRouteRouteWithChildren
   '/dashboard/applications': typeof DashboardApplicationsRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/register'
+    | '/register-company'
     | '/reset-password'
     | '/dashboard/internships'
     | '/dashboard/applications'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/register'
+    | '/register-company'
     | '/reset-password'
     | '/dashboard/applications'
     | '/dashboard/management'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/register'
+    | '/register-company'
     | '/reset-password'
     | '/dashboard/internships'
     | '/dashboard/applications'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  RegisterCompanyRoute: typeof RegisterCompanyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register-company': {
+      id: '/register-company'
+      path: '/register-company'
+      fullPath: '/register-company'
+      preLoaderRoute: typeof RegisterCompanyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -398,6 +418,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  RegisterCompanyRoute: RegisterCompanyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport

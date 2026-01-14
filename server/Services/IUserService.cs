@@ -9,4 +9,5 @@ public interface IUserService
     Task<Result> UpdatePersonalInformationAsync(Guid userId, UpdatePersonalInformationReqDto request);
     Task<Result> UpdateInternshipHandlerPersonalInfoAsync(Guid userId, UpdateInternshipHandlerPersonalInfoReqDto request);
     Task<Result> UpdateCompanyRepresentativePersonalInfoAsync(Guid userId, UpdateCompanyRepresentativePersonalInfoReqDto request);
+    Task<Result<List<InternshipHandlerResDto>>> GetAllInternshipHandlersAsync();
 }

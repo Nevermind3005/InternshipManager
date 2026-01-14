@@ -4,8 +4,11 @@ import { requireRole } from '@/lib/authGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormattedMessage } from 'react-intl';
 import StudyProgramsTable from '@/components/tables/StudyProgramsTable';
+import InternshipHandlersTable from '@/components/tables/InternshipHandlersTable';
 import CreateStudyProgramForm from '@/components/forms/CreateStudyProgramForm';
-import FloatingActionButton from '@/components/foundation/FloatingActionButton';
+import CreateInternshipHandlerForm from '@/components/forms/CreateInternshipHandlerForm';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export const Route = createFileRoute('/dashboard/settings/')({
     component: RouteComponent,
@@ -16,7 +19,8 @@ export const Route = createFileRoute('/dashboard/settings/')({
 });
 
 function RouteComponent() {
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isStudyProgramDialogOpen, setIsStudyProgramDialogOpen] = useState(false);
+    const [isHandlerDialogOpen, setIsHandlerDialogOpen] = useState(false);
 
     return (
         <div className="flex flex-col h-full w-full p-2 md:p-4">
@@ -27,19 +31,48 @@ function RouteComponent() {
                         <CardDescription><FormattedMessage id="Settings.Description" /></CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-6">
+                        <div className="space-y-8">
+                            {/* Study Programs Section */}
                             <div>
-                                <h3 className="text-lg font-medium mb-4">
-                                    <FormattedMessage id="Settings.StudyPrograms.Title" />
-                                </h3>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-medium">
+                                        <FormattedMessage id="Settings.StudyPrograms.Title" />
+                                    </h3>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setIsStudyProgramDialogOpen(true)}
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        <FormattedMessage id="Actions.Add" />
+                                    </Button>
+                                </div>
                                 <StudyProgramsTable />
+                            </div>
+
+                            {/* Internship Handlers Section */}
+                            <div>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-medium">
+                                        <FormattedMessage id="Settings.InternshipHandlers.Title" />
+                                    </h3>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setIsHandlerDialogOpen(true)}
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        <FormattedMessage id="Actions.Add" />
+                                    </Button>
+                                </div>
+                                <InternshipHandlersTable />
                             </div>
                         </div>
                     </CardContent>
                 </Card>
-                <FloatingActionButton onClick={() => setIsDialogOpen(true)} />
             </div>
-            <CreateStudyProgramForm open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+            <CreateStudyProgramForm open={isStudyProgramDialogOpen} onOpenChange={setIsStudyProgramDialogOpen} />
+            <CreateInternshipHandlerForm open={isHandlerDialogOpen} onOpenChange={setIsHandlerDialogOpen} />
         </div>
     );
 }
