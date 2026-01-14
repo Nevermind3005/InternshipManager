@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useIntl } from "react-intl";
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -189,6 +190,22 @@ function FieldError({
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined>
 }) {
+    const intl = useIntl();
+
+    // Helper function to translate message if it's a translation key
+    const translateMessage = (message?: string): string => {
+        if (!message) return "";
+        
+        // Check if it looks like a translation key (e.g., "Validation.Phone.Invalid")
+        if (message.match(/^[A-Za-z]+(\.[A-Za-z]+)+$/)) {
+            // Try to translate, fallback to original message if key doesn't exist
+            const translated = intl.formatMessage({ id: message, defaultMessage: message });
+            return translated;
+        }
+        
+        return message;
+    };
+
     const content = useMemo(() => {
         if (children) {
             return children;
@@ -199,18 +216,18 @@ function FieldError({
         }
 
         if (errors?.length == 1) {
-            return errors[0]?.message;
+            return translateMessage(errors[0]?.message);
         }
 
         return (
             <ul className="ml-4 flex list-disc flex-col gap-1">
                 {errors.map(
                     (error, index) =>
-                        error?.message && <li key={index}>{error.message}</li>
+                        error?.message && <li key={index}>{translateMessage(error.message)}</li>
                 )}
             </ul>
         );
-    }, [children, errors]);
+    }, [children, errors, intl]);
 
     if (!content) {
         return null;

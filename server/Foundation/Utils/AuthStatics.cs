@@ -105,4 +105,31 @@ public static class AuthStatics
         var randomBytes = RandomNumberGenerator.GetBytes(byteLength);
         return Convert.ToBase64String(randomBytes);
     }
+    
+    /// <summary>
+    /// Generates a cryptographically secure URL-safe random string.
+    /// Uses Base64 URL encoding (no +, /, or = characters).
+    /// </summary>
+    /// <param name="byteLength">The number of random bytes to generate (default is 32).</param>
+    /// <returns>A URL-safe Base64-encoded random string.</returns>
+    public static string GenerateUrlSafeToken(int byteLength = 32)
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(byteLength);
+        return Convert.ToBase64String(randomBytes)
+            .Replace("+", "-")
+            .Replace("/", "_")
+            .TrimEnd('=');
+    }
+    
+    /// <summary>
+    /// Computes SHA256 hash of the input string.
+    /// Used for storing password reset tokens securely.
+    /// </summary>
+    /// <param name="input">The string to hash.</param>
+    /// <returns>Lowercase hexadecimal string representation of the hash.</returns>
+    public static string ComputeSha256Hash(string input)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
+        return Convert.ToHexString(bytes).ToLowerInvariant();
+    }
 }

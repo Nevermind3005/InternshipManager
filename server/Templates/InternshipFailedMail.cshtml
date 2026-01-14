@@ -1,0 +1,44 @@
+@model server.Models.Mail.InternshipFailedMail
+
+<!DOCTYPE html>
+<html lang="sk">
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.5; color: #333; }
+            .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; }
+            .header { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #dc3545; }
+            .info-box {
+                padding: 15px;
+                margin: 15px 0;
+                background: #f8f9fa;
+                border-left: 4px solid #dc3545;
+                border-radius: 4px;
+            }
+            .info-label { font-weight: bold; color: #555; }
+            .note { font-size: 14px; color: #666; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">Prax neúspešne ukončená</div>
+
+            <p>Dobrý deň @Model.StudentFirstName @Model.StudentLastName,</p>
+
+            <p>Informujeme vás, že vaša prax bola vyhodnotená ako neúspešná.</p>
+
+            <div class="info-box">
+                <div><span class="info-label">Názov praxe:</span> @Model.InternshipName</div>
+                <div><span class="info-label">Spoločnosť:</span> @Model.CompanyName</div>
+                <div><span class="info-label">Začiatok:</span> @Model.StartDate.ToString("dd.MM.yyyy")</div>
+                <div><span class="info-label">Koniec:</span> @Model.EndDate.ToString("dd.MM.yyyy")</div>
+            </div>
+
+            <p>Pre viac informácií o dôvode neúspešného ukončenia a ďalšom postupe sa prosím obráťte na koordinátora praxí.</p>
+
+            <div class="note">
+                Toto je automatický email z InternshipManager systému.
+            </div>
+        </div>
+    </body>
+</html>

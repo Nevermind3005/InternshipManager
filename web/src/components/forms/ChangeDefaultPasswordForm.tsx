@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Controller, useForm } from "react-hook-form";
@@ -7,25 +8,34 @@ import { useChanageDefaultPassword } from "@/api/hooks/useChangeDefaultPassword"
 import { HTTPError } from "ky";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
-import LoadingButton from "../LoadingButton";
+import { Button } from "../ui/button";
+import { EyeIcon, EyeOffIcon, LoaderIcon } from "lucide-react";
+import { FormattedMessage, useIntl } from "react-intl";
+import PasswordStrengthMeter from "../ui/PasswordStrengthMeter";
+import { passwordRegex } from "@/lib/validation";
 
 const formSchema = z.object({
     password: z
         .string()
-        .nonempty()
         .min(8)
-        .max(64)
+        .max(256)
+        .regex(passwordRegex)
 });
 
 const ChangeDefaultPasswordForm = () => {
     const { mutate: changeDefaultPassword, isPending } = useChanageDefaultPassword();
     const navigate = useNavigate();
+    const intl = useIntl();
+    const [showPassword, setShowPassword] = useState(false);
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             password: ""
         }
     });
+
+    const passwordValue = form.watch("password");
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
         changeDefaultPassword(data, {
@@ -35,7 +45,6 @@ const ChangeDefaultPasswordForm = () => {
                 if (error instanceof HTTPError) {
                     try {
                         const data = await error.response.json();
-                        // TODO later use key from backend for translation and show the translation
                         message = data.detail || data.message || message;
                     } catch {
                         message = error.message;
@@ -43,7 +52,6 @@ const ChangeDefaultPasswordForm = () => {
                 } else {
                     message = error.message;
                 }
-                // TODO later use shadcn toast instead console log
                 console.log(message);
             }
         });
@@ -52,8 +60,8 @@ const ChangeDefaultPasswordForm = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Change your default password</CardTitle>
-                <CardDescription>Enter your new password</CardDescription>
+                <CardTitle><FormattedMessage id="ChangeDefaultPassword.Title" /></CardTitle>
+                <CardDescription><FormattedMessage id="ChangeDefaultPassword.Description" /></CardDescription>
             </CardHeader>
             <CardContent>
                 <form id="UserChangeDefaultPassword" onSubmit={form.handleSubmit(onSubmit)}>
@@ -64,24 +72,55 @@ const ChangeDefaultPasswordForm = () => {
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
                                     <FieldLabel htmlFor="UserChangeDefaultPassword_Password">
-                                    New Password
+                                        <FormattedMessage id="ResetPassword.NewPassword" />
                                     </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        id="UserChangeDefaultPassword_Password"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="New Password"
-                                        autoComplete="on"
-                                        type="password"
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            id="UserChangeDefaultPassword_Password"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder={intl.formatMessage({ id: "ResetPassword.NewPassword" })}
+                                            autoComplete="new-password"
+                                            type={showPassword ? "text" : "password"}
+                                            disabled={isPending}
+                                        />
+                                        <Button
+                                            type="button"
+                                            size="icon"
+                                            variant="ghost"
+                                            className="absolute inset-y-0 right-1 my-auto h-8 w-8"
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                            tabIndex={-1}
+                                            aria-label={showPassword 
+                                                ? intl.formatMessage({ id: "Profile.ChangePassword.Hide" })
+                                                : intl.formatMessage({ id: "Profile.ChangePassword.Show" })}
+                                            aria-pressed={showPassword}
+                                        >
+                                            {showPassword ? (
+                                                <EyeOffIcon className="size-4" aria-hidden="true" />
+                                            ) : (
+                                                <EyeIcon className="size-4" aria-hidden="true" />
+                                            )}
+                                        </Button>
+                                    </div>
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
+                                    <PasswordStrengthMeter password={passwordValue} />
                                 </Field>
                             )}
                         />
                         <Field>
-                            <LoadingButton isPending={isPending} form="UserChangeDefaultPassword">Submit</LoadingButton>
+                            <Button type="submit" form="UserChangeDefaultPassword" disabled={isPending} className="w-full">
+                                {isPending && (
+                                    <LoaderIcon
+                                        role="status"
+                                        aria-label="Loading"
+                                        className="mr-2 size-4 animate-spin"
+                                    />
+                                )}
+                                <FormattedMessage id={isPending ? "Actions.Loading" : "Profile.ChangePassword.Submit"} />
+                            </Button>
                         </Field>
                     </FieldGroup>
                 </form>

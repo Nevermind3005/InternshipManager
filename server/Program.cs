@@ -1,5 +1,7 @@
 using System.Net.Mail;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -16,11 +18,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<AuthConfiguration>(builder.Configuration.GetSection("Auth"));
+builder.Services.Configure<S3Configuration>(builder.Configuration.GetSection("S3"));
 
 // Register the database ctx
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -44,10 +52,12 @@ builder.Services.AddCors(options =>
         
         policy.WithOrigins(consumers)
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .WithExposedHeaders("Content-Disposition");
     });
 });
 
+#region AuthRegion
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -66,11 +76,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AuthStatics.PolicyNoDefaultPassword, policy =>
-    policy.RequireAssertion(context =>
     {
-        var isPasswordDirty = context.User.FindFirst("IsPasswordDirty")?.Value;
-        return isPasswordDirty == "False";
-    }));
+        policy.RequireAssertion(context =>
+        {
+            // Do not check if password is default if the user is an application
+            if (context.User.IsInRole(nameof(ERole.ExternalApplication)))
+            {
+                return true;
+            }
+
+            return context.User.HasClaim("IsPasswordDirty", "False");
+        });
+    });
+#endregion
 
 builder.Services.AddFluentEmail(builder.Configuration.GetValue<string>("Mail:From"), builder.Configuration.GetValue<string>("Mail:Name"))
     .AddRazorRenderer()
@@ -95,7 +113,15 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddDetection();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IInternshipService, InternshipService>();
+builder.Services.AddScoped<IInternshipNotificationService, InternshipNotificationService>();
+builder.Services.AddScoped<IInternshipDocumentService, InternshipDocumentService>();
+builder.Services.AddScoped<IStudyProgramService, StudyProgramService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.AddSingleton<IS3Service, S3Service>();
 
 var app = builder.Build();
 
@@ -110,7 +136,10 @@ app.UseAuthorization();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference((options, context) =>
+    {
+        options.AddServer(new ScalarServer($"https://{context.Request.Host}"));
+    });
 }
 
 app.UseHttpsRedirection();
