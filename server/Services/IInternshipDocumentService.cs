@@ -12,4 +12,5 @@ public interface IInternshipDocumentService
     Task<Result> DeleteDocumentAsync(Guid internshipId, Guid documentId, Guid userId);
     Task<Result> ApproveDocumentsAsync(Guid internshipId, Guid userId);
     Task<Result> RejectDocumentsAsync(Guid internshipId, Guid userId);
+    Task<Result> SubmitDocumentsForApprovalAsync(Guid internshipId, Guid userId);
 }

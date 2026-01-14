@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,11 +8,18 @@ import { useDeleteInternshipDocument } from '@/api/hooks/useDeleteInternshipDocu
 import { useDownloadInternshipDocument } from '@/api/hooks/useDownloadInternshipDocument';
 import { useApproveInternshipDocuments } from '@/api/hooks/useApproveInternshipDocuments';
 import { useRejectInternshipDocuments } from '@/api/hooks/useRejectInternshipDocuments';
+import { useSubmitInternshipDocuments } from '@/api/hooks/useSubmitInternshipDocuments';
 import { useAuthStore } from '@/store/useAuthStore';
 import { toast } from 'sonner';
 import { errorResponseHandler } from '@/lib/errorResponseHandler';
-import { Upload, Download, Trash2, CheckCircle2, XCircle, FileText, Loader2 } from 'lucide-react';
+import { Upload, Download, Trash2, CheckCircle2, XCircle, FileText, Loader2, Send, X } from 'lucide-react';
 import type { DocumentSlot, IInternshipDocument } from '@/models/internship/IInternshipDocument';
+
+interface PendingFile {
+    file: File;
+    slot: DocumentSlot;
+    id: string;
+}
 
 interface InternshipDocumentsProps {
     internshipId: string;
@@ -24,14 +31,14 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
     const { role } = useAuthStore();
     const supportingInputRef = useRef<HTMLInputElement>(null);
     const reportInputRef = useRef<HTMLInputElement>(null);
+    
+    // State for pending files (not yet uploaded)
+    const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([]);
 
     const { data: documentsStatus, isLoading } = useGetInternshipDocuments(internshipId);
     const { downloadDocument, isDownloading } = useDownloadInternshipDocument();
 
-    const { mutate: uploadDocument, isPending: isUploading } = useUploadInternshipDocument({
-        onSuccess: () => {
-            toast.success(intl.formatMessage({ id: "Internship.Documents.UploadSuccess" }));
-        },
+    const { mutateAsync: uploadDocument, isPending: isUploading } = useUploadInternshipDocument({
         onError: async (error) => {
             await errorResponseHandler(error, intl);
         }
@@ -64,6 +71,15 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
         }
     });
 
+    const { mutate: submitDocuments, isPending: isSubmitting } = useSubmitInternshipDocuments({
+        onSuccess: () => {
+            toast.success(intl.formatMessage({ id: "Internship.Documents.SubmitSuccess" }));
+        },
+        onError: async (error) => {
+            await errorResponseHandler(error, intl);
+        }
+    });
+
     // Only show documents section if internship is Confirmed or later
     if (internshipState !== 'Confirmed' && internshipState !== 'Approved' && internshipState !== 'Passed') {
         return null;
@@ -81,14 +97,57 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
 
     const isStudent = role === 'Student';
     const isCompanyRep = role === 'CompanyRepresentative';
-    const isPending = isUploading || isDeleting || isApproving || isRejecting;
+    const isPending = isUploading || isDeleting || isApproving || isRejecting || isSubmitting;
 
+    // For students: add files to pending list instead of uploading immediately
     const handleFileSelect = (slot: DocumentSlot, files: FileList | null) => {
         if (!files || files.length === 0) return;
         
-        Array.from(files).forEach(file => {
-            uploadDocument({ internshipId, slot, file });
-        });
+        if (isStudent) {
+            // Add to pending files
+            const newPendingFiles = Array.from(files).map(file => ({
+                file,
+                slot,
+                id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+            }));
+            setPendingFiles(prev => [...prev, ...newPendingFiles]);
+        } else {
+            // For company: upload immediately
+            Array.from(files).forEach(file => {
+                uploadDocument({ internshipId, slot, file });
+            });
+        }
+    };
+
+    const handleRemovePendingFile = (id: string) => {
+        setPendingFiles(prev => prev.filter(f => f.id !== id));
+    };
+
+    const handleSubmitDocuments = async () => {
+        if (pendingFiles.length === 0) {
+            // If no pending files, just send notification
+            submitDocuments(internshipId);
+            return;
+        }
+
+        try {
+            // Upload all pending files first
+            for (const pendingFile of pendingFiles) {
+                await uploadDocument({ 
+                    internshipId, 
+                    slot: pendingFile.slot, 
+                    file: pendingFile.file 
+                });
+            }
+            
+            // Clear pending files
+            setPendingFiles([]);
+            
+            // Then send notification to company
+            submitDocuments(internshipId);
+        } catch (error) {
+            // Error handling is done in the hook
+        }
     };
 
     const handleDownload = (documentId: string) => {
@@ -106,15 +165,22 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
     const maxSupportingDocs = 3;
     const studentSupportingCount = documentsStatus.studentSupportingDocs.length;
     const companySupportingCount = documentsStatus.companySupportingDocs.length;
+    
+    // Count pending files by slot
+    const pendingSupportingCount = pendingFiles.filter(f => f.slot === 'Supporting').length;
+    const pendingReportCount = pendingFiles.filter(f => f.slot === 'Report').length;
 
-    const canAddMoreStudentSupporting = canStudentUploadSupporting && studentSupportingCount < maxSupportingDocs;
+    const canAddMoreStudentSupporting = canStudentUploadSupporting && (studentSupportingCount + pendingSupportingCount) < maxSupportingDocs;
     const canAddMoreCompanySupporting = canCompanyUpload && companySupportingCount < maxSupportingDocs;
 
-    // Check if there are any documents to approve
+    // Check if there are any documents to approve (for company)
     const hasAnyDocuments = documentsStatus.studentSupportingDocs.length > 0 || 
                            documentsStatus.companySupportingDocs.length > 0 ||
                            documentsStatus.studentReport !== null ||
                            documentsStatus.companyReport !== null;
+    
+    // Check if student has pending files to submit
+    const hasPendingFiles = pendingFiles.length > 0;
 
     const renderDocumentItem = (doc: IInternshipDocument, canDelete: boolean) => (
         <div key={doc.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
@@ -164,6 +230,26 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
         </span>
     );
 
+    const renderPendingFileItem = (pendingFile: PendingFile) => (
+        <div key={pendingFile.id} className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-blue-500" />
+                <span className="text-sm">{pendingFile.file.name}</span>
+                <span className="text-xs text-blue-600">
+                    (<FormattedMessage id="Internship.Documents.PendingUpload" />)
+                </span>
+            </div>
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleRemovePendingFile(pendingFile.id)}
+                disabled={isPending}
+            >
+                <X className="h-4 w-4 text-destructive" />
+            </Button>
+        </div>
+    );
+
     return (
         <Card className="mt-6">
             <CardHeader>
@@ -184,9 +270,14 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
                     </div>
                     
                     <div className="space-y-2">
-                        {/* Student's documents */}
+                        {/* Student's uploaded documents */}
                         {documentsStatus.studentSupportingDocs.map(doc => 
                             renderDocumentItem(doc, canStudentUploadSupporting && doc.uploadedBy === 'Student')
+                        )}
+                        
+                        {/* Student's pending documents (not yet uploaded) */}
+                        {pendingFiles.filter(f => f.slot === 'Supporting').map(pendingFile => 
+                            renderPendingFileItem(pendingFile)
                         )}
                         
                         {/* Company's documents */}
@@ -211,9 +302,9 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
                                     disabled={isPending}
                                 >
                                     <Upload className="h-4 w-4 mr-2" />
-                                    <FormattedMessage id="Internship.Documents.Upload" />
+                                    <FormattedMessage id="Internship.Documents.SelectFile" />
                                     <span className="text-muted-foreground ml-2">
-                                        ({studentSupportingCount}/{maxSupportingDocs})
+                                        ({studentSupportingCount + pendingSupportingCount}/{maxSupportingDocs})
                                     </span>
                                 </Button>
                             </>
@@ -267,13 +358,18 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
                             renderDocumentItem(documentsStatus.studentReport, canStudentUploadReport)
                         }
                         
+                        {/* Student's pending report (not yet uploaded) */}
+                        {pendingFiles.filter(f => f.slot === 'Report').map(pendingFile => 
+                            renderPendingFileItem(pendingFile)
+                        )}
+                        
                         {/* Company's report */}
                         {documentsStatus.companyReport && 
                             renderDocumentItem(documentsStatus.companyReport, false)
                         }
 
                         {/* Upload button for student */}
-                        {canStudentUploadReport && !documentsStatus.studentReport && (
+                        {canStudentUploadReport && !documentsStatus.studentReport && pendingReportCount === 0 && (
                             <>
                                 <input
                                     ref={reportInputRef}
@@ -289,7 +385,7 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
                                     disabled={isPending}
                                 >
                                     <Upload className="h-4 w-4 mr-2" />
-                                    <FormattedMessage id="Internship.Documents.Upload" />
+                                    <FormattedMessage id="Internship.Documents.SelectFile" />
                                 </Button>
                             </>
                         )}
@@ -326,6 +422,25 @@ export function InternshipDocuments({ internshipId, internshipState }: Internshi
                         )}
                     </div>
                 </div>
+
+                {/* Submit for approval button for student - only show when there are pending files */}
+                {isStudent && hasPendingFiles && (
+                    <div className="pt-4 border-t">
+                        <Button
+                            onClick={handleSubmitDocuments}
+                            disabled={isPending}
+                            className="w-full"
+                            variant="default"
+                        >
+                            {isPending ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Send className="mr-2 h-4 w-4" />
+                            )}
+                            <FormattedMessage id="Internship.Documents.Submit" />
+                        </Button>
+                    </div>
+                )}
 
                 {/* Approve/Reject buttons for company */}
                 {isCompanyRep && hasAnyDocuments && (

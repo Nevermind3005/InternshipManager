@@ -32,7 +32,8 @@ export const API = {
             DownloadDocument: (id: string, documentId: string) => `Internship/${id}/documents/download/${documentId}`,
             DeleteDocument: (id: string, documentId: string) => `Internship/${id}/documents/${documentId}`,
             ApproveDocuments: (id: string) => `Internship/${id}/documents/approve`,
-            RejectDocuments: (id: string) => `Internship/${id}/documents/reject`
+            RejectDocuments: (id: string) => `Internship/${id}/documents/reject`,
+            SubmitDocuments: (id: string) => `Internship/${id}/documents/submit`
         },
         Users: {
             PersonalInformation: () => 'User/me/personalInformation',

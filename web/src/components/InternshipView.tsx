@@ -278,20 +278,23 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
                                         <FormattedMessage id="Internship.Documents.Report" />
                                         <span className="ml-auto text-muted-foreground text-xs">.docx</span>
                                     </Button>
-                                    <Button
-                                        variant="outline"
-                                        className="justify-start"
-                                        onClick={() => downloadDocument('agreement')}
-                                        disabled={isDownloading !== null}
-                                    >
-                                        {isDownloading === 'agreement' ? (
-                                            <Loader className="mr-2 h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <Download className="mr-2 h-4 w-4" />
-                                        )}
-                                        <FormattedMessage id="Internship.Documents.Agreement" />
-                                        <span className="ml-auto text-muted-foreground text-xs">.docx</span>
-                                    </Button>
+                                    {/* Agreement is only shown for Unpaid internships */}
+                                    {internship.type === 'Unpaid' && (
+                                        <Button
+                                            variant="outline"
+                                            className="justify-start"
+                                            onClick={() => downloadDocument('agreement')}
+                                            disabled={isDownloading !== null}
+                                        >
+                                            {isDownloading === 'agreement' ? (
+                                                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Download className="mr-2 h-4 w-4" />
+                                            )}
+                                            <FormattedMessage id="Internship.Documents.Agreement" />
+                                            <span className="ml-auto text-muted-foreground text-xs">.docx</span>
+                                        </Button>
+                                    )}
                                     <Button
                                         variant="outline"
                                         className="justify-start"

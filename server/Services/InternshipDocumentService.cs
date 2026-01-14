@@ -85,8 +85,8 @@ public class InternshipDocumentService(
             return Result<InternshipDocumentResDto>.Failure(Error.NotFound);
         }
 
-        // Check internship state - must be Confirmed
-        if (internship.State != EInternshipState.Confirmed)
+        // Check internship state - must be Confirmed or Approved
+        if (internship.State != EInternshipState.Confirmed && internship.State != EInternshipState.Approved)
         {
             return Result<InternshipDocumentResDto>.Failure(Error.BadRequest);
         }
@@ -452,5 +452,54 @@ public class InternshipDocumentService(
                 model
             );
         }
+    }
+
+    public async Task<Result> SubmitDocumentsForApprovalAsync(Guid internshipId, Guid userId)
+    {
+        var internship = await dbContext.Internships
+            .Include(i => i.Documents)
+            .Include(i => i.Student)
+            .Include(i => i.CompanyRepresentative)
+            .Include(i => i.Company)
+            .FirstOrDefaultAsync(i => i.Id == internshipId);
+
+        if (internship == null)
+        {
+            return Result.Failure(Error.NotFound);
+        }
+
+        // Only students can submit documents for approval
+        if (internship.StudentId != userId)
+        {
+            return Result.Failure(Error.Unauthorized);
+        }
+
+        // Check if there are any student documents to submit
+        var hasStudentDocs = internship.Documents.Any(d => d.UploadedBy == EDocumentUploader.Student);
+        if (!hasStudentDocs)
+        {
+            return Result.Failure(Error.BadRequest);
+        }
+
+        // Send email to company representative
+        var model = new DocumentsSubmittedForApprovalMail
+        {
+            RepresentativeFirstName = internship.CompanyRepresentative.FirstName,
+            RepresentativeLastName = internship.CompanyRepresentative.LastName,
+            StudentFirstName = internship.Student.FirstName,
+            StudentLastName = internship.Student.LastName,
+            StudentEmail = internship.Student.Email,
+            InternshipName = internship.Name,
+            CompanyName = internship.Company.Name
+        };
+
+        await mailService.SendMailTemplateAsync(
+            internship.CompanyRepresentative.Email,
+            "Dokumenty na schválenie",
+            "Templates/DocumentsSubmittedForApprovalMail.cshtml",
+            model
+        );
+
+        return Result.Success();
     }
 }

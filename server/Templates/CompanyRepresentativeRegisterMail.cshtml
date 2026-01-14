@@ -1,0 +1,37 @@
+@model server.Models.Mail.CompanyRepresentativeRegisterMail
+
+<!DOCTYPE html>
+<html lang="sk">
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.5; color: #333; }
+            .container { max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; }
+            .header { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+            .password-box {
+                display: inline-block;
+                padding: 10px 15px;
+                margin: 15px 0;
+                background: #f4f4f4;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-family: Consolas, monospace;
+                font-size: 16px;
+            }
+            .note { font-size: 14px; color: #666; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">Dobrý deň, @Model.FirstName @Model.LastName!</div>
+
+            <p>Boli ste zaregistrovaný/á ako zástupca firmy <strong>@Model.CompanyName</strong> v systéme <strong>InternHub</strong>.</p>
+
+            <p>Váš účet bol úspešne vytvorený. Pri prvom prihlásení použite nasledovné heslo:</p>
+
+            <div class="password-box">@Model.GeneratedPassword</div>
+
+            <p class="note">Po prihlásení budete vyzvaný/á na zmenu hesla. V systéme môžete spravovať praxe študentov vo vašej firme.</p>
+        </div>
+    </body>
+</html>

@@ -111,6 +111,13 @@ public class AuthService(
             return Result<UserResDto>.Failure(Error.UserAlreadyExists);
         }
 
+        // Get company name for email
+        var company = await context.Companies.FindAsync(request.CompanyId);
+        if (company is null)
+        {
+            return Result<UserResDto>.Failure(Error.NotFound);
+        }
+
         // Generate random password and hash it with bCrypt
         var password = AuthStatics.GenerateRandomPassword();
         var passwordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(password);
@@ -123,8 +130,15 @@ public class AuthService(
         var dbUser = await context.Users.AddAsync(user);
         await context.SaveChangesAsync();
         
-        // TODO replace with proper password sending via mail
-        Console.WriteLine(password);
+        var mailTemplateModel = new CompanyRepresentativeRegisterMail
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            GeneratedPassword = password,
+            CompanyName = company.Name
+        };
+        
+        await mailService.SendMailTemplateAsync(request.Email, "Registrácia v systéme InternHub", "Templates/CompanyRepresentativeRegisterMail.cshtml", mailTemplateModel);
 
         var response = mapper.Map<UserResDto>(dbUser.Entity);
         

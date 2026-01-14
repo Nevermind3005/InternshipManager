@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -30,7 +30,7 @@ namespace server.Migrations
                 table: "internships",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: "Unpaid");
 
             migrationBuilder.CreateTable(
                 name: "internship_documents",

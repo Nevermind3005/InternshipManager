@@ -333,5 +333,24 @@ public class InternshipController(
         return Ok();
     }
 
+    [HttpPost("{id:guid}/documents/submit")]
+    [Authorize(Roles = nameof(ERole.Student))]
+    public async Task<ActionResult> SubmitDocumentsForApproval(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        var result = await documentService.SubmitDocumentsForApprovalAsync(id, userGuid);
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok();
+    }
+
     #endregion
 }

@@ -22,7 +22,10 @@ export const useUploadInternshipDocument = (options?: {
 
             const response = await authHttpClient.post(
                 API.Endpoints.Internship.UploadDocument(internshipId, slot),
-                { body: formData }
+                {
+                    body: formData,
+                    // Don't set Content-Type - let browser set it with boundary
+                }
             );
             return response.json<IInternshipDocument>();
         },
