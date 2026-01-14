@@ -5,7 +5,8 @@ import { useHandlerApproveInternship } from '@/api/hooks/useHandlerApproveIntern
 import { useHandlerRejectInternship } from '@/api/hooks/useHandlerRejectInternship';
 import { useHandlerPassInternship } from '@/api/hooks/useHandlerPassInternship';
 import { useHandlerFailInternship } from '@/api/hooks/useHandlerFailInternship';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDownloadDocument } from '@/api/hooks/useDownloadDocument';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { LoaderIcon } from 'lucide-react';
 import { formatDateOnlyString } from '@/lib/foundationUtils';
@@ -13,8 +14,9 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { errorResponseHandler } from '@/lib/errorResponseHandler';
 import { toast } from 'sonner';
-import { CheckCircle2, XCircle, Check, X } from 'lucide-react';
+import { CheckCircle2, XCircle, Check, X, Download, LoaderIcon as Loader } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { InternshipDocuments } from '@/components/internship/InternshipDocuments';
 
 interface InternshipViewProps {
     internshipId: string;
@@ -25,6 +27,7 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
     const { data: internship, isLoading, isError, refetch } = useGetInternship(internshipId);
     const intl = useIntl();
     const { role } = useAuthStore();
+    const { downloadDocument, isDownloading } = useDownloadDocument();
     
     // Company Representative actions
     const { mutate: approveInternship, isPending: isApproving } = useApproveInternship({
@@ -173,10 +176,7 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
         <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
             <Card>
                 <CardHeader>
-                    <CardTitle><FormattedMessage id="Internship.View" /></CardTitle>
-                    <CardDescription>
-                        <FormattedMessage id="Internship.ViewDescription" />
-                    </CardDescription>
+                    <CardTitle><FormattedMessage id="Internship.ViewTitle" /></CardTitle>
                 </CardHeader>
                 <CardContent>
                     <FieldGroup>
@@ -256,6 +256,62 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
                                 )}
                             </div>
                         </div>
+                        {role === "Student" && (
+                            <div className="pt-6 border-t">
+                                <Field>
+                                    <FieldLabel className="text-lg font-semibold">
+                                        <FormattedMessage id="Internship.Documents.Templates" />
+                                    </FieldLabel>
+                                </Field>
+                                <div className="flex flex-col gap-3 mt-4">
+                                    <Button
+                                        variant="outline"
+                                        className="justify-start"
+                                        onClick={() => downloadDocument('report')}
+                                        disabled={isDownloading !== null}
+                                    >
+                                        {isDownloading === 'report' ? (
+                                            <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Download className="mr-2 h-4 w-4" />
+                                        )}
+                                        <FormattedMessage id="Internship.Documents.Report" />
+                                        <span className="ml-auto text-muted-foreground text-xs">.docx</span>
+                                    </Button>
+                                    {/* Agreement is only shown for Unpaid internships */}
+                                    {internship.type === 'Unpaid' && (
+                                        <Button
+                                            variant="outline"
+                                            className="justify-start"
+                                            onClick={() => downloadDocument('agreement')}
+                                            disabled={isDownloading !== null}
+                                        >
+                                            {isDownloading === 'agreement' ? (
+                                                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Download className="mr-2 h-4 w-4" />
+                                            )}
+                                            <FormattedMessage id="Internship.Documents.Agreement" />
+                                            <span className="ml-auto text-muted-foreground text-xs">.docx</span>
+                                        </Button>
+                                    )}
+                                    <Button
+                                        variant="outline"
+                                        className="justify-start"
+                                        onClick={() => downloadDocument('instructions')}
+                                        disabled={isDownloading !== null}
+                                    >
+                                        {isDownloading === 'instructions' ? (
+                                            <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Download className="mr-2 h-4 w-4" />
+                                        )}
+                                        <FormattedMessage id="Internship.Documents.Instructions" />
+                                        <span className="ml-auto text-muted-foreground text-xs">.pdf</span>
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                         {canApproveOrDecline && (
                             <Field>
                                 <div className="flex gap-4 pt-6 border-t">
@@ -340,6 +396,14 @@ export function InternshipView({ internshipId, showActions = true }: InternshipV
                     </FieldGroup>
                 </CardContent>
             </Card>
+            
+            {/* Document Management Section - for Student and Company */}
+            {(role === "Student" || role === "CompanyRepresentative" || role === "InternshipHandler") && (
+                <InternshipDocuments 
+                    internshipId={internshipId} 
+                    internshipState={internship.state} 
+                />
+            )}
         </div>
     );
 }

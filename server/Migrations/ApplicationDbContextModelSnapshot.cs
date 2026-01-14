@@ -114,6 +114,14 @@ namespace server.Migrations
                         .HasColumnType("date")
                         .HasColumnName("end_date");
 
+                    b.Property<bool>("IsReportApprovedByCompany")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_report_approved_by_company");
+
+                    b.Property<bool>("IsSupportingDocsApprovedByCompany")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_supporting_docs_approved_by_company");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -142,6 +150,11 @@ namespace server.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("study_program_id");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
@@ -166,6 +179,60 @@ namespace server.Migrations
                         .HasDatabaseName("ix_internships_study_program_id");
 
                     b.ToTable("internships", (string)null);
+                });
+
+            modelBuilder.Entity("server.Entities.InternshipDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("file_name");
+
+                    b.Property<Guid>("InternshipId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("internship_id");
+
+                    b.Property<string>("S3Key")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
+                        .HasColumnName("s3key");
+
+                    b.Property<string>("Slot")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("slot");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("uploaded_at");
+
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("uploaded_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_internship_documents");
+
+                    b.HasIndex("InternshipId", "Slot", "UploadedBy")
+                        .HasDatabaseName("ix_internship_documents_internship_id_slot_uploaded_by");
+
+                    b.ToTable("internship_documents", (string)null);
                 });
 
             modelBuilder.Entity("server.Entities.PasswordResetToken", b =>
@@ -462,6 +529,18 @@ namespace server.Migrations
                     b.Navigation("StudyProgram");
                 });
 
+            modelBuilder.Entity("server.Entities.InternshipDocument", b =>
+                {
+                    b.HasOne("server.Entities.Internship", "Internship")
+                        .WithMany("Documents")
+                        .HasForeignKey("InternshipId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_internship_documents_internships_internship_id");
+
+                    b.Navigation("Internship");
+                });
+
             modelBuilder.Entity("server.Entities.PasswordResetToken", b =>
                 {
                     b.HasOne("server.Entities.User", "User")
@@ -541,6 +620,11 @@ namespace server.Migrations
                     b.Navigation("Internships");
 
                     b.Navigation("Representatives");
+                });
+
+            modelBuilder.Entity("server.Entities.Internship", b =>
+                {
+                    b.Navigation("Documents");
                 });
 
             modelBuilder.Entity("server.Entities.StudyProgram", b =>

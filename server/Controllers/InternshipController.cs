@@ -8,6 +8,7 @@ using server.Foundation.Utils;
 using server.Models;
 using server.Models.Filters;
 using server.Models.Internship;
+using server.Models.InternshipDocument;
 using server.Services;
 
 namespace server.Controllers;
@@ -18,7 +19,8 @@ namespace server.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class InternshipController(
     IInternshipService internshipService,
-    IAuthService authService
+    IAuthService authService,
+    IInternshipDocumentService documentService
     ) : ControllerBase
 {
     [HttpPost]
@@ -213,4 +215,142 @@ public class InternshipController(
         return Ok(result.Value);
     }
 
+    #region Document Endpoints
+
+    [HttpGet("{id:guid}/documents")]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
+    public async Task<ActionResult<InternshipDocumentsStatusResDto>> GetDocumentsStatus(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        var result = await documentService.GetDocumentsStatusAsync(id, userGuid);
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpPost("{id:guid}/documents/{slot}")]
+    [Authorize(Roles = $"{nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
+    public async Task<ActionResult<InternshipDocumentResDto>> UploadDocument(Guid id, EDocumentSlot slot, IFormFile file)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        await using var stream = file.OpenReadStream();
+        var result = await documentService.UploadDocumentAsync(id, userGuid, slot, stream, file.FileName);
+        
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("{id:guid}/documents/download/{documentId:guid}")]
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.CompanyRepresentative)}, {nameof(ERole.Student)}")]
+    public async Task<IActionResult> DownloadDocument(Guid id, Guid documentId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        var result = await documentService.DownloadDocumentAsync(id, documentId, userGuid);
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return File(result.Value.FileStream, result.Value.ContentType, result.Value.FileName);
+    }
+
+    [HttpDelete("{id:guid}/documents/{documentId:guid}")]
+    [Authorize(Roles = nameof(ERole.Student))]
+    public async Task<ActionResult> DeleteDocument(Guid id, Guid documentId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        var result = await documentService.DeleteDocumentAsync(id, documentId, userGuid);
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/documents/approve")]
+    [Authorize(Roles = nameof(ERole.CompanyRepresentative))]
+    public async Task<ActionResult> ApproveDocuments(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        var result = await documentService.ApproveDocumentsAsync(id, userGuid);
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("{id:guid}/documents/reject")]
+    [Authorize(Roles = nameof(ERole.CompanyRepresentative))]
+    public async Task<ActionResult> RejectDocuments(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        var result = await documentService.RejectDocumentsAsync(id, userGuid);
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("{id:guid}/documents/submit")]
+    [Authorize(Roles = nameof(ERole.Student))]
+    public async Task<ActionResult> SubmitDocumentsForApproval(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null || !Guid.TryParse(userId, out var userGuid))
+        {
+            return Problem();
+        }
+
+        var result = await documentService.SubmitDocumentsForApprovalAsync(id, userGuid);
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok();
+    }
+
+    #endregion
 }

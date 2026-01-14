@@ -1,6 +1,7 @@
 import type { ICompanyRes } from "../company/ICompanyRes";
 import type { IStudyProgramRes } from "../studyProgram/IStudyProgramRes";
 import type { IUserRes } from "../user/IUserRes";
+import type { InternshipType } from "./IInternshipDocument";
 
 export interface IInternshipRes {
   id: string,
@@ -11,6 +12,9 @@ export interface IInternshipRes {
   year: number,
   semester: string,
   state: string,
+  type: InternshipType,
+  isSupportingDocsApprovedByCompany: boolean,
+  isReportApprovedByCompany: boolean,
   studentId: string,
   student: IUserRes,
   companyRepresentativeId: string,

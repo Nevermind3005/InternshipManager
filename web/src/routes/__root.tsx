@@ -63,7 +63,7 @@ const RootLayout = () => {
                     </div>
                 </header>
 
-                <div className="flex-1 min-h-0 flex flex-col">
+                <div className="flex-1 min-h-0 flex flex-col overflow-auto">
                     <Outlet />
                 </div>
             </SidebarInset>

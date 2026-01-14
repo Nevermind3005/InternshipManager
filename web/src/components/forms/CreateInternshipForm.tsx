@@ -42,6 +42,8 @@ const formSchema = z.object({
         .string(),
     semester: z
         .string(),
+    type: z
+        .enum(['Unpaid', 'Paid']),
     studyProgramId: z
         .string()
         .uuid()
@@ -111,7 +113,8 @@ const CreateInternshipForm = () => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             year: new Date().getFullYear().toString(),
-            semester: getSeason()
+            semester: getSeason(),
+            type: 'Unpaid'
         }
     });
 
@@ -134,6 +137,7 @@ const CreateInternshipForm = () => {
             endDate: toDateOnlyString(data.endDate),
             year: parseInt(data.year),
             semester: capitalizedSemester,
+            type: data.type,
             companyRepresentativeId: foundRepresentative!.id,
             companyId: data.companyId,
             studyProgramId: data.studyProgramId || null
@@ -381,6 +385,30 @@ const CreateInternshipForm = () => {
                                                 )}
                                             />
                                         </Field>
+                                    </Field>
+                                    <Field>
+                                        <Controller
+                                            name="type"
+                                            control={form.control}
+                                            render={({ field, fieldState }) => (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="CreateInternship_Type">
+                                                        <FormattedMessage id="CreateInternship.Type" />
+                                                    </FieldLabel>
+                                                    <select
+                                                        {...field}
+                                                        id="CreateInternship_Type"
+                                                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                                    >
+                                                        <option value="Unpaid">{intl.formatMessage({ id: 'CreateInternship.Type.Unpaid' })}</option>
+                                                        <option value="Paid">{intl.formatMessage({ id: 'CreateInternship.Type.Paid' })}</option>
+                                                    </select>
+                                                    {fieldState.invalid && (
+                                                        <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
+                                            )}
+                                        />
                                     </Field>
                                     <Field>
                                         <Controller

@@ -28,6 +28,12 @@ public class Internship : EntityBase
     [Required]
     public EInternshipState State { get; set; }
     
+    [Required]
+    public EInternshipType Type { get; set; } = EInternshipType.Unpaid;
+    
+    public bool IsSupportingDocsApprovedByCompany { get; set; } = false;
+    public bool IsReportApprovedByCompany { get; set; } = false;
+    
     public Guid StudentId { get; set; }
     public User Student { get; set; } = null!;
 
@@ -39,4 +45,6 @@ public class Internship : EntityBase
     
     public Guid? StudyProgramId { get; set; }
     public StudyProgram? StudyProgram { get; set; }
+    
+    public ICollection<InternshipDocument> Documents { get; set; } = new List<InternshipDocument>();
 }

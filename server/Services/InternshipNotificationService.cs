@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using server.Data;
 using server.Entities;
@@ -7,7 +8,8 @@ namespace server.Services;
 
 public class InternshipNotificationService(
     IMailService mailService,
-    ILogger<InternshipNotificationService> logger
+    ILogger<InternshipNotificationService> logger,
+    ApplicationDbContext dbContext
     ) : IInternshipNotificationService
 {
     private const string TemplateBasePath = "Templates/";
@@ -118,7 +120,8 @@ public class InternshipNotificationService(
 
     private async Task SendConfirmedNotificationAsync(Internship internship, string studentEmail)
     {
-        var model = new InternshipConfirmedMail
+        // Send notification to student
+        var studentModel = new InternshipConfirmedMail
         {
             StudentFirstName = internship.Student.FirstName,
             StudentLastName = internship.Student.LastName,
@@ -133,8 +136,50 @@ public class InternshipNotificationService(
             studentEmail,
             "Prax potvrdená spoločnosťou",
             $"{TemplateBasePath}InternshipConfirmedMail.cshtml",
-            model
+            studentModel
         );
+
+        // Send notification to all coordinators (InternshipHandlers)
+        var coordinators = await dbContext.Users
+            .Where(u => u.Role == ERole.InternshipHandler)
+            .ToListAsync();
+
+        if (coordinators.Count > 0)
+        {
+            var coordinatorModel = new InternshipConfirmedForCoordinatorMail
+            {
+                StudentFirstName = internship.Student.FirstName,
+                StudentLastName = internship.Student.LastName,
+                StudentEmail = internship.Student.Email,
+                StudentPhone = internship.Student.Phone,
+                StudyProgramCode = internship.StudyProgram?.Code,
+                InternshipName = internship.Name,
+                CompanyName = internship.Company.Name,
+                CompanyRepresentativeName = $"{internship.CompanyRepresentative.FirstName} {internship.CompanyRepresentative.LastName}",
+                CompanyRepresentativeEmail = internship.CompanyRepresentative.Email,
+                StartDate = internship.StartDate,
+                EndDate = internship.EndDate,
+                Year = internship.Year,
+                Semester = internship.Semester.ToString()
+            };
+
+            foreach (var coordinator in coordinators)
+            {
+                try
+                {
+                    await mailService.SendMailTemplateAsync(
+                        coordinator.Email,
+                        "Nová prax potvrdená firmou",
+                        $"{TemplateBasePath}InternshipConfirmedForCoordinatorMail.cshtml",
+                        coordinatorModel
+                    );
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to send confirmation email to coordinator {CoordinatorEmail}", coordinator.Email);
+                }
+            }
+        }
     }
 
     private async Task SendRejectedByCompanyNotificationAsync(Internship internship, string studentEmail)
