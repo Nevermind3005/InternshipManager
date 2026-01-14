@@ -10,6 +10,7 @@ using server.Models.Filters;
 using server.Models.Internship;
 using server.Models.InternshipDocument;
 using server.Services;
+using static System.Enum;
 
 namespace server.Controllers;
 
@@ -161,9 +162,14 @@ public class InternshipController(
         ChangeInternshipStateAsync(id, EInternshipState.Rejected, ERole.InternshipHandler);
 
     [HttpPost("{id:guid}/handler/pass")]
-    [Authorize(Roles = nameof(ERole.InternshipHandler))]
-    public Task<ActionResult<InternshipResDto>> HandlerPassInternship(Guid id) =>
-        ChangeInternshipStateAsync(id, EInternshipState.Passed, ERole.InternshipHandler);
+    [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.ExternalApplication)}")]
+    public Task<ActionResult<InternshipResDto>> HandlerPassInternship(Guid id)
+    {
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+        TryParse<ERole>(userRole, out var roleEnum);
+        return ChangeInternshipStateAsync(id, EInternshipState.Passed, roleEnum);
+    }
+
 
     [HttpPost("{id:guid}/handler/fail")]
     [Authorize(Roles = nameof(ERole.InternshipHandler))]
