@@ -1,18 +1,10 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useAuthStore } from '@/store/useAuthStore';
-import LandingPage from '../components/LandingPage';
+import { createFileRoute } from '@tanstack/react-router';
+import { Landing } from '@/components/Landing';
+import { requireAnonymous } from '@/lib/authGuard';
 
 export const Route = createFileRoute('/')({
-    component: LandingPage,
-    beforeLoad: () => {
-        const { role } = useAuthStore.getState();
-        // If user is logged in, redirect to internships
-        if (role !== 'None') {
-            throw redirect({
-                to: '/internships'
-            });
-        }
-    },
+    component: Landing,
+    beforeLoad: requireAnonymous(),
     loader: () => ({
         crumb: 'Home'
     })

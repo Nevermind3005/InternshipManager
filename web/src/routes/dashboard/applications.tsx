@@ -5,7 +5,7 @@ import { requireRole } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/applications')({
+export const Route = createFileRoute('/dashboard/applications')({
     component: RouteComponent,
     beforeLoad: requireRole(['InternshipHandler']),
     loader: () => ({

@@ -1,10 +1,10 @@
-import { ClipboardCheckIcon, FingerprintIcon, LogOut, Home, Lock, Settings, type LucideProps } from "lucide-react";
+import { ClipboardCheckIcon, FingerprintIcon, LogOut, Lock, Settings, type LucideProps } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from "../ui/sidebar";
 import { Link } from "@tanstack/react-router";
 import { Button } from "../ui/button";
 import { PermissionGuard } from "./PermissionGuard";
 import { FormattedMessage } from "react-intl";
-import { Roles_All, type Role } from "@/store/useAuthStore";
+import { type Role } from "@/store/useAuthStore";
 import { useLogout } from "@/hooks/useLogout";
 
 interface ISidebarNav {
@@ -16,32 +16,26 @@ interface ISidebarNav {
 
 const navMain : ISidebarNav[] = [
     {
-        title: "Sidebar.Home",
-        url: "/",
-        icon: Home,
-        roles: Roles_All
-    },
-    {
         title: "Sidebar.Internships",
-        url: "/internships",
+        url: "/dashboard/internships",
         icon: ClipboardCheckIcon,
         roles: ["Student", "InternshipHandler", "CompanyRepresentative"]
     },
     {
         title: "Sidebar.Account",
-        url: "/account",
+        url: "/dashboard/account",
         icon: FingerprintIcon,
         roles: ["Student", "InternshipHandler", "CompanyRepresentative"]
     },
     {
         title: "Sidebar.Applications",
-        url: "/applications",
+        url: "/dashboard/applications",
         icon: Lock,
         roles: ["InternshipHandler"]
     },
     {
         title: "Sidebar.Settings",
-        url: "/settings",
+        url: "/dashboard/settings",
         icon: Settings,
         roles: ["InternshipHandler"]
     }

@@ -1,5 +1,5 @@
 import ResetPasswordForm from '@/components/forms/ResetPasswordForm';
-import { requireRole } from '@/lib/authGuard';
+import { requireAnonymous } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 import * as z from 'zod';
 
@@ -9,7 +9,7 @@ const resetPasswordSearchSchema = z.object({
 
 export const Route = createFileRoute('/reset-password')({
     component: RouteComponent,
-    beforeLoad: requireRole(['None']),
+    beforeLoad: requireAnonymous(),
     validateSearch: resetPasswordSearchSchema,
     loader: () => ({
         crumb: 'Reset Password'

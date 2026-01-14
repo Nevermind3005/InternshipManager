@@ -1,10 +1,10 @@
 import LoginForm from '@/components/forms/LoginForm';
-import { requireRole } from '@/lib/authGuard';
+import { requireAnonymous } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/login')({
     component: RouteComponent,
-    beforeLoad: requireRole(['None']),
+    beforeLoad: requireAnonymous(),
     loader: () => ({
         crumb: 'Login'
     })

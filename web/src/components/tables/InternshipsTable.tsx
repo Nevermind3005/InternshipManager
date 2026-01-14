@@ -165,7 +165,7 @@ const getTableColumns = (navigate: ReturnType<typeof useNavigate>) => {
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => navigate({ to: `/internships/edit/${row.original.id}` })}
+                            onClick={() => navigate({ to: `/dashboard/internships/edit/${row.original.id}` })}
                             className="h-8 w-8 p-0"
                         >
                             <PencilIcon className="h-4 w-4" />
@@ -300,7 +300,7 @@ export function InternshipsTable() {
             <PageableTable 
                 table={table} 
                 columns={columns} 
-                onRowClick={(row) => navigate({ to: `/internships/detail/${row.original.id}` })} 
+                onRowClick={(row) => navigate({ to: `/dashboard/internships/detail/${row.original.id}` })} 
                 totalPages={totalPages}
             />
         </div>

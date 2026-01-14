@@ -423,7 +423,7 @@ const ChangePersonalInformationForm = () => {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => navigate({ to: "/" })}
+                                    onClick={() => navigate({ to: "/dashboard/internships" })}
                                     disabled={isPending}
                                     className="flex-1"
                                 >

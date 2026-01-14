@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import EditInternshipForm from '@/components/forms/EditInternshipForm';
 
-export const Route = createFileRoute('/internships/edit/$internshipId')({
+export const Route = createFileRoute('/dashboard/internships/edit/$internshipId')({
     component: RouteComponent,
     loader: () => ({
         crumb: 'Edit'

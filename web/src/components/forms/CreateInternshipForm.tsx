@@ -147,7 +147,7 @@ const CreateInternshipForm = () => {
                 errorResponseHandler(error, intl);
             },
             onSuccess: () => {
-                navigate({ to: '/internships' });
+                navigate({ to: '/dashboard/internships' });
             }
         });
     };

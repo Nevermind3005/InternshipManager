@@ -325,6 +325,10 @@ const RegisterForm = () => {
                                 <Link to="/login">{' '}<FormattedMessage id="SignUp.SignIn" />
                                 </Link>
                             </FieldDescription>
+                            <FieldDescription className="px-6 text-center">
+                                <Link to="/register-company">{' '}<FormattedMessage id="Landing.RegisterCompany" />
+                                </Link>
+                            </FieldDescription>
                         </Field>
                     </FieldGroup>
                 </form>

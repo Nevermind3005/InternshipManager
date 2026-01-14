@@ -5,7 +5,7 @@ import ChangePasswordForm from '@/components/forms/ChangePasswordForm';
 import ProfileSummaryCard from '@/components/profile/ProfileSummaryCard';
 import { requireRole } from '@/lib/authGuard';
 
-export const Route = createFileRoute('/account/')({
+export const Route = createFileRoute('/dashboard/account/')({
     component: RouteComponent,
     beforeLoad: requireRole(['Student', 'InternshipHandler', 'CompanyRepresentative']),
     loader: () => ({

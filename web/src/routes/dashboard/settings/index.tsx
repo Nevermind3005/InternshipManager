@@ -10,7 +10,7 @@ import CreateInternshipHandlerForm from '@/components/forms/CreateInternshipHand
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 
-export const Route = createFileRoute('/settings/')({
+export const Route = createFileRoute('/dashboard/settings/')({
     component: RouteComponent,
     beforeLoad: requireRole(['InternshipHandler']),
     loader: () => ({

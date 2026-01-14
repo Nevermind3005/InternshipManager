@@ -12,19 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterCompanyRouteImport } from './routes/register-company'
 import { Route as RegisterRouteImport } from './routes/register'
-import { Route as ManagementRouteImport } from './routes/management'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as ChangeDefaultPasswordRouteImport } from './routes/changeDefaultPassword'
-import { Route as ApplicationsRouteImport } from './routes/applications'
-import { Route as InternshipsRouteRouteImport } from './routes/internships/route'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as InternshipsIndexRouteImport } from './routes/internships/index'
-import { Route as AccountIndexRouteImport } from './routes/account/index'
-import { Route as InternshipsNewIndexRouteImport } from './routes/internships/new/index'
-import { Route as InternshipsEditInternshipIdRouteImport } from './routes/internships/edit/$internshipId'
-import { Route as InternshipsDetailInternshipIdRouteImport } from './routes/internships/detail/$internshipId'
+import { Route as DashboardManagementRouteImport } from './routes/dashboard/management'
+import { Route as DashboardApplicationsRouteImport } from './routes/dashboard/applications'
+import { Route as DashboardInternshipsRouteRouteImport } from './routes/dashboard/internships/route'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/settings/index'
+import { Route as DashboardInternshipsIndexRouteImport } from './routes/dashboard/internships/index'
+import { Route as DashboardAccountIndexRouteImport } from './routes/dashboard/account/index'
+import { Route as DashboardInternshipsNewIndexRouteImport } from './routes/dashboard/internships/new/index'
+import { Route as DashboardInternshipsEditInternshipIdRouteImport } from './routes/dashboard/internships/edit/$internshipId'
+import { Route as DashboardInternshipsDetailInternshipIdRouteImport } from './routes/dashboard/internships/detail/$internshipId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -39,11 +40,6 @@ const RegisterCompanyRoute = RegisterCompanyRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ManagementRoute = ManagementRouteImport.update({
-  id: '/management',
-  path: '/management',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -61,14 +57,9 @@ const ChangeDefaultPasswordRoute = ChangeDefaultPasswordRouteImport.update({
   path: '/changeDefaultPassword',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApplicationsRoute = ApplicationsRouteImport.update({
-  id: '/applications',
-  path: '/applications',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InternshipsRouteRoute = InternshipsRouteRouteImport.update({
-  id: '/internships',
-  path: '/internships',
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -76,162 +67,182 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
+const DashboardManagementRoute = DashboardManagementRouteImport.update({
+  id: '/management',
+  path: '/management',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardApplicationsRoute = DashboardApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardInternshipsRouteRoute =
+  DashboardInternshipsRouteRouteImport.update({
+    id: '/internships',
+    path: '/internships',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
-const InternshipsIndexRoute = InternshipsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => InternshipsRouteRoute,
-} as any)
-const AccountIndexRoute = AccountIndexRouteImport.update({
+const DashboardInternshipsIndexRoute =
+  DashboardInternshipsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardInternshipsRouteRoute,
+  } as any)
+const DashboardAccountIndexRoute = DashboardAccountIndexRouteImport.update({
   id: '/account/',
   path: '/account/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
-const InternshipsNewIndexRoute = InternshipsNewIndexRouteImport.update({
-  id: '/new/',
-  path: '/new/',
-  getParentRoute: () => InternshipsRouteRoute,
-} as any)
-const InternshipsEditInternshipIdRoute =
-  InternshipsEditInternshipIdRouteImport.update({
+const DashboardInternshipsNewIndexRoute =
+  DashboardInternshipsNewIndexRouteImport.update({
+    id: '/new/',
+    path: '/new/',
+    getParentRoute: () => DashboardInternshipsRouteRoute,
+  } as any)
+const DashboardInternshipsEditInternshipIdRoute =
+  DashboardInternshipsEditInternshipIdRouteImport.update({
     id: '/edit/$internshipId',
     path: '/edit/$internshipId',
-    getParentRoute: () => InternshipsRouteRoute,
+    getParentRoute: () => DashboardInternshipsRouteRoute,
   } as any)
-const InternshipsDetailInternshipIdRoute =
-  InternshipsDetailInternshipIdRouteImport.update({
+const DashboardInternshipsDetailInternshipIdRoute =
+  DashboardInternshipsDetailInternshipIdRouteImport.update({
     id: '/detail/$internshipId',
     path: '/detail/$internshipId',
-    getParentRoute: () => InternshipsRouteRoute,
+    getParentRoute: () => DashboardInternshipsRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/internships': typeof InternshipsRouteRouteWithChildren
-  '/applications': typeof ApplicationsRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
-  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
   '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/account': typeof AccountIndexRoute
-  '/internships/': typeof InternshipsIndexRoute
-  '/settings': typeof SettingsIndexRoute
-  '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
-  '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
-  '/internships/new': typeof InternshipsNewIndexRoute
+  '/dashboard/internships': typeof DashboardInternshipsRouteRouteWithChildren
+  '/dashboard/applications': typeof DashboardApplicationsRoute
+  '/dashboard/management': typeof DashboardManagementRoute
+  '/dashboard/account': typeof DashboardAccountIndexRoute
+  '/dashboard/internships/': typeof DashboardInternshipsIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
+  '/dashboard/internships/detail/$internshipId': typeof DashboardInternshipsDetailInternshipIdRoute
+  '/dashboard/internships/edit/$internshipId': typeof DashboardInternshipsEditInternshipIdRoute
+  '/dashboard/internships/new': typeof DashboardInternshipsNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/applications': typeof ApplicationsRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
-  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
   '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/account': typeof AccountIndexRoute
-  '/internships': typeof InternshipsIndexRoute
-  '/settings': typeof SettingsIndexRoute
-  '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
-  '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
-  '/internships/new': typeof InternshipsNewIndexRoute
+  '/dashboard/applications': typeof DashboardApplicationsRoute
+  '/dashboard/management': typeof DashboardManagementRoute
+  '/dashboard/account': typeof DashboardAccountIndexRoute
+  '/dashboard/internships': typeof DashboardInternshipsIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
+  '/dashboard/internships/detail/$internshipId': typeof DashboardInternshipsDetailInternshipIdRoute
+  '/dashboard/internships/edit/$internshipId': typeof DashboardInternshipsEditInternshipIdRoute
+  '/dashboard/internships/new': typeof DashboardInternshipsNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/internships': typeof InternshipsRouteRouteWithChildren
-  '/applications': typeof ApplicationsRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/changeDefaultPassword': typeof ChangeDefaultPasswordRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
-  '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
   '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/account/': typeof AccountIndexRoute
-  '/internships/': typeof InternshipsIndexRoute
-  '/settings/': typeof SettingsIndexRoute
-  '/internships/detail/$internshipId': typeof InternshipsDetailInternshipIdRoute
-  '/internships/edit/$internshipId': typeof InternshipsEditInternshipIdRoute
-  '/internships/new/': typeof InternshipsNewIndexRoute
+  '/dashboard/internships': typeof DashboardInternshipsRouteRouteWithChildren
+  '/dashboard/applications': typeof DashboardApplicationsRoute
+  '/dashboard/management': typeof DashboardManagementRoute
+  '/dashboard/account/': typeof DashboardAccountIndexRoute
+  '/dashboard/internships/': typeof DashboardInternshipsIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
+  '/dashboard/internships/detail/$internshipId': typeof DashboardInternshipsDetailInternshipIdRoute
+  '/dashboard/internships/edit/$internshipId': typeof DashboardInternshipsEditInternshipIdRoute
+  '/dashboard/internships/new/': typeof DashboardInternshipsNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/internships'
-    | '/applications'
+    | '/dashboard'
     | '/changeDefaultPassword'
     | '/forgot-password'
     | '/login'
-    | '/management'
     | '/register'
     | '/register-company'
     | '/reset-password'
-    | '/account'
-    | '/internships/'
-    | '/settings'
-    | '/internships/detail/$internshipId'
-    | '/internships/edit/$internshipId'
-    | '/internships/new'
+    | '/dashboard/internships'
+    | '/dashboard/applications'
+    | '/dashboard/management'
+    | '/dashboard/account'
+    | '/dashboard/internships/'
+    | '/dashboard/settings'
+    | '/dashboard/internships/detail/$internshipId'
+    | '/dashboard/internships/edit/$internshipId'
+    | '/dashboard/internships/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/applications'
+    | '/dashboard'
     | '/changeDefaultPassword'
     | '/forgot-password'
     | '/login'
-    | '/management'
     | '/register'
     | '/register-company'
     | '/reset-password'
-    | '/account'
-    | '/internships'
-    | '/settings'
-    | '/internships/detail/$internshipId'
-    | '/internships/edit/$internshipId'
-    | '/internships/new'
+    | '/dashboard/applications'
+    | '/dashboard/management'
+    | '/dashboard/account'
+    | '/dashboard/internships'
+    | '/dashboard/settings'
+    | '/dashboard/internships/detail/$internshipId'
+    | '/dashboard/internships/edit/$internshipId'
+    | '/dashboard/internships/new'
   id:
     | '__root__'
     | '/'
-    | '/internships'
-    | '/applications'
+    | '/dashboard'
     | '/changeDefaultPassword'
     | '/forgot-password'
     | '/login'
-    | '/management'
     | '/register'
     | '/register-company'
     | '/reset-password'
-    | '/account/'
-    | '/internships/'
-    | '/settings/'
-    | '/internships/detail/$internshipId'
-    | '/internships/edit/$internshipId'
-    | '/internships/new/'
+    | '/dashboard/internships'
+    | '/dashboard/applications'
+    | '/dashboard/management'
+    | '/dashboard/account/'
+    | '/dashboard/internships/'
+    | '/dashboard/settings/'
+    | '/dashboard/internships/detail/$internshipId'
+    | '/dashboard/internships/edit/$internshipId'
+    | '/dashboard/internships/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  InternshipsRouteRoute: typeof InternshipsRouteRouteWithChildren
-  ApplicationsRoute: typeof ApplicationsRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   ChangeDefaultPasswordRoute: typeof ChangeDefaultPasswordRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
-  ManagementRoute: typeof ManagementRoute
   RegisterRoute: typeof RegisterRoute
   RegisterCompanyRoute: typeof RegisterCompanyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  AccountIndexRoute: typeof AccountIndexRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -257,13 +268,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/management': {
-      id: '/management'
-      path: '/management'
-      fullPath: '/management'
-      preLoaderRoute: typeof ManagementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -285,18 +289,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChangeDefaultPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/applications': {
-      id: '/applications'
-      path: '/applications'
-      fullPath: '/applications'
-      preLoaderRoute: typeof ApplicationsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/internships': {
-      id: '/internships'
-      path: '/internships'
-      fullPath: '/internships'
-      preLoaderRoute: typeof InternshipsRouteRouteImport
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -306,81 +303,123 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/': {
-      id: '/settings/'
+    '/dashboard/management': {
+      id: '/dashboard/management'
+      path: '/management'
+      fullPath: '/dashboard/management'
+      preLoaderRoute: typeof DashboardManagementRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/applications': {
+      id: '/dashboard/applications'
+      path: '/applications'
+      fullPath: '/dashboard/applications'
+      preLoaderRoute: typeof DashboardApplicationsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/internships': {
+      id: '/dashboard/internships'
+      path: '/internships'
+      fullPath: '/dashboard/internships'
+      preLoaderRoute: typeof DashboardInternshipsRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
       path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
-    '/internships/': {
-      id: '/internships/'
+    '/dashboard/internships/': {
+      id: '/dashboard/internships/'
       path: '/'
-      fullPath: '/internships/'
-      preLoaderRoute: typeof InternshipsIndexRouteImport
-      parentRoute: typeof InternshipsRouteRoute
+      fullPath: '/dashboard/internships/'
+      preLoaderRoute: typeof DashboardInternshipsIndexRouteImport
+      parentRoute: typeof DashboardInternshipsRouteRoute
     }
-    '/account/': {
-      id: '/account/'
+    '/dashboard/account/': {
+      id: '/dashboard/account/'
       path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AccountIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/dashboard/account'
+      preLoaderRoute: typeof DashboardAccountIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
-    '/internships/new/': {
-      id: '/internships/new/'
+    '/dashboard/internships/new/': {
+      id: '/dashboard/internships/new/'
       path: '/new'
-      fullPath: '/internships/new'
-      preLoaderRoute: typeof InternshipsNewIndexRouteImport
-      parentRoute: typeof InternshipsRouteRoute
+      fullPath: '/dashboard/internships/new'
+      preLoaderRoute: typeof DashboardInternshipsNewIndexRouteImport
+      parentRoute: typeof DashboardInternshipsRouteRoute
     }
-    '/internships/edit/$internshipId': {
-      id: '/internships/edit/$internshipId'
+    '/dashboard/internships/edit/$internshipId': {
+      id: '/dashboard/internships/edit/$internshipId'
       path: '/edit/$internshipId'
-      fullPath: '/internships/edit/$internshipId'
-      preLoaderRoute: typeof InternshipsEditInternshipIdRouteImport
-      parentRoute: typeof InternshipsRouteRoute
+      fullPath: '/dashboard/internships/edit/$internshipId'
+      preLoaderRoute: typeof DashboardInternshipsEditInternshipIdRouteImport
+      parentRoute: typeof DashboardInternshipsRouteRoute
     }
-    '/internships/detail/$internshipId': {
-      id: '/internships/detail/$internshipId'
+    '/dashboard/internships/detail/$internshipId': {
+      id: '/dashboard/internships/detail/$internshipId'
       path: '/detail/$internshipId'
-      fullPath: '/internships/detail/$internshipId'
-      preLoaderRoute: typeof InternshipsDetailInternshipIdRouteImport
-      parentRoute: typeof InternshipsRouteRoute
+      fullPath: '/dashboard/internships/detail/$internshipId'
+      preLoaderRoute: typeof DashboardInternshipsDetailInternshipIdRouteImport
+      parentRoute: typeof DashboardInternshipsRouteRoute
     }
   }
 }
 
-interface InternshipsRouteRouteChildren {
-  InternshipsIndexRoute: typeof InternshipsIndexRoute
-  InternshipsDetailInternshipIdRoute: typeof InternshipsDetailInternshipIdRoute
-  InternshipsEditInternshipIdRoute: typeof InternshipsEditInternshipIdRoute
-  InternshipsNewIndexRoute: typeof InternshipsNewIndexRoute
+interface DashboardInternshipsRouteRouteChildren {
+  DashboardInternshipsIndexRoute: typeof DashboardInternshipsIndexRoute
+  DashboardInternshipsDetailInternshipIdRoute: typeof DashboardInternshipsDetailInternshipIdRoute
+  DashboardInternshipsEditInternshipIdRoute: typeof DashboardInternshipsEditInternshipIdRoute
+  DashboardInternshipsNewIndexRoute: typeof DashboardInternshipsNewIndexRoute
 }
 
-const InternshipsRouteRouteChildren: InternshipsRouteRouteChildren = {
-  InternshipsIndexRoute: InternshipsIndexRoute,
-  InternshipsDetailInternshipIdRoute: InternshipsDetailInternshipIdRoute,
-  InternshipsEditInternshipIdRoute: InternshipsEditInternshipIdRoute,
-  InternshipsNewIndexRoute: InternshipsNewIndexRoute,
+const DashboardInternshipsRouteRouteChildren: DashboardInternshipsRouteRouteChildren =
+  {
+    DashboardInternshipsIndexRoute: DashboardInternshipsIndexRoute,
+    DashboardInternshipsDetailInternshipIdRoute:
+      DashboardInternshipsDetailInternshipIdRoute,
+    DashboardInternshipsEditInternshipIdRoute:
+      DashboardInternshipsEditInternshipIdRoute,
+    DashboardInternshipsNewIndexRoute: DashboardInternshipsNewIndexRoute,
+  }
+
+const DashboardInternshipsRouteRouteWithChildren =
+  DashboardInternshipsRouteRoute._addFileChildren(
+    DashboardInternshipsRouteRouteChildren,
+  )
+
+interface DashboardRouteRouteChildren {
+  DashboardInternshipsRouteRoute: typeof DashboardInternshipsRouteRouteWithChildren
+  DashboardApplicationsRoute: typeof DashboardApplicationsRoute
+  DashboardManagementRoute: typeof DashboardManagementRoute
+  DashboardAccountIndexRoute: typeof DashboardAccountIndexRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
 }
 
-const InternshipsRouteRouteWithChildren =
-  InternshipsRouteRoute._addFileChildren(InternshipsRouteRouteChildren)
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardInternshipsRouteRoute: DashboardInternshipsRouteRouteWithChildren,
+  DashboardApplicationsRoute: DashboardApplicationsRoute,
+  DashboardManagementRoute: DashboardManagementRoute,
+  DashboardAccountIndexRoute: DashboardAccountIndexRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  InternshipsRouteRoute: InternshipsRouteRouteWithChildren,
-  ApplicationsRoute: ApplicationsRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   ChangeDefaultPasswordRoute: ChangeDefaultPasswordRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
-  ManagementRoute: ManagementRoute,
   RegisterRoute: RegisterRoute,
   RegisterCompanyRoute: RegisterCompanyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  AccountIndexRoute: AccountIndexRoute,
-  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -15,3 +15,17 @@ export const requireRole = (allowedRoles: Role[]) => {
         }
     };
 };
+
+export const requireAnonymous = () => {
+    return () => {
+        const { role } = useAuthStore.getState();
+        if (role != 'None') {
+            throw redirect({
+                to: '/dashboard/internships',
+                search: {
+                    redirect: location.href
+                }
+            });
+        }
+    };
+};
