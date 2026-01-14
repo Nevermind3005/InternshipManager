@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using server.Data;
 using server.Foundation.Result;
 using server.Models.Auth;
+using server.Models.Company;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
 using server.Models.User.Representative;
@@ -79,6 +80,32 @@ public class AuthController(
     public async Task<ActionResult<UserResDto>> RegisterCompanyRepresentative(CompanyRepresentativeRegisterReqDto request)
     {
         var result = await authService.RegisterCompanyRepresentativeAsync(request);
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+        
+        return CreatedAtAction(
+            nameof(GetUserById), 
+            new { id = result.Value.Id }, 
+            result.Value
+        );
+    }
+
+    /// <summary>
+    /// Register a company with a primary representative from the landing page.
+    /// If companyId is provided, adds the representative to an existing company.
+    /// Otherwise creates a new company with the representative.
+    /// </summary>
+    /// <param name="request">JSON containing company and representative info</param>
+    /// <response code="200">Returns a user object.</response>
+    /// <response code="400">If validation fails or user with given email already exists.</response>
+    /// <response code="404">If companyId is provided but company not found.</response>
+    [HttpPost("register/company")]
+    public async Task<ActionResult<UserResDto>> RegisterCompanyWithRepresentative(CompanyWithRepresentativeRegisterReqDto request)
+    {
+        var result = await authService.RegisterCompanyWithPrimaryRepresentativeAsync(request);
 
         if (result.IsFailure)
         {

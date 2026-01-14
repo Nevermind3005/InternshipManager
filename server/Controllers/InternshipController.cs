@@ -128,7 +128,23 @@ public class InternshipController(
 
         if (userRole == nameof(ERole.CompanyRepresentative))
         {
-            filter.CompanyRepresentativeId = userGuid;
+            // Get user to check if primary representative
+            var userResult = await authService.GetUserByIdAsync(userGuid);
+            if (userResult.IsFailure)
+            {
+                return userResult.ToProblemDetails();
+            }
+            
+            // Primary representatives see all internships for their company
+            // Regular representatives see only internships assigned to them
+            if (userResult.Value.IsPrimaryRepresentative && userResult.Value.CompanyId.HasValue)
+            {
+                filter.CompanyId = userResult.Value.CompanyId.Value;
+            }
+            else
+            {
+                filter.CompanyRepresentativeId = userGuid;
+            }
         }
         
         var result = await internshipService.GetInternshipsAsync(filter, skip, limit);

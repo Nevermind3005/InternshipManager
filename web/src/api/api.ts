@@ -10,6 +10,7 @@ export const API = {
             CreateInternshipHandler: () => 'Auth/register/internshipHandler',
             RegisterCompany: () => 'Auth/register/company',
             RegisterRepresentative: () => 'Auth/register/representative',
+            RegisterCompany: () => 'Auth/register/company',
             Logout: () => 'Auth/logout',
             RequestPasswordReset: () => 'Auth/requestPasswordReset',
             ConfirmPasswordReset: () => 'Auth/confirmPasswordReset'
@@ -39,12 +40,14 @@ export const API = {
             PersonalInformation: () => 'User/me/personalInformation',
             PersonalInformationInternshipHandler: () => 'User/me/personalInformation/internshipHandler',
             PersonalInformationCompanyRepresentative: () => 'User/me/personalInformation/companyRepresentative',
-            ChangePassword: () => 'User/me/changePassword'
+            ChangePassword: () => 'User/me/changePassword',
+            GetAllInternshipHandlers: () => 'User/internshipHandlers'
         },
         Company: {
             Create: () => 'Company',
             GetById: (id: string) => `Company/${id}`,
             GetAll: () => 'Company',
+            GetAllPublic: () => 'Company/public',
             GetRepresentativeByEmail: (id: string, email: string) => `Company/${id}/representative/${email}`
         },
         OAuth: {
