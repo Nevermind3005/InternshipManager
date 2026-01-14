@@ -128,18 +128,15 @@ public class InternshipController(
 
         if (userRole == nameof(ERole.CompanyRepresentative))
         {
-            // Get user to check if primary representative
-            var userResult = await authService.GetUserByIdAsync(userGuid);
-            if (userResult.IsFailure)
-            {
-                return userResult.ToProblemDetails();
-            }
+            // Read from JWT claims instead of database query
+            var isPrimaryRepresentative = User.FindFirst("IsPrimaryRepresentative")?.Value == "True";
+            var companyIdClaim = User.FindFirst("CompanyId")?.Value;
             
             // Primary representatives see all internships for their company
             // Regular representatives see only internships assigned to them
-            if (userResult.Value.IsPrimaryRepresentative && userResult.Value.CompanyId.HasValue)
+            if (isPrimaryRepresentative && !string.IsNullOrEmpty(companyIdClaim) && Guid.TryParse(companyIdClaim, out var companyId))
             {
-                filter.CompanyId = userResult.Value.CompanyId.Value;
+                filter.CompanyId = companyId;
             }
             else
             {

@@ -405,7 +405,9 @@ public class AuthService(
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Role, user.Role.ToString()),
             new(JwtRegisteredClaimNames.Jti, tokenId),
-            new("IsPasswordDirty", user.IsPasswordDirty.ToString())
+            new("IsPasswordDirty", user.IsPasswordDirty.ToString()),
+            new("IsPrimaryRepresentative", user.IsPrimaryRepresentative.ToString()),
+            new("CompanyId", user.CompanyId?.ToString() ?? "")
         };
 
         var expiresIn = DateTime.UtcNow.AddMinutes(authConfiguration.Value.Lifetime.AccessToken);

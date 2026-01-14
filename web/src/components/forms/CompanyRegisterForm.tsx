@@ -43,7 +43,7 @@ const formSchema = z.object({
     }
     return true;
 }, {
-    message: "Company details are required when creating a new company",
+    message: "Validation.Company.DetailsRequired",
     path: ["companyName"]
 });
 

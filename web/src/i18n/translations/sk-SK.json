@@ -332,6 +332,7 @@
     "Validation.BuildingNumber.TooLong": "Číslo domu je príliš dlhé",
     "Validation.ZipCode.Required": "PSČ je povinné",
     "Validation.ZipCode.TooLong": "PSČ je príliš dlhé",
+    "Validation.Company.DetailsRequired": "Pri vytváraní novej firmy sú údaje o firme povinné",
 
     "Validation.Email.Required": "Email je povinný",
     "Validation.Email.Invalid": "Neplatná emailová adresa",

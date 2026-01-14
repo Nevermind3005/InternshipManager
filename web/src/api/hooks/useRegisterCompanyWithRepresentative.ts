@@ -8,7 +8,7 @@ export const useRegisterCompanyWithRepresentative = () => {
     return useMutation({
         mutationFn: async (req: ICompanyWithRepresentativeRegisterReq) => {
             return await httpClient.post(
-                API.Endpoints.Auth.RegisterCompany(), 
+                API.Endpoints.Auth.RegisterCompanyWithRepresentative(), 
                 { 
                     json: req 
                 }).json<IUserRes>();
