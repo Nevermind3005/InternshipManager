@@ -1,10 +1,10 @@
 import ForgotPasswordForm from '@/components/forms/ForgotPasswordForm';
-import { requireRole } from '@/lib/authGuard';
+import { requireAnonymous } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/forgot-password')({
     component: RouteComponent,
-    beforeLoad: requireRole(['None']),
+    beforeLoad: requireAnonymous(),
     loader: () => ({
         crumb: 'Forgot Password'
     })

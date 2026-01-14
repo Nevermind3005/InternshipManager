@@ -2,7 +2,7 @@ import CreateInternshipHandler from '@/components/forms/CreateInternshipHandler'
 import { requireRole } from '@/lib/authGuard';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/management')({
+export const Route = createFileRoute('/dashboard/management')({
     component: RouteComponent,
     beforeLoad: requireRole(['InternshipHandler']),
     loader: () => ({

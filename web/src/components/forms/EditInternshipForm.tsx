@@ -113,7 +113,7 @@ const InternshipForm = ({ internship, internshipId }: InternshipFormProps) => {
             },
             onSuccess: () => {
                 toast.success(intl.formatMessage({ id: "Internship.UpdateSuccess" }));
-                navigate({ to: '/internships' });
+                navigate({ to: '/dashboard/internships' });
             }
         });
     };
@@ -282,7 +282,7 @@ const InternshipForm = ({ internship, internshipId }: InternshipFormProps) => {
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => navigate({ to: '/internships' })}
+                            onClick={() => navigate({ to: '/dashboard/internships' })}
                             disabled={isPending}
                         >
                             <FormattedMessage id="Actions.Cancel" />
@@ -329,7 +329,7 @@ const EditInternshipForm = ({ internshipId }: EditInternshipFormProps) => {
                         <p className="text-sm text-muted-foreground">
                             <FormattedMessage id="Internship.LoadError" />
                         </p>
-                        <Button variant="outline" className="w-fit" onClick={() => navigate({ to: '/internships' })}>
+                        <Button variant="outline" className="w-fit" onClick={() => navigate({ to: '/dashboard/internships' })}>
                             <FormattedMessage id="Actions.Back" />
                         </Button>
                     </div>

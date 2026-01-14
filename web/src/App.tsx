@@ -7,7 +7,8 @@ import { useLanguageStore } from './store/useLanguageStore';
 import { IntlProvider } from 'react-intl';
 import { locales } from './i18n/IntlConfig';
 import { Toaster } from 'sonner';
-import { Landing } from './components/Landing';
+import { RouterProvider } from '@tanstack/react-router';
+import router from './lib/router';
 
 /* ~Begin ReactQuery */
 const queryClient = new QueryClient();
@@ -22,8 +23,7 @@ function App() {
                 <ThemeInitializer />
                 <IntlProvider locale={locale} messages={locales[locale]}>
                     <Toaster position="top-center" richColors />
-                    {/* <RouterProvider router={router} /> */}
-                    <Landing />
+                    <RouterProvider router={router} />
                 </IntlProvider>
             </QueryClientProvider>
         </>

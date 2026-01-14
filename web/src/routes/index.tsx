@@ -1,8 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
-import LandingPage from '../components/LandingPage';
+import { Landing } from '@/components/Landing';
+import { requireAnonymous } from '@/lib/authGuard';
 
 export const Route = createFileRoute('/')({
-    component: LandingPage,
+    component: Landing,
+    beforeLoad: requireAnonymous(),
     loader: () => ({
         crumb: 'Home'
     })

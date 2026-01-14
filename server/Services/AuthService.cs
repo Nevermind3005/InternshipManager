@@ -172,7 +172,7 @@ public class AuthService(
             return Result<TokenResDto>.Failure(Error.InvalidCredentials);
         }
 
-        var redirector = "/";
+        var redirector = "/dashboard/internships";
 
         if (user.IsPasswordDirty)
         {

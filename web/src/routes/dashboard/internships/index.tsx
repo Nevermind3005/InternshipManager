@@ -4,7 +4,7 @@ import { InternshipsTable } from '@/components/tables/InternshipsTable';
 import router from '@/lib/router';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/internships/')({
+export const Route = createFileRoute('/dashboard/internships/')({
     component: RouteComponent,
 });
 
@@ -16,7 +16,7 @@ function RouteComponent() {
                 <InternshipsTable />
                 {/** Only studnt should see button to create a new internship */}
                 <PermissionGuard roles={['Student']}>
-                    <FloatingActionButton onClick={() => { router.navigate({ to: '/internships/new' }); }}/>
+                    <FloatingActionButton onClick={() => { router.navigate({ to: '/dashboard/internships/new' }); }}/>
                 </PermissionGuard>
             </div>
         </div>

@@ -7,7 +7,7 @@ import StudyProgramsTable from '@/components/tables/StudyProgramsTable';
 import CreateStudyProgramForm from '@/components/forms/CreateStudyProgramForm';
 import FloatingActionButton from '@/components/foundation/FloatingActionButton';
 
-export const Route = createFileRoute('/settings/')({
+export const Route = createFileRoute('/dashboard/settings/')({
     component: RouteComponent,
     beforeLoad: requireRole(['InternshipHandler']),
     loader: () => ({
