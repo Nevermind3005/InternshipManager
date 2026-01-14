@@ -17,7 +17,7 @@ const updatePersonalInformation = async (req: UpdatePersonalInformationPayload, 
     
     if (role === 'InternshipHandler') {
         endpoint = API.Endpoints.Users.PersonalInformationInternshipHandler();
-    } else if (role === 'Company') {
+    } else if (role === 'CompanyRepresentative') {
         endpoint = API.Endpoints.Users.PersonalInformationCompanyRepresentative();
     } else {
         endpoint = API.Endpoints.Users.PersonalInformation();

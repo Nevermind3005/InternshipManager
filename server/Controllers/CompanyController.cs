@@ -62,6 +62,23 @@ public class CompanyController(
 
         return Ok(result.Value);
     }
+
+    /// <summary>
+    /// Get all companies (public endpoint for company registration form).
+    /// </summary>
+    [HttpGet("public")]
+    [AllowAnonymous]
+    public async Task<ActionResult<CompanyResDto>> GetCompaniesPublic()
+    {
+        var result = await companyService.GetCompaniesAsync();
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(result.Value);
+    }
     
     [HttpGet("{id:guid}/representative/{email}")]
     [Authorize(Roles = $"{nameof(ERole.InternshipHandler)}, {nameof(ERole.Student)}")]

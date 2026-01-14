@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RegisterCompanyRouteImport } from './routes/register-company'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ManagementRouteImport } from './routes/management'
 import { Route as LoginRouteImport } from './routes/login'
@@ -28,6 +29,11 @@ import { Route as InternshipsDetailInternshipIdRouteImport } from './routes/inte
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterCompanyRoute = RegisterCompanyRouteImport.update({
+  id: '/register-company',
+  path: '/register-company',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
+  '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/account': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
+  '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/account': typeof AccountIndexRoute
   '/internships': typeof InternshipsIndexRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/management': typeof ManagementRoute
   '/register': typeof RegisterRoute
+  '/register-company': typeof RegisterCompanyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/account/': typeof AccountIndexRoute
   '/internships/': typeof InternshipsIndexRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/management'
     | '/register'
+    | '/register-company'
     | '/reset-password'
     | '/account'
     | '/internships/'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/management'
     | '/register'
+    | '/register-company'
     | '/reset-password'
     | '/account'
     | '/internships'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/management'
     | '/register'
+    | '/register-company'
     | '/reset-password'
     | '/account/'
     | '/internships/'
@@ -216,6 +228,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ManagementRoute: typeof ManagementRoute
   RegisterRoute: typeof RegisterRoute
+  RegisterCompanyRoute: typeof RegisterCompanyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   AccountIndexRoute: typeof AccountIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register-company': {
+      id: '/register-company'
+      path: '/register-company'
+      fullPath: '/register-company'
+      preLoaderRoute: typeof RegisterCompanyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -357,6 +377,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ManagementRoute: ManagementRoute,
   RegisterRoute: RegisterRoute,
+  RegisterCompanyRoute: RegisterCompanyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   AccountIndexRoute: AccountIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,

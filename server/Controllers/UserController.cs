@@ -117,4 +117,22 @@ public class UserController(IUserService userService, IAuthService authService) 
 
         return NoContent();
     }
+
+    /// <summary>
+    /// Get all internship handlers (coordinators).
+    /// </summary>
+    /// <response code="200">Returns list of internship handlers.</response>
+    [HttpGet("internshipHandlers")]
+    [Authorize(Roles = nameof(ERole.InternshipHandler))]
+    public async Task<ActionResult<List<InternshipHandlerResDto>>> GetAllInternshipHandlers()
+    {
+        var result = await userService.GetAllInternshipHandlersAsync();
+
+        if (result.IsFailure)
+        {
+            return result.ToProblemDetails();
+        }
+
+        return Ok(result.Value);
+    }
 }

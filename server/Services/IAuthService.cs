@@ -1,5 +1,6 @@
 using server.Foundation.Result;
 using server.Models.Auth;
+using server.Models.Company;
 using server.Models.User;
 using server.Models.User.InternshipHandler;
 using server.Models.User.Representative;
@@ -12,6 +13,14 @@ public interface IAuthService
     Task<Result<UserResDto>> RegisterStudentAsync(StudentRegisterReqDto request);
     Task<Result<UserResDto>> RegisterInternshipHandlerAsync(InternshipHandlerRegisterReqDto request);
     Task<Result<UserResDto>> RegisterCompanyRepresentativeAsync(CompanyRepresentativeRegisterReqDto request);
+    
+    /// <summary>
+    /// Registers a company with a primary representative from the landing page.
+    /// If companyId is provided, adds the representative to existing company.
+    /// Otherwise creates a new company.
+    /// </summary>
+    Task<Result<UserResDto>> RegisterCompanyWithPrimaryRepresentativeAsync(CompanyWithRepresentativeRegisterReqDto request);
+    
     Task<Result<UserResDto>> GetUserByIdAsync(Guid userId);
     Task<Result<TokenResDto>> LoginAsync(LoginReqDto request);
     Task<Result<TokenResDto>> RefreshTokensAsync(RefreshTokenReqDto request);

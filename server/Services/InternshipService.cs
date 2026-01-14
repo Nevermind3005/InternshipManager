@@ -145,6 +145,11 @@ public class InternshipService(
             query = query.Where(i => i.CompanyRepresentativeId == filter.CompanyRepresentativeId);
         }
         
+        if (filter.CompanyId is not null)
+        {
+            query = query.Where(i => i.CompanyId == filter.CompanyId);
+        }
+        
         if (filter.StudyProgramId is not null)
         {
             query = query.Where(i => i.StudyProgramId == filter.StudyProgramId);
@@ -326,6 +331,11 @@ public class InternshipService(
         if (filter.CompanyRepresentativeId is not null)
         {
             query = query.Where(i => i.CompanyRepresentativeId == filter.CompanyRepresentativeId);
+        }
+        
+        if (filter.CompanyId is not null)
+        {
+            query = query.Where(i => i.CompanyId == filter.CompanyId);
         }
         
         if (filter.StudyProgramId is not null)

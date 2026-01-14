@@ -19,5 +19,11 @@ public class InternshipFilter
     [JsonIgnore]
     public Guid? CompanyRepresentativeId { get; set; }
     
+    /// <summary>
+    /// Filter by company ID (used for primary representatives who see all internships of their company)
+    /// </summary>
+    [JsonIgnore]
+    public Guid? CompanyId { get; set; }
+    
     public Guid? StudyProgramId { get; set; }
 }
